@@ -14,6 +14,8 @@ type SceneScreenProps = {
   challenges?: string[];
   /** ScenePresenter output: stage + dock */
   children: ReactNode;
+  onSettings?: () => void;
+  onHelp?: () => void;
 };
 
 /**
@@ -30,6 +32,8 @@ export function SceneScreen({
   goalBody = 'Survive for 10 Sols on Mars!',
   challenges = ['☢ Radiation', '❄ Extreme cold', '💧 Limited water'],
   children,
+  onSettings,
+  onHelp,
 }: SceneScreenProps) {
   return (
     <div className="ui-game">
@@ -47,18 +51,19 @@ export function SceneScreen({
         <MetersBar values={meters} reduceMotion={reduceMotion} variant="hud" />
         <div className="ui-topbar__end">
           <SolBadge sol={sol} phaseLabel={phaseLabel} clockLabel={clockLabel} />
-          <button type="button" className="ui-icon-btn" aria-label="Settings">
+          <button
+            type="button"
+            className="ui-icon-btn"
+            aria-label="Settings"
+            onClick={onSettings}
+          >
             ⚙
           </button>
         </div>
       </header>
 
       <aside className="ui-rail ui-rail--left" aria-label="Mission tools">
-        <button type="button" className="ui-rail__btn">
-          <span aria-hidden="true">📘</span>
-          Learn
-        </button>
-        <button type="button" className="ui-rail__btn">
+        <button type="button" className="ui-rail__btn" onClick={onHelp}>
           <span aria-hidden="true">❓</span>
           Help
         </button>

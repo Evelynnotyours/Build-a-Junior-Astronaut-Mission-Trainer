@@ -8,7 +8,7 @@
 
 This section is authoritative for confirmed product decisions. The November 11 fixed-order and Rover Drive fallback decisions are incorporated here. The PDF remains the source for the original scene format; where it differs, this README governs.
 
-**Player flow:** Start Mission -> read NASA input once (with saved-data fallback) -> Plan phase with Robo guidance -> prologue -> Sol 1 -> Sol 2 -> middle mission events -> Sol 10 -> ending and mission report.
+**Player flow:** Start New -> read NASA input once (with saved-data fallback) -> Plan phase with Robo guidance -> prologue -> Sol 1 -> Sol 2 -> middle mission events -> Sol 10 -> ending and mission report.
 
 **Original base game plus six additions:**
 1. Plan phase: choose cargo under the launch-weight budget; Robo gives optional advice based on the NASA input. Advice never forces a cargo choice.
@@ -31,7 +31,7 @@ This section is authoritative for confirmed product decisions. The November 11 f
 
 ### Confirmed title menu, save and responsive UI
 
-Title menu: **Start Mission**, **Continue Mission** (only with a valid unfinished save), **Learn**, **Teachers**, **Sources & Credits**, and **Settings**. Start Mission begins a new run and asks before replacing existing unfinished progress. Continue Mission restores the existing run without fetching new NASA conditions.
+Title menu: **Start New**, **Continue** (only with a valid unfinished save), **Learn** (learning hub and Teacher Pack), **Sources & Credits**, and **Settings**. Start New opens a fresh cargo plan directly, without a replacement popup. An inline notice explains that launching replaces unfinished progress; Back preserves it until launch. Continue restores the existing run without fetching new NASA conditions.
 
 Build dialogue boxes, speech tails, portrait/photo frames, meters, buttons, cards, source/disclosure labels and all text with responsive HTML/CSS/SVG. No generated UI-frame images are required. On narrow screens, reflow portraits and choices instead of shrinking the whole interface into unreadable text. Make tap targets, focus, font sizing and Reduce Motion work independently of scene art.
 
@@ -50,7 +50,7 @@ The scene is layered: sky/mountain/terrain -> permanent structures -> optional p
 
 ### Confirmed Teacher Pack scope
 
-Keep the lesson plan, event-matched discussion questions, kid-friendly vocabulary, prediction/choice/result worksheet, Mission Album printing and certificate. Teachers access these from the title screen. Classroom is a setting on the same mission, not a new mode; Section 14 owns its presentation and print requirements. No student accounts, connected devices or automatic voting.
+Keep the lesson plan, event-matched discussion questions, kid-friendly vocabulary, prediction/choice/result worksheet, Mission Album printing and certificate. The title-menu entry is **Learn**, opening **Your Mars Learning**; it contains these Teacher Pack materials. Classroom is a setting on the same mission, not a new mode; Section 14 owns its presentation and print requirements. No student accounts, connected devices or automatic voting.
 
 ### Confirmed photo cards: knowledge through fun for ages 7-12
 
@@ -215,7 +215,7 @@ export const FEATURES = {
 4. Teacher pack (can be built in parallel by non-coders)
 5. NASA Real-Sky integration (needs the sky function)
 6. AI debrief (needs the debrief function)
-7. Report/Album/Commander-style polish, sound and music, and Learn-screen polish. The basic failure report, confirmed title-menu entries and Reduce Motion behavior remain required; they are not deferred polish.
+7. Report/Album/Commander-style polish, sound and music, and Teacher Pack vocabulary polish. The basic failure report, confirmed title-menu entries and Reduce Motion behavior remain required; they are not deferred polish.
 
 ### P2: stretch
 - Burmese language option, read-aloud (browser speech synthesis), printable certificate polish. Exclusions are listed under Not in scope.
@@ -302,7 +302,7 @@ mars-mission-survival/
       debrief.ts             # calls /api/debrief with fallback
       storage.ts
     ui/
-      screens/               # Title, Plan, Prologue, Scene, Learn, Debrief,
+      screens/               # Title, Plan, Prologue, Scene, Debrief,
                              # Report, Teacher, Sources, Settings
       components/            # Meters, SolBadge, Hotspot, Commander, NarrationCard,
                              # ChoicePanel, AfterCard, RealMarsCard, PhotoFrame,
@@ -639,15 +639,15 @@ All player-facing text (narration, dialogue, After lines, Real moments, "Kids le
 ## 10. UI and scene spec
 
 ### 10.1 Screens
-1. **Title:** game name, Start Mission, Continue Mission (only for a valid unfinished save), Learn, Sources & Credits, Settings, Teachers, and an optional NASA observation badge. Confirm before a new mission replaces unfinished progress.
+1. **Title:** game name, Start New, Continue (only for a valid unfinished save), Sources & Credits, Settings, Learn, and an optional NASA observation badge. Explain the replacement inline; replace saved progress only when the new cargo launches.
 2. **Mission initialization (no mode screen):** obtain NASA input or fallback once, then open Plan. No Story/Daily selection.
 3. **Plan phase:** cargo bay with item cards, budget bar, Balanced pack, Launch, and Robo's optional NASA-based cargo guidance with observation date/source.
 4. **Prologue:** Robo narration cards with typewriter text and tap to continue.
 5. **Scene (main screen):** HUD plus outpost map (below).
 6. **Mini-game overlays:** one per mini-game, with Robo hint and Skip.
-7. **Learn:** glossary (sol, radiation, shield, solar panel, signal delay, dust storm, launch weight, cargo).
+7. **Vocabulary (inside Teacher Pack):** the fixed glossary remains available to teachers; the Learn entry opens the complete learning hub, rather than a second standalone glossary.
 8. **Debrief and Mission Report:** Robo's AI debrief (or template), choices made, meter graph by sol, why it worked or failed, Mission Album, Commander style, data sources.
-9. **Teachers:** downloads, Classroom mode switch, lesson plan links.
+9. **Learn (Your Mars Learning):** learning materials, Teacher Pack downloads/printing, Classroom presentation switch and lesson plan links.
 10. **Sources:** every dataset and photo used, links, observation Live/Cached/Saved status, and Saved photo labels for bundled images.
 11. **Settings:** sound, reduce motion, text size, Classroom mode.
 
@@ -1138,24 +1138,24 @@ Format: print-ready HTML pages (print CSS) and pre-made PDFs. Check readability 
 
 ## 15. Storage and settings
 
-### 15.1 Confirmed autosave and Continue Mission
+### 15.1 Confirmed autosave and Continue
 
 - No database/accounts are required. Save on the same browser/device with `localStorage`, wrapped in try/catch and validated on load. Clearing site data or closing private browsing may erase progress; cross-device resume is outside scope.
 - Use a versioned save envelope containing save-schema version, content version, run ID, current durable game state, fixed sol sequence, selected event variants, frozen NASA snapshot, cargo, meters, flags, pending effects, history, current event/choice and phase/checkpoint. Never store secret API keys.
 - Save after durable transitions: confirmed launch/cargo, sol-start effects, committed choice result, night upkeep, and ending. Track which effects have been applied. Reloading must not apply solar generation, choice costs, bonuses, delayed effects or upkeep twice.
 - Continue restores the latest valid checkpoint without querying new NASA conditions or changing the fixed order. A save made during transient walking can restore to WALK_SELECT; a mini-game can restart that same uncommitted task with no new cost/bonus. Persist the selected choice and its pre-result state for that restart. Already committed results resume after the commit.
-- Provide the stable in-game Continue action for dialogue/cards independently of title-screen Continue Mission. Discussion pauses likewise advance only when the teacher presses Continue.
-- Validate IDs, ranges and schema/content compatibility before showing Continue Mission. An invalid/incompatible save gets a friendly restart message, never an app crash or silent reinterpretation under new rules. Do not promise restoring old content versions without a migration.
+- Provide the stable in-game Continue action for dialogue/cards independently of title-screen Continue. Discussion pauses likewise advance only when the teacher presses Continue.
+- Validate IDs, ranges and schema/content compatibility before showing Continue. An invalid/incompatible save gets a friendly restart message, never an app crash or silent reinterpretation under new rules. Do not promise restoring old content versions without a migration.
 - If persistent storage is unavailable, maintain the current run in memory and give a short Settings/save-status explanation that it will not be remembered after closing. Do not show a misleading saved-progress promise. Active-session duplicate-request/bonus guards must still work.
-- Completed runs open their report in the current session and may remain in last-run history; they do not show as unfinished Continue Mission saves. New mission overwrite confirmation applies only to unfinished progress.
-- Verification: close/reopen after launch, walking, mini-game, result and night; verify identical conditions/state and no duplicate effects. Test blocked storage, corrupt save, incompatible version and new-run overwrite cancellation.
+- Completed runs open their report in the current session and may remain in last-run history; they do not show as unfinished Continue saves. Start New needs no separate confirmation card; its Plan notice explains that launch replaces unfinished progress, and Back keeps it.
+- Verification: close/reopen after launch, walking, mini-game, result and night; verify identical conditions/state and no duplicate effects. Test blocked storage, corrupt save, incompatible version and Back from a new plan preserving the old save, and replacement only on launch.
 
 ### 15.2 Storage keys
 
 `localStorage` keys (wrap in try/catch and handle storage being unavailable):
 - `mms.settings`: sound, reduceMotion, textSize, classroomMode
 - `mms.lastRun`: fixed schedule, contentVersion, frozen sky snapshot, current state, history, ending
-- `mms.activeRun`: versioned unfinished run/checkpoint used by Continue Mission (15.1)
+- `mms.activeRun`: versioned unfinished run/checkpoint used by Continue (15.1)
 - `mms.album`: ids of Real Mars cards seen
 - `mms.cargo.last`: the last cargo plan
 - `mms.sky.<date>`: cached NASA response with observation date, fetch time and source

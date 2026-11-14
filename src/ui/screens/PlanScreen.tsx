@@ -20,6 +20,7 @@ export type PlanScreenProps = {
   solarGainPreview?: number;
   onLaunch: (cargo: CargoId[]) => void;
   onBack?: () => void;
+  replacesSavedMission?: boolean;
 };
 
 /**
@@ -33,6 +34,7 @@ export function PlanScreen({
   solarGainPreview = 12,
   onLaunch,
   onBack,
+  replacesSavedMission = false,
 }: PlanScreenProps) {
   const [selected, setSelected] = useState<CargoId[]>(initialCargo);
   const [roboLine, setRoboLine] = useState<string>(PLAN_COPY.welcome);
@@ -56,7 +58,9 @@ export function PlanScreen({
     }
 
     if (used + item.weight > CARGO_BUDGET) {
-      setRoboLine(PLAN_COPY.overBudget);
+      setRoboLine(
+        `${item.name} needs ${item.weight} weight points, but we have only ${CARGO_BUDGET - used} left. Remove something first, then try again.`,
+      );
       return;
     }
 
@@ -106,9 +110,15 @@ export function PlanScreen({
         </header>
 
         <div className="plan-robo">
-          <img src="/assets/characters/robo_explaining.png" alt="" draggable={false} />
+          <img
+            src="/assets/characters/robo_explaining.png"
+            alt=""
+            draggable={false}
+          />
           <div className="plan-bubble">
-            <p>{roboLine}</p>
+            <p role="status" aria-live="polite">
+              {roboLine}
+            </p>
             <p className="plan-bubble__advice">{briefing.briefing}</p>
             <p className="plan-bubble__advice">{briefing.advice}</p>
           </div>
@@ -134,7 +144,7 @@ export function PlanScreen({
                   iconSrc={item.iconSrc}
                   mass={item.weight}
                   selected={isOn}
-                  disabled={wouldOver}
+                  overBudget={wouldOver}
                   onToggle={toggle}
                 />
               </div>
@@ -142,6 +152,12 @@ export function PlanScreen({
           })}
         </div>
 
+        {replacesSavedMission && (
+          <p className="plan-replace-notice">
+            Launching this new mission replaces your saved progress. Choose Back
+            to keep the current mission.
+          </p>
+        )}
         <footer className="plan-foot">
           {onBack ? (
             <button type="button" className="plan-btn" onClick={onBack}>

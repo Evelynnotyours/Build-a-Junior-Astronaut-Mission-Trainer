@@ -43,7 +43,12 @@ export function MissionAlbumScreen({
               Print
             </button>
             {onClose ? (
-              <button type="button" className="album-close" aria-label="Close album" onClick={onClose}>
+              <button
+                type="button"
+                className="album-close"
+                aria-label="Close album"
+                onClick={onClose}
+              >
                 ✕
               </button>
             ) : null}
@@ -52,8 +57,15 @@ export function MissionAlbumScreen({
 
         {cards.length === 0 ? (
           <div className="album-empty">
-            <img src="/assets/characters/robo_thinking.png" alt="" draggable={false} />
-            <p>Encountered cards appear here even if you continue without opening each one.</p>
+            <img
+              src="/assets/characters/robo_thinking.png"
+              alt=""
+              draggable={false}
+            />
+            <p>
+              Encountered cards appear here even if you continue without opening
+              each one.
+            </p>
           </div>
         ) : (
           <div className="album-body">
@@ -84,7 +96,9 @@ export function MissionAlbumScreen({
               <article className="album-detail" aria-label={open.title}>
                 <header>
                   <h2>{open.title}</h2>
-                  <span className="album-pill">Saved photo</span>
+                  <span className="album-pill">
+                    {open.mediaLabel ?? 'Saved photo'}
+                  </span>
                 </header>
                 {open.photoSrc ? (
                   <PhotoFrame
@@ -92,11 +106,15 @@ export function MissionAlbumScreen({
                     alt={open.photoAlt}
                     credit={open.photoCredit}
                     savedLabel
+                    mediaLabel={open.mediaLabel}
                   />
                 ) : (
                   <p className="album-missing">Photo not bundled yet.</p>
                 )}
                 <p className="album-fact">{open.fact}</p>
+                {open.photoCaption && <p>{open.photoCaption}</p>}
+                {open.contextNote && <p>{open.contextNote}</p>}
+                {open.observationNote && <p>{open.observationNote}</p>}
                 <p className="album-source">{open.sourceLabel}</p>
                 {open.sourceUrl ? (
                   <a
@@ -119,7 +137,14 @@ export function MissionAlbumScreen({
                   {card.photoSrc ? (
                     <img src={card.photoSrc} alt={card.photoAlt} />
                   ) : null}
-                  <p>{card.fact}</p>
+                  <p>
+                    {card.mediaLabel ?? 'Saved photo'} · {card.fact}
+                  </p>
+                  {card.photoCaption && <p>{card.photoCaption}</p>}
+                  {card.contextNote && <p>{card.contextNote}</p>}
+                  {card.observationNote && <p>{card.observationNote}</p>}
+                  {card.photoSourceUrl && <p>{card.photoSourceUrl}</p>}
+                  {card.sourceUrl && <p>{card.sourceUrl}</p>}
                   <p>
                     {card.photoCredit} · {card.sourceLabel}
                   </p>

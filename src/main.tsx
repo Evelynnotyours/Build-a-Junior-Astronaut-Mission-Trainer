@@ -10,6 +10,7 @@ import './styles/prologue.css';
 import './styles/teacher-print.css';
 import './styles/report.css';
 import './styles/album.css';
+import './styles/mission.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

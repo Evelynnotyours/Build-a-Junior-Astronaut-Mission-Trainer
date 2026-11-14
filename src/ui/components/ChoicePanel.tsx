@@ -35,8 +35,10 @@ export function ChoicePanel({
         <button
           key={option.id}
           type="button"
-          className={option.caution ? 'ui-choice ui-choice--caution' : 'ui-choice'}
-          disabled={disabled || option.disabled || locked.current}
+          className={
+            option.caution ? 'ui-choice ui-choice--caution' : 'ui-choice'
+          }
+          disabled={disabled || option.disabled}
           onClick={() => handleChoose(option.id)}
         >
           <span className="ui-choice__label">{option.label}</span>

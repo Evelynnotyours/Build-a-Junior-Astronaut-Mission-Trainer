@@ -1,9 +1,15 @@
-import { useMemo, useState } from 'react';
-import story from './content/story.json';
+import { features } from './features';
+import { useRef, useState } from 'react';
+import {
+  resolveText as text,
+  resolveRealCard,
+  resolveAlbum,
+} from './content/mission-content';
 import { createMission } from './engine/state';
-import { launchMission } from './engine/resources';
+import { beginNextSol, launchMission, meterZone } from './engine/resources';
 import { validateLoadout } from './engine/loadout';
-import { createSol01Scene } from './engine/scenes/sol01-touchdown';
+import { resolveMissionScene } from './engine/mission';
+import { createRetrySession } from './engine/retry';
 import {
   resumeScene,
   sceneView,
@@ -11,79 +17,138 @@ import {
   stampSceneInput,
   startScene,
 } from './engine/scene-player';
-import type { SceneTransition } from './engine/scene-player';
+import type { SceneOptions, SceneTransition } from './engine/scene-player';
 import type { SceneInput } from './engine/scene-types';
-import type { CargoId, GameState, SkySource } from './engine/types';
+import type { CargoId, GameState } from './engine/types';
 import { createMissionStorage, createSaveEnvelope } from './services/storage';
 import type { DurableTransition } from './engine/contracts';
-
 import { registerBundledDonkiArchive } from './content/donkiArchive';
 import {
   clearMissionSkyFreeze,
   fetchSkyForMission,
   freezeMissionSkySnapshot,
 } from './services/sky';
-
-import { ScenePresenter } from './ui/components/ScenePresenter';
-import type { ResolvedSceneContent } from './ui/components/ScenePresenter';
-import { PREVIEW_SPOTS } from './ui/preview/fixtures';
-import { LearnScreen } from './ui/screens/LearnScreen';
+import { useClassroomSettings } from './services/classroom-settings';
+import {
+  ScenePresenter,
+  type ResolvedSceneContent,
+} from './ui/components/ScenePresenter';
+import { SceneStage } from './ui/components/SceneStage';
+import { MISSION_SPOTS } from './ui/components/outpostLayout';
+import { scenePresentation } from './ui/mission-presentation';
 import { PlanScreen } from './ui/screens/PlanScreen';
 import { PrologueScreen } from './ui/screens/PrologueScreen';
 import { SceneScreen } from './ui/screens/SceneScreen';
-import { SettingsScreen, type SettingsValues } from './ui/screens/SettingsScreen';
+import { SettingsScreen } from './ui/screens/SettingsScreen';
 import { SourcesScreen } from './ui/screens/SourcesScreen';
 import { TeachersScreen } from './ui/screens/TeachersScreen';
 import { TitleScreen, type TitleAction } from './ui/screens/TitleScreen';
+import { MissionAlbumScreen } from './ui/screens/MissionAlbumScreen';
+import { CertificatePrint } from './ui/screens/teacher/CertificatePrint';
+import { ClassroomPause } from './ui/screens/teacher/ClassroomPause';
+import { MissionReport } from './ui/screens/MissionReport';
+import { useMissionAudio } from './ui/use-mission-audio';
 
+// Remain compatible with already saved Sol 1 runs; the envelope/schema is unchanged.
 const VERSION = 'sol1-v1';
-const text = (key: string) =>
-  (story as Record<string, string>)[key] ?? 'Content is not ready yet.';
+type AppPhase = 'title' | 'plan' | 'scene' | 'report';
+type Overlay =
+  'teachers' | 'sources' | 'settings' | 'album' | 'certificate' | null;
 
-type AppPhase = 'title' | 'plan' | 'prologue' | 'scene';
-type MenuOverlay = 'learn' | 'teachers' | 'sources' | 'settings' | null;
-
-/** App shell: Title → Plan → Prologue → Sol 1 scene (Member 4 UI + Member 1 engine). */
 export default function App() {
   const [storage] = useState(() =>
     createMissionStorage({ contentVersion: VERSION }),
   );
+  const [retry] = useState(createRetrySession);
   const [saved, setSaved] = useState(() => storage.loadActive());
+  const [lastRun, setLastRun] = useState(() => storage.loadLastRun());
   const [phase, setPhase] = useState<AppPhase>('title');
-  const [overlay, setOverlay] = useState<MenuOverlay>(null);
+  const [overlay, setOverlay] = useState<Overlay>(null);
   const [plan, setPlan] = useState<GameState>();
-  const [pendingLaunch, setPendingLaunch] = useState<{
-    game: GameState;
-    cargo: CargoId[];
-  }>();
   const [transition, setTransition] = useState<SceneTransition>();
+  const current = useRef<SceneTransition | undefined>(undefined);
   const [runId, setRunId] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
-  const [confirmNew, setConfirmNew] = useState(false);
+  const starting = useRef(false);
   const [allowReplace, setAllowReplace] = useState(false);
-  const [settings, setSettings] = useState<SettingsValues>(() => ({
-    soundEnabled: true,
-    reduceMotion:
-      globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
-      false,
-    textSize: 'md',
-    classroomMode: false,
-  }));
+  const { settings, setClassroom, updateSettings, saveWarning } =
+    useClassroomSettings();
+  const options: SceneOptions = {
+    reduceMotion: settings.reduceMotion,
+    classroomMode: settings.classroomMode,
+    miniGames: features.miniGames,
+  };
+  const playback = transition?.playback;
+  const state = phase === 'plan' ? plan : playback?.game;
+  const reportState = playback?.game.ending
+    ? playback.game
+    : lastRun.kind === 'ready'
+      ? lastRun.save.state
+      : undefined;
+  const materialState =
+    phase === 'report'
+      ? reportState
+      : (state ?? (saved.kind === 'ready' ? saved.save.state : reportState));
+  const scene = playback ? resolveMissionScene(playback.game) : undefined;
+  const view = playback && scene ? sceneView(scene, playback) : undefined;
+  const step = view?.step;
+  const presentation =
+    scene && playback ? scenePresentation(scene, playback) : undefined;
+  useMissionAudio(
+    phase === 'scene' && !overlay ? transition : undefined,
+    settings.soundEnabled,
+  );
 
-  const reducedMotion = settings.reduceMotion;
-
-  async function start(replace = false) {
-    if (saved.kind === 'ready' && !replace && !confirmNew) {
-      setConfirmNew(true);
-      return;
-    }
+  function persist(next: SceneTransition, id: string, replace = false) {
+    const state = next.playback.game;
+    const checkpoint: DurableTransition =
+      state.phase === 'ENDED'
+        ? 'ending'
+        : state.phase === 'NIGHT'
+          ? 'night'
+          : ['RESULT', 'REAL_CARD'].includes(state.phase)
+            ? 'choice_result'
+            : 'sol_start';
+    const result = storage.save(
+      createSaveEnvelope({
+        runId: id,
+        state,
+        cursor: next.playback.cursor,
+        checkpoint,
+        savedAt: new Date().toISOString(),
+      }),
+      { replaceUnfinished: replace },
+    );
+    setSaved(storage.loadActive());
+    setLastRun(storage.loadLastRun());
+    setStatus(
+      result.kind !== 'saved'
+        ? 'This progress could not be saved. Keep this page open.'
+        : result.mode === 'memory'
+          ? 'Progress is kept in this tab only because browser storage is unavailable.'
+          : '',
+    );
+    return result.kind === 'saved';
+  }
+  function install(next: SceneTransition) {
+    current.current = next;
+    setTransition(next);
+    if (next.playback.status === 'ended') setPhase('report');
+  }
+  function capture(next: SceneTransition, id: string) {
+    const start = next.checkpoints.find((c) => c.checkpoint === 'sol_start');
+    if (start) retry.capture(id, start.state, start.cursor);
+  }
+  async function start() {
+    if (starting.current) return;
+    starting.current = true;
     setLoading(true);
     setStatus('Reading NASA observations…');
     try {
-      const date = new Date().toISOString().slice(0, 10);
       registerBundledDonkiArchive();
       clearMissionSkyFreeze();
+      const date = new Date().toISOString().slice(0, 10);
       const result = await fetchSkyForMission({ queryDate: date });
       if (!result.ok) throw new Error('Sky unavailable');
       const mission = createMission({
@@ -94,264 +159,350 @@ export default function App() {
       freezeMissionSkySnapshot(mission.sky!);
       setPlan(mission);
       setRunId(crypto.randomUUID());
-      setAllowReplace(replace || confirmNew);
-      setConfirmNew(false);
-      setPhase('plan');
+      setAllowReplace(saved.kind === 'ready');
       setOverlay(null);
+      setPhase('plan');
       setStatus('');
     } catch {
       setStatus(
         'NASA observations and saved fallback are unavailable. Please try again. Your saved mission is unchanged.',
       );
     } finally {
+      starting.current = false;
       setLoading(false);
     }
   }
-
-  function persist(next: SceneTransition, id: string, replace = false) {
-    const phaseName = next.playback.game.phase;
-    const checkpoint: DurableTransition =
-      phaseName === 'ENDED'
-        ? 'ending'
-        : phaseName === 'NIGHT'
-          ? 'night'
-          : phaseName === 'RESULT' || phaseName === 'REAL_CARD'
-            ? 'choice_result'
-            : 'sol_start';
-    const result = storage.save(
-      createSaveEnvelope({
-        runId: id,
-        state: next.playback.game,
-        cursor: next.playback.cursor,
-        checkpoint,
-        savedAt: new Date().toISOString(),
-      }),
-      { replaceUnfinished: replace },
-    );
-    if (result.kind !== 'saved') {
-      setStatus('This progress could not be saved. Keep this page open.');
-      return false;
-    }
-    setStatus(
-      result.mode === 'memory'
-        ? 'Progress is kept in this tab only because browser storage is unavailable.'
-        : '',
-    );
-    setSaved(storage.loadActive());
-    return true;
-  }
-
-  function beginPrologue(cargo: CargoId[]) {
-    if (!plan || !validateLoadout(cargo).valid) return;
-    setPendingLaunch({ game: plan, cargo });
-    setPlan(undefined);
-    setPhase('prologue');
-  }
-
-  function enterScene(from: { game: GameState; cargo: CargoId[] }) {
-    const next = startScene(
-      createSol01Scene(from.cargo),
-      launchMission(from.game, from.cargo),
-    );
+  function launch(cargo: CargoId[]) {
+    if (!plan || !validateLoadout(cargo).valid || starting.current) return;
+    const game = launchMission(plan, cargo);
+    const next = startScene(resolveMissionScene(game), game, options);
     if (!persist(next, runId, allowReplace)) return;
-    setTransition(next);
-    setPendingLaunch(undefined);
+    retry.clear();
+    capture(next, runId);
+    install(next);
+    setPlan(undefined);
     setAllowReplace(false);
     setPhase('scene');
   }
-
   function restore() {
     if (saved.kind !== 'ready') return;
     try {
       const next = resumeScene(
-        createSol01Scene(saved.save.state.cargo),
+        resolveMissionScene(saved.save.state),
         saved.save,
-        { reduceMotion: reducedMotion },
+        { ...options, visitBase: (current.current?.playback.visit ?? 0) + 1 },
       );
       if (next.playback.game.sky)
         freezeMissionSkySnapshot(next.playback.game.sky);
+      retry.clear();
       setRunId(saved.save.runId);
-      setTransition(next);
+      install(next);
       setPhase('scene');
       setOverlay(null);
       setStatus('');
     } catch {
-      setStatus('This save cannot be opened with the current Sol 1 content.');
+      setStatus('This save cannot be opened with the current mission content.');
     }
   }
-
   function input(value: SceneInput) {
-    if (!transition) return;
+    const previous = current.current;
+    if (!previous) return;
     const next = sendSceneInput(
-      createSol01Scene(transition.playback.game.cargo),
-      transition.playback,
-      stampSceneInput(transition.playback, value),
-      { reduceMotion: reducedMotion },
+      resolveMissionScene(previous.playback.game),
+      previous.playback,
+      value,
+      options,
     );
     if (next.feedback) {
-      setStatus('Try the habitat. Robo will help you find it!');
+      setStatus('Tap the glowing destination. Robo will help you find it!');
       return;
     }
+    if (next.playback === previous.playback) return;
     persist(next, runId);
-    setTransition(next);
+    install(next);
   }
-
-  function onTitleAction(action: TitleAction) {
+  // Stamp the frame that created the callback, not whichever frame is current when it fires.
+  const onSceneInput = playback
+    ? (value: SceneInput) => input(stampSceneInput(playback, value))
+    : () => {};
+  function nextSol() {
+    const previous = current.current?.playback;
+    if (
+      !previous ||
+      previous.status !== 'complete' ||
+      previous.game.phase !== 'NIGHT'
+    )
+      return;
+    const game = beginNextSol(previous.game);
+    const next = startScene(resolveMissionScene(game), game, {
+      ...options,
+      visitBase: previous.visit + 1,
+    });
+    persist(next, runId);
+    capture(next, runId);
+    install(next);
+  }
+  function retrySol() {
+    const previous = current.current?.playback;
+    if (!previous) return;
+    const snapshot = retry.restore(runId, previous.game);
+    if (!snapshot) return;
+    const result = storage.save(
+      createSaveEnvelope({
+        runId,
+        state: snapshot.state,
+        cursor: snapshot.cursor,
+        checkpoint: 'sol_start',
+        savedAt: new Date().toISOString(),
+      }),
+      { retrySol: true },
+    );
+    if (result.kind !== 'saved') {
+      setStatus('This sol could not be retried. You can start a new mission.');
+      return;
+    }
+    const next = startScene(
+      resolveMissionScene(snapshot.state),
+      snapshot.state,
+      { ...options, visitBase: previous.visit + 1 },
+    );
+    persist(next, runId);
+    install(next);
+    setPhase('scene');
+  }
+  function titleAction(action: TitleAction) {
     if (action === 'start') {
-      void start(false);
+      void start();
       return;
     }
     if (action === 'continue') {
       restore();
       return;
     }
-    if (action === 'learn') setOverlay('learn');
-    if (action === 'teachers') setOverlay('teachers');
-    if (action === 'sources') setOverlay('sources');
-    if (action === 'settings') setOverlay('settings');
+    setOverlay(action);
   }
-
-  const playback = transition?.playback;
-  const view = playback
-    ? sceneView(createSol01Scene(playback.game.cargo), playback)
-    : undefined;
-  const state = playback?.game ?? plan ?? pendingLaunch?.game;
-  const step = view?.step;
-
-  const content: ResolvedSceneContent = useMemo(() => {
-    if (!view || !step) return {};
-    const speaker =
-      'speaker' in step
-        ? step.speaker === 'robo'
-          ? 'Robo'
-          : step.speaker === 'kai'
-            ? 'Kai'
-            : step.speaker === 'mei'
-              ? 'Mei'
-              : 'Dr. Thiri'
-        : undefined;
-    return {
-      text: view.textKey ? text(view.textKey) : undefined,
-      speakerName: speaker,
-      choices: view.choices?.map((c) => ({
-        id: c.id,
-        label: text(c.labelKey),
-        caution: view.caution?.choiceId === c.id,
-      })),
-      realCard: {
-        title: 'Gale Crater',
-        fact: 'Gale Crater is a giant bowl on Mars about 154 km (96 miles) wide!',
-        sourceLabel: 'NASA Mars Exploration · Gale Crater',
-        photoSrc: '/assets/bg/mars_vista.jpg',
-        photoAlt: 'Mars landscape for Gale Crater',
-      },
-    };
-  }, [view, step]);
-
-  const layers = useMemo(() => {
-    const cargo = playback?.game.cargo ?? pendingLaunch?.cargo ?? [];
-    return {
-      sky: 'dawn' as const,
-      solar: 'clean' as const,
-      extraPanels: cargo.includes('solar_extra'),
-      batteryBox: cargo.includes('batteries'),
-      shieldPlating: cargo.includes('shield_plating'),
-      frost: false,
-      garageOpen: false,
-      shelterOpen: playback?.status === 'ended',
-    };
-  }, [playback, pendingLaunch]);
-
-  const commanderStart = { x: 46, y: 70 };
-
-  if (overlay === 'learn') return <LearnScreen onClose={() => setOverlay(null)} />;
+  const content: ResolvedSceneContent = {
+    text: view?.textKey
+      ? text(view.textKey)
+      : step?.type === 'mini_game'
+        ? text(
+            `minigame.${step.gameId}.${step.gameId === 'rover_drive' && !features.roverObstacleBlocking ? 'waypoints' : 'hint'}`,
+          )
+        : undefined,
+    choices: view?.choices?.map((c) => ({
+      id: c.id,
+      label: text(c.labelKey),
+      caution: view.caution?.choiceId === c.id,
+      disabled: !!view.caution,
+    })),
+    realCard:
+      step?.type === 'real_card' && state
+        ? resolveRealCard(step.realMomentId, state)
+        : undefined,
+  };
+  const closeOverlay = () => setOverlay(null);
   if (overlay === 'teachers')
     return (
       <TeachersScreen
         classroomMode={settings.classroomMode}
-        onClassroomModeChange={(enabled) =>
-          setSettings((s) => ({
-            ...s,
-            classroomMode: enabled,
-            ...(enabled ? { soundEnabled: false, reduceMotion: true } : {}),
-          }))
-        }
-        onClose={() => setOverlay(null)}
+        onClassroomModeChange={setClassroom}
+        albumIds={materialState?.albumIds}
+        missionCompleted={materialState?.ending === 'success'}
+        onClose={closeOverlay}
       />
     );
-  if (overlay === 'sources')
-    return <SourcesScreen onClose={() => setOverlay(null)} />;
   if (overlay === 'settings')
     return (
       <SettingsScreen
         values={settings}
-        onChange={setSettings}
-        onClose={() => setOverlay(null)}
+        onChange={updateSettings}
+        saveStatus={saveWarning}
+        onClose={closeOverlay}
       />
     );
-
-  if (phase === 'plan' && plan) {
-    const skyStatus = (plan.sky?.source ?? 'saved') as SkySource;
+  if (overlay === 'sources') return <SourcesScreen onClose={closeOverlay} />;
+  if (overlay === 'album')
     return (
-      <>
-        <PlanScreen
-          skyLevel={plan.sky?.level ?? 'calm'}
-          skyStatus={skyStatus}
-          observationDate={plan.sky?.observedAt?.slice(0, 10) ?? plan.missionDate}
-          solarGainPreview={12}
-          onBack={() => {
-            setPlan(undefined);
-            setPhase('title');
-            setConfirmNew(false);
-          }}
-          onLaunch={beginPrologue}
-        />
-        {status ? <p role="status">{status}</p> : null}
-        {loading ? <p role="status">Reading observations…</p> : null}
-      </>
-    );
-  }
-
-  if (phase === 'prologue' && pendingLaunch) {
-    return (
-      <PrologueScreen
-        reduceMotion={reducedMotion}
-        onComplete={() => enterScene(pendingLaunch)}
-        onSkip={() => enterScene(pendingLaunch)}
+      <MissionAlbumScreen
+        cards={materialState ? resolveAlbum(materialState) : []}
+        onClose={closeOverlay}
       />
     );
-  }
-
-  if (phase === 'scene' && playback && state) {
+  if (overlay === 'certificate')
     return (
-      <div className="app-scene">
-        <SceneScreen
-          meters={state.meters}
-          sol={state.sol}
-          phaseLabel={state.phase === 'NIGHT' ? 'Night' : 'Day'}
-          reduceMotion={reducedMotion}
-        >
-          {view && step ? (
-            <ScenePresenter
-              step={step}
-              reduceMotion={reducedMotion}
-              onInput={input}
-              content={content}
-              spots={PREVIEW_SPOTS}
-              layers={layers}
-              settings={{
-                reduceMotion: reducedMotion,
-                soundEnabled: settings.soundEnabled,
-              }}
-              backdropSrc="/assets/bg/mars_vista.jpg"
-              showBuildings
-              commanderStart={commanderStart}
-            />
-          ) : null}
-        </SceneScreen>
-
-        {view?.caution ? (
-          <div className="app-caution" role="alertdialog" aria-label="Confirm resource use">
+      <div className="tn-shell">
+        <div className="tn-main">
+          <button className="no-print" onClick={closeOverlay}>
+            Back to report
+          </button>
+          <CertificatePrint
+            missionCompleted={reportState?.ending === 'success'}
+          />
+        </div>
+      </div>
+    );
+  if (phase === 'report' && reportState)
+    return (
+      <MissionReport
+        game={reportState}
+        canRetrySol={!!retry.restore(runId, reportState)}
+        onRetrySol={retrySol}
+        onRetryMission={() => void start()}
+        onOpenAlbum={() => setOverlay('album')}
+        onOpenCertificate={() => setOverlay('certificate')}
+        onClose={() => setPhase('title')}
+      />
+    );
+  if (phase === 'plan' && plan)
+    return (
+      <PlanScreen
+        skyLevel={plan.solarVariant}
+        skyStatus={plan.sky!.source}
+        observationDate={plan.sky?.observedAt?.slice(0, 10)}
+        onBack={() => {
+          setPlan(undefined);
+          setPhase('title');
+        }}
+        onLaunch={launch}
+        replacesSavedMission={allowReplace}
+      />
+    );
+  if (phase === 'scene' && playback && state && scene) {
+    const prologue =
+      step?.type === 'narration' && step.textKey.startsWith('prologue.');
+    return (
+      <div
+        className={`app-scene ${settings.classroomMode ? 'app-scene--classroom' : ''} mission-text--${settings.textSize}`}
+      >
+        {prologue ? (
+          <PrologueScreen
+            key={step.id}
+            reduceMotion={settings.reduceMotion}
+            lines={[text(step.textKey)]}
+            finalLabel={
+              step.textKey === 'prologue.6' ? 'Begin Sol 1' : 'Continue'
+            }
+            onComplete={() =>
+              onSceneInput({ type: 'advance', stepId: step.id })
+            }
+            onSkip={() => {
+              const previous = current.current;
+              if (!previous || previous.playback.visit !== playback.visit)
+                return;
+              let next = previous;
+              for (let i = 0; i < 6; i++) {
+                const at = sceneView(scene, next.playback)?.step;
+                if (
+                  at?.type !== 'narration' ||
+                  !at.textKey.startsWith('prologue.')
+                )
+                  break;
+                next = sendSceneInput(
+                  scene,
+                  next.playback,
+                  stampSceneInput(next.playback, {
+                    type: 'advance',
+                    stepId: at.id,
+                  }),
+                  options,
+                );
+              }
+              persist(next, runId);
+              install(next);
+            }}
+          />
+        ) : (
+          <SceneScreen
+            meters={state.meters}
+            sol={state.sol}
+            phaseLabel={presentation?.layers.sky === 'night' ? 'Night' : 'Day'}
+            reduceMotion={settings.reduceMotion}
+            onSettings={() => setOverlay('settings')}
+            onHelp={() =>
+              setStatus(
+                'Tap Continue to read, choose one action, or tap the glowing building. Every mini-game has Skip.',
+              )
+            }
+          >
+            {playback.status === 'complete' && (
+              <div className="ui-game__stage">
+                <SceneStage
+                  layers={{
+                    ...presentation!.layers,
+                    sky: 'night',
+                    extraPanels: state.cargo.includes('solar_extra'),
+                    batteryBox: state.cargo.includes('batteries'),
+                    shieldPlating: state.cargo.includes('shield_plating'),
+                  }}
+                  spots={MISSION_SPOTS}
+                  hotspotsEnabled={false}
+                  commander={presentation!.commander}
+                  settings={settings}
+                  backdropSrc="/assets/bg/mars_vista.jpg"
+                  showBuildings
+                  moodTintClassName="mission-mood--dusk_night"
+                  onSelectSpot={() => {}}
+                />
+              </div>
+            )}
+            {view && step ? (
+              <>
+                <ScenePresenter
+                  key={`${state.sol}:${step.id}:${playback.visit}`}
+                  step={step}
+                  initialWalking={view.walking}
+                  reduceMotion={settings.reduceMotion}
+                  onInput={onSceneInput}
+                  roverObstacleBlocking={features.roverObstacleBlocking}
+                  content={content}
+                  eventEffects={presentation!.cues}
+                  cameraPan={transition?.cues.some(
+                    (c) => c.type === 'camera' && c.cueKey.includes('pan'),
+                  )}
+                  spots={MISSION_SPOTS}
+                  layers={{
+                    ...presentation!.layers,
+                    extraPanels: state.cargo.includes('solar_extra'),
+                    batteryBox: state.cargo.includes('batteries'),
+                    shieldPlating: state.cargo.includes('shield_plating'),
+                  }}
+                  settings={settings}
+                  backdropSrc="/assets/bg/mars_vista.jpg"
+                  showBuildings
+                  commanderStart={presentation!.commander}
+                  moodTintClassName={`mission-mood--${presentation!.mood}`}
+                />
+                {step.type === 'classroom_pause' && (
+                  <div className="mission-classroom">
+                    <ClassroomPause
+                      sol={state.sol}
+                      question={text(step.questionKey)}
+                      onContinue={() =>
+                        onSceneInput({ type: 'advance', stepId: step.id })
+                      }
+                    />
+                  </div>
+                )}
+              </>
+            ) : null}
+            {playback.status === 'complete' && (
+              <section className="mission-night" aria-label="Sol complete">
+                <h2>Sol {state.sol} complete</h2>
+                <p>Night supplies have been used. Ready for the next sol?</p>
+                <button className="ui-btn ui-btn--cta" onClick={nextSol}>
+                  Begin Sol {state.sol + 1}
+                </button>
+              </section>
+            )}
+          </SceneScreen>
+        )}
+        {view?.caution && step && (
+          <div
+            className="app-caution"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="Confirm resource use"
+          >
             <p>
               That would use all our{' '}
               {view.caution.failedMeter === 'life'
@@ -362,10 +513,8 @@ export default function App() {
               . Are you sure?
             </p>
             <button
-              type="button"
               onClick={() =>
-                step &&
-                input({
+                onSceneInput({
                   type: 'confirm_choice',
                   stepId: step.id,
                   choiceId: view.caution!.choiceId,
@@ -375,61 +524,68 @@ export default function App() {
               Choose this
             </button>
             <button
-              type="button"
               onClick={() =>
-                step && input({ type: 'cancel_choice', stepId: step.id })
+                onSceneInput({ type: 'cancel_choice', stepId: step.id })
               }
             >
               Go back
             </button>
           </div>
-        ) : null}
-
+        )}
         <p className="app-meter-readout" aria-live="polite">
           Life Support: {state.meters.life} · Power: {state.meters.power} ·
           Shielding: {state.meters.shield}
         </p>
-
-        {playback.status === 'complete' && (
-          <p role="status">Sol 1 is complete and saved. Sol 2 is not connected yet.</p>
-        )}
-        {playback.status === 'ended' && (
-          <p role="status">
-            The crew is safe in the shelter. The ending screen is not connected
-            yet.
+        {status && (
+          <p role="status" className="mission-status">
+            {status}
           </p>
         )}
-        {status ? <p role="status">{status}</p> : null}
+        <div className="mission-warnings" role="status">
+          {(['life', 'power', 'shield'] as const).map((meter) => {
+            const zone = meterZone(state.meters[meter]);
+            return zone === 'low' || zone === 'danger' ? (
+              <p key={meter}>{text(`warning.${meter}.${zone}`)}</p>
+            ) : null;
+          })}
+        </div>
+        <div className="mission-tools no-print">
+          <button onClick={() => setOverlay('teachers')}>Learn</button>
+          <button onClick={() => setOverlay('album')}>Mission Album</button>
+          <button onClick={() => setPhase('title')}>Save &amp; title</button>
+        </div>
       </div>
     );
   }
-
   return (
     <>
       <TitleScreen
         canContinue={saved.kind === 'ready'}
-        replaceWarning={confirmNew}
-        sky={
-          saved.kind === 'ready' && saved.save.state.sky
-            ? {
-                level: saved.save.state.sky.level,
-                status: saved.save.state.sky.source,
-                observationDate: saved.save.state.sky.observedAt?.slice(0, 10),
-              }
-            : undefined
-        }
-        onAction={onTitleAction}
-        onConfirmStart={() => void start(true)}
-        onCancelStart={() => setConfirmNew(false)}
+        onAction={titleAction}
       />
-      {loading ? <p role="status">Reading observations…</p> : null}
-      {status ? <p role="status">{status}</p> : null}
-      {saved.kind !== 'ready' && saved.kind !== 'empty' ? (
+      {lastRun.kind === 'ready' && (
+        <button
+          className="mission-last-report"
+          onClick={() => {
+            current.current = undefined;
+            setTransition(undefined);
+            setPhase('report');
+          }}
+        >
+          View last mission report
+        </button>
+      )}
+      {(loading || status) && (
+        <p role="status" className="mission-status">
+          {status || 'Reading NASA observations…'}
+        </p>
+      )}
+      {saved.kind !== 'ready' && saved.kind !== 'empty' && (
         <p role="status">
           Your saved mission is incompatible or damaged. You can start a new
           mission.
         </p>
-      ) : null}
+      )}
     </>
   );
 }

@@ -1,3 +1,4 @@
+import type { SpotId, SpotLayout } from './types';
 /**
  * Percent layout for outpost sprites on the 16:9 stage.
  * Reference: greenhouse left · dual solar mid-left · air mid · habitat center-right · rover right.
@@ -24,3 +25,19 @@ export const OUTPOST_BUILDINGS = {
   garage: { id: 'garage', left: 82, top: 40, width: 11, z: 4 },
   rover: { id: 'rover', left: 77, top: 52, width: 15, z: 6 },
 } as const satisfies Record<string, BuildingSlot>;
+
+export const MISSION_SPOTS: Record<SpotId, SpotLayout> = {
+  greenhouse: {
+    x: 7,
+    y: 34,
+    w: 18,
+    h: 22,
+    stand: [15, 62],
+    label: 'Greenhouse',
+  },
+  solar: { x: 30, y: 56, w: 12, h: 14, stand: [34, 72], label: 'Solar panels' },
+  air: { x: 38, y: 48, w: 10, h: 14, stand: [42, 68], label: 'Air module' },
+  habitat: { x: 54, y: 28, w: 18, h: 24, stand: [62, 64], label: 'Habitat' },
+  dish: { x: 72, y: 22, w: 8, h: 12, stand: [74, 48], label: 'Comms dish' },
+  rover: { x: 80, y: 52, w: 12, h: 16, stand: [86, 72], label: 'Rover garage' },
+};

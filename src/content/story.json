@@ -22,5 +22,16 @@
   "touchdown.A.after": "Air first! Breathing comes before everything. We have a little less power now, so we will plan carefully.",
   "touchdown.B.after": "The shield is ready to protect us from radiation. The air system can wait a little, but not for long.",
   "touchdown.C.after": "Mei’s plants are waking up! Plants give us food and fresh air, but their lights use a lot of power.",
-  "touchdown.classroom": "Why could we not give the first power to everything?"
+  "touchdown.classroom": "Why could we not give the first power to everything?",
+  "minigame.cover_panels.hint": "Tap each panel to fit its cover. Cover all four, or choose Skip.",
+  "minigame.rover_drive.hint": "Guide the rover around the rocks to the ice. Tap a route or use the keyboard.",
+  "minigame.repair_wires.hint": "Choose a wire end, then its matching symbol. Connect all three pairs.",
+  "minigame.patch_leak.hint": "Tap each marked leak to place a patch. Patch all three, or choose Skip.",
+  "minigame.rover_drive.waypoints": "Guide the rover through the waypoints to the ice. Tap a route or use the keyboard.",
+  "warning.life.low": "Our air and water supplies are getting low. Let’s watch Life Support.",
+  "warning.life.danger": "Life Support is very low. Look for a way to protect our air and water.",
+  "warning.power.low": "Our stored power is getting low. Let’s plan the next job carefully.",
+  "warning.power.danger": "Power is very low. Check the cost before starting another job.",
+  "warning.shield.low": "Our protection is getting low. Let’s keep an eye on Shielding.",
+  "warning.shield.danger": "Shielding is very low. Look for protection or shelter choices."
 }

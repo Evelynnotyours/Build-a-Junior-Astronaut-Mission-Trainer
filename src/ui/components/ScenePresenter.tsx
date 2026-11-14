@@ -14,7 +14,14 @@ import { RealMarsCard } from './RealMarsCard';
 import { SceneStage } from './SceneStage';
 import { CoverPanels } from '../minigames/CoverPanels';
 import { RoverDrive } from '../minigames/RoverDrive';
-import type { ChoiceOption, SceneLayerFlags, SpotLayout, UiSettings } from './types';
+import { RepairWires } from '../minigames/RepairWires';
+import { PatchLeak } from '../minigames/PatchLeak';
+import type {
+  ChoiceOption,
+  SceneLayerFlags,
+  SpotLayout,
+  UiSettings,
+} from './types';
 
 export type ResolvedSceneContent = {
   /** Already looked-up story text for the active step */
@@ -27,6 +34,14 @@ export type ResolvedSceneContent = {
     sourceLabel: string;
     photoSrc?: string;
     photoAlt?: string;
+    photoCredit?: string;
+    mediaLabel?: string;
+    sourceUrl?: string;
+    photoSourceUrl?: string;
+    photoCaption?: string;
+    contextNote?: string;
+    observationNote?: string;
+    observationSourceUrl?: string;
   };
 };
 
@@ -39,6 +54,10 @@ type ScenePresenterProps = ScenePresentationProps & {
   showBuildings?: boolean;
   commanderStart?: { x: number; y: number };
   moodTintClassName?: string;
+  roverObstacleBlocking?: boolean;
+  eventEffects?: readonly string[];
+  cameraPan?: boolean;
+  initialWalking?: boolean;
 };
 
 const SPEAKER_LABEL: Record<string, string> = {
@@ -53,7 +72,10 @@ const SPEAKER_LABEL: Record<string, string> = {
  * Parent resolves text keys; this never applies meter/effects itself.
  * Wrap with SceneScreen for HUD chrome.
  */
-export function ScenePresenter({
+export function ScenePresenter(props: ScenePresenterProps) {
+  return <ScenePresenterFrame key={props.step.id} {...props} />;
+}
+function ScenePresenterFrame({
   step,
   reduceMotion,
   onInput,
@@ -65,38 +87,26 @@ export function ScenePresenter({
   showBuildings,
   commanderStart = { x: 50, y: 78 },
   moodTintClassName,
+  roverObstacleBlocking = true,
+  eventEffects,
+  cameraPan,
+  initialWalking = false,
 }: ScenePresenterProps) {
   const [commander, setCommander] = useState({
     ...commanderStart,
     pose: 'idle' as 'idle' | 'walk' | 'cheer' | 'concerned',
   });
-  const [walking, setWalking] = useState(false);
+  const [walking, setWalking] = useState(initialWalking);
+  // CSS transitionend may not fire after a settings overlay or when the position is unchanged.
+  useEffect(() => {
+    if (!walking || step.type !== 'walk') return;
+    const timer = window.setTimeout(
+      () => onInput({ type: 'walk_finished', stepId: step.id }),
+      reduceMotion ? 0 : 1800,
+    );
+    return () => window.clearTimeout(timer);
+  }, [walking, step, onInput, reduceMotion]);
   const [realOpen, setRealOpen] = useState(false);
-
-  useEffect(() => {
-    setWalking(false);
-    setRealOpen(false);
-    setCommander((c) => ({ ...c, pose: 'idle' }));
-  }, [step.id]);
-
-  // Non-interactive cue steps: report completion (skippable / instant under Reduce Motion).
-  useEffect(() => {
-    if (
-      step.type === 'scene' ||
-      step.type === 'camera' ||
-      step.type === 'effect' ||
-      step.type === 'audio' ||
-      step.type === 'result' ||
-      step.type === 'night'
-    ) {
-      const delay = reduceMotion ? 0 : 400;
-      const timer = window.setTimeout(() => {
-        onInput({ type: 'advance', stepId: step.id });
-      }, delay);
-      return () => window.clearTimeout(timer);
-    }
-    return undefined;
-  }, [step, reduceMotion, onInput]);
 
   function emit(input: SceneInput) {
     onInput(input);
@@ -104,7 +114,10 @@ export function ScenePresenter({
 
   function startWalk(spotId: SpotId) {
     if (step.type !== 'walk' || walking) return;
-    if (spotId !== step.target) return;
+    if (spotId !== step.target) {
+      emit({ type: 'select_spot', stepId: step.id, spotId });
+      return;
+    }
     const stand = spots[spotId].stand;
     setWalking(true);
     setCommander({ x: stand[0], y: stand[1], pose: 'walk' });
@@ -121,6 +134,7 @@ export function ScenePresenter({
   const activeSpot = step.type === 'walk' ? step.target : null;
   const dock = renderDock(step, content, {
     reduceMotion,
+    roverObstacleBlocking,
     walking,
     realOpen,
     setRealOpen,
@@ -137,6 +151,8 @@ export function ScenePresenter({
       <div className="ui-game__stage">
         <SceneStage
           layers={layers}
+          eventEffects={eventEffects}
+          cameraPan={cameraPan}
           spots={spots}
           activeSpot={activeSpot}
           hotspotsEnabled={step.type === 'walk' && !walking}
@@ -166,6 +182,7 @@ function renderDock(
   content: ResolvedSceneContent,
   opts: {
     reduceMotion: boolean;
+    roverObstacleBlocking: boolean;
     walking: boolean;
     realOpen: boolean;
     setRealOpen: (open: boolean) => void;
@@ -193,7 +210,9 @@ function renderDock(
       return (
         <DialogueBox
           {...portrait}
-          speakerName={content.speakerName ?? SPEAKER_LABEL[step.speaker] ?? step.speaker}
+          speakerName={
+            content.speakerName ?? SPEAKER_LABEL[step.speaker] ?? step.speaker
+          }
           text={content.text ?? ''}
           onContinue={opts.onAdvance}
         />
@@ -221,39 +240,53 @@ function renderDock(
         </div>
       );
     case 'after':
-      return <AfterCard text={content.text ?? ''} onContinue={opts.onAdvance} />;
-    case 'real_card':
-      if (!content.realCard) {
-        return <Banner message="Real Mars card content missing." />;
-      }
       return (
-        <RealMarsCard
-          title={content.realCard.title}
-          fact={content.realCard.fact}
-          sourceLabel={content.realCard.sourceLabel}
-          photoSrc={content.realCard.photoSrc}
-          photoAlt={content.realCard.photoAlt}
-          collapsed={!opts.realOpen}
-          onOpen={() => opts.setRealOpen(true)}
-          onClose={() => {
-            opts.setRealOpen(false);
-            opts.onAdvance();
-          }}
-        />
+        <AfterCard text={content.text ?? ''} onContinue={opts.onAdvance} />
       );
-    case 'classroom_pause':
+    case 'real_card':
       return (
-        <div className="ui-game__dock-row">
-          <Banner
-            tone="info"
-            message={content.text ?? 'Classroom pause — teacher presses Continue.'}
-          />
-          <button type="button" className="ui-btn ui-btn--cta" onClick={opts.onAdvance}>
-            Continue
-          </button>
+        <div className="ui-game__dock-stack">
+          {content.realCard ? (
+            <RealMarsCard
+              {...content.realCard}
+              collapsed={!opts.realOpen}
+              onOpen={() => opts.setRealOpen(true)}
+              onClose={opts.onAdvance}
+            />
+          ) : (
+            <Banner message="This learning card is unavailable. You can keep playing." />
+          )}
+          {!opts.realOpen && (
+            <button
+              className="ui-btn ui-btn--cta"
+              type="button"
+              onClick={opts.onAdvance}
+            >
+              Continue
+            </button>
+          )}
         </div>
       );
+    case 'classroom_pause':
+      return null;
     case 'mini_game':
+      if (step.gameId === 'repair_wires' || step.gameId === 'patch_leak') {
+        const common = {
+          reduceMotion: opts.reduceMotion,
+          instructionKey: `minigame.${step.gameId}.hint`,
+          instruction: content.text ?? '',
+          onResult: opts.onMiniGameResult,
+        };
+        return (
+          <div className="ui-game__dock-stack">
+            {step.gameId === 'repair_wires' ? (
+              <RepairWires {...common} id="repair_wires" />
+            ) : (
+              <PatchLeak {...common} id="patch_leak" />
+            )}
+          </div>
+        );
+      }
       if (step.gameId === 'rover_drive') {
         return (
           <div className="ui-game__dock-stack">
@@ -265,7 +298,7 @@ function renderDock(
                 'Guide the rover to the ice. Use the D-pad, arrow keys, or GO.'
               }
               reduceMotion={opts.reduceMotion}
-              obstacleBlocking
+              obstacleBlocking={opts.roverObstacleBlocking}
               onResult={opts.onMiniGameResult}
             />
           </div>
@@ -293,7 +326,11 @@ function renderDock(
             tone="hint"
             message={`Mini-game “${step.gameId}” stub — use Skip until the real task lands.`}
           />
-          <button type="button" className="ui-btn" onClick={opts.onSkipMiniGame}>
+          <button
+            type="button"
+            className="ui-btn"
+            onClick={opts.onSkipMiniGame}
+          >
             Skip
           </button>
         </div>

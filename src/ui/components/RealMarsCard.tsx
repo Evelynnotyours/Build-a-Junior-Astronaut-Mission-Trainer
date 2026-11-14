@@ -6,6 +6,13 @@ type RealMarsCardProps = {
   photoAlt?: string;
   photoCredit?: string;
   savedPhoto?: boolean;
+  mediaLabel?: string;
+  sourceUrl?: string;
+  photoSourceUrl?: string;
+  photoCaption?: string;
+  contextNote?: string;
+  observationNote?: string;
+  observationSourceUrl?: string;
   collapsed?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
@@ -19,6 +26,13 @@ export function RealMarsCard({
   photoAlt = 'Real Mars photo',
   photoCredit,
   savedPhoto = true,
+  mediaLabel = 'Saved photo',
+  sourceUrl,
+  photoSourceUrl,
+  photoCaption,
+  contextNote,
+  observationNote,
+  observationSourceUrl,
   collapsed = true,
   onOpen,
   onClose,
@@ -35,8 +49,9 @@ export function RealMarsCard({
     <article className="ui-real-mars" aria-label={title}>
       <header className="ui-real-mars__header">
         <h2>{title}</h2>
-        {savedPhoto ? <span className="ui-real-mars__tag">Saved photo</span> : null}
-        <span className="ui-real-mars__tag">Real photo</span>
+        {savedPhoto ? (
+          <span className="ui-real-mars__tag">{mediaLabel}</span>
+        ) : null}
       </header>
       {photoSrc ? (
         <figure className="ui-real-mars__figure">
@@ -47,7 +62,34 @@ export function RealMarsCard({
         <p className="ui-real-mars__missing">Photo not bundled yet.</p>
       )}
       <p className="ui-real-mars__fact">{fact}</p>
-      <p className="ui-real-mars__source">{sourceLabel}</p>
+      {observationNote && <p>{observationNote}</p>}
+      <details>
+        <summary>Photo and sources</summary>
+        {photoCaption && <p>{photoCaption}</p>}
+        {contextNote && <p>{contextNote}</p>}
+        <p className="ui-real-mars__source">{sourceLabel}</p>
+        {observationSourceUrl && (
+          <p>
+            <a href={observationSourceUrl} target="_blank" rel="noreferrer">
+              Mission solar observation source
+            </a>
+          </p>
+        )}
+        {sourceUrl && (
+          <p>
+            <a href={sourceUrl} target="_blank" rel="noreferrer">
+              Fact source
+            </a>
+          </p>
+        )}
+        {photoSourceUrl && (
+          <p>
+            <a href={photoSourceUrl} target="_blank" rel="noreferrer">
+              Image source
+            </a>
+          </p>
+        )}
+      </details>
       <button type="button" className="ui-btn" onClick={onClose}>
         Close
       </button>

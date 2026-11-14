@@ -10,6 +10,12 @@ export type AlbumCardRecord = {
   photoSrc?: string;
   photoAlt: string;
   photoCredit: string;
+  mediaLabel?: string;
+  photoCaption?: string;
+  photoSourceUrl?: string;
+  contextNote?: string;
+  observationNote?: string;
+  observationSourceUrl?: string;
 };
 
 /**
@@ -45,7 +51,8 @@ export const FIXTURE_ALBUM: AlbumCardRecord[] = [
     title: 'Planet-wide dust',
     fact: 'In 2018, a giant dust storm covered the entire planet of Mars!',
     sourceLabel: 'NASA Mars Exploration · Opportunity',
-    sourceUrl: 'https://mars.nasa.gov/news/8348/opportunity-hunkers-down-during-dust-storm/',
+    sourceUrl:
+      'https://mars.nasa.gov/news/8348/opportunity-hunkers-down-during-dust-storm/',
     photoSrc: '/assets/bg/mars_vista.jpg',
     photoAlt: 'Dusty Mars landscape placeholder',
     photoCredit: 'Placeholder art · final NASA photo TBD (Member 2/3)',
@@ -56,7 +63,8 @@ export const FIXTURE_ALBUM: AlbumCardRecord[] = [
     title: 'Water in the dirt',
     fact: 'Martian dirt has a little bit of water trapped inside it.',
     sourceLabel: 'NASA · Curiosity soil water',
-    sourceUrl: 'https://www.nasa.gov/news-release/nasas-curiosity-rover-finds-water-in-martian-soil/',
+    sourceUrl:
+      'https://www.nasa.gov/news-release/nasas-curiosity-rover-finds-water-in-martian-soil/',
     photoSrc: '/assets/bg/mars_vista.jpg',
     photoAlt: 'Mars ground placeholder for ice hunt card',
     photoCredit: 'Placeholder art · final NASA photo TBD (Member 2/3)',

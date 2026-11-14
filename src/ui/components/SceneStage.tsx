@@ -9,7 +9,11 @@ type SceneStageProps = {
   spots: Record<SpotId, SpotLayout>;
   activeSpot?: SpotId | null;
   hotspotsEnabled?: boolean;
-  commander: { x: number; y: number; pose?: 'idle' | 'walk' | 'cheer' | 'concerned' };
+  commander: {
+    x: number;
+    y: number;
+    pose?: 'idle' | 'walk' | 'cheer' | 'concerned';
+  };
   moodTintClassName?: string;
   settings: UiSettings;
   onSelectSpot: (id: SpotId) => void;
@@ -22,6 +26,8 @@ type SceneStageProps = {
    */
   backdropSrc?: string;
   showBuildings?: boolean;
+  eventEffects?: readonly string[];
+  cameraPan?: boolean;
 };
 
 const SKY: Record<SceneLayerFlags['sky'], string> = {
@@ -79,10 +85,15 @@ export function SceneStage({
   showSkipWalk = false,
   backdropSrc,
   showBuildings = !backdropSrc,
+  eventEffects = [],
+  cameraPan = false,
 }: SceneStageProps) {
   return (
     <div className="ui-scene">
-      <div className="ui-scene__stage" role="img" aria-label="Mars outpost">
+      <div
+        className={`ui-scene__stage ${cameraPan && !settings.reduceMotion ? 'mission-camera-pan' : ''}`}
+        aria-label="Mars outpost"
+      >
         {backdropSrc ? (
           <img
             className="ui-scene__layer ui-scene__backdrop"
@@ -92,7 +103,12 @@ export function SceneStage({
           />
         ) : (
           <>
-            <img className="ui-scene__layer" src={SKY[layers.sky]} alt="" draggable={false} />
+            <img
+              className="ui-scene__layer"
+              src={SKY[layers.sky]}
+              alt=""
+              draggable={false}
+            />
             <img
               className="ui-scene__layer"
               src="/assets/bg/mount_sharp.png"
@@ -125,8 +141,14 @@ export function SceneStage({
                 slot={OUTPOST_BUILDINGS.shelter}
               />
             ) : null}
-            <BuildingSprite src={SOLAR[layers.solar]} slot={OUTPOST_BUILDINGS.solar} />
-            <BuildingSprite src={SOLAR[layers.solar]} slot={OUTPOST_BUILDINGS.solarB} />
+            <BuildingSprite
+              src={SOLAR[layers.solar]}
+              slot={OUTPOST_BUILDINGS.solar}
+            />
+            <BuildingSprite
+              src={SOLAR[layers.solar]}
+              slot={OUTPOST_BUILDINGS.solarB}
+            />
             {layers.extraPanels ? (
               <BuildingSprite
                 src="/assets/buildings/extra_panels.png"
@@ -176,6 +198,38 @@ export function SceneStage({
           reduceMotion={settings.reduceMotion}
         />
 
+        <div
+          className={`mission-effects ${!settings.reduceMotion ? 'mission-effects--moving' : ''}`}
+          aria-hidden="true"
+        >
+          {eventEffects.some((c) => c.includes('puff')) && (
+            <img
+              className="mission-effects__hiss"
+              src="/assets/overlays/hiss_puff.png"
+              alt=""
+            />
+          )}
+          {eventEffects.some((c) => c.includes('spark')) && (
+            <img
+              className="mission-effects__spark"
+              src="/assets/overlays/spark.png"
+              alt=""
+            />
+          )}
+          {eventEffects.some(
+            (c) => c.includes('meteor') || c.includes('shooting'),
+          ) && <span className="mission-effects__meteor" />}
+          {eventEffects.some((c) => c.includes('glow')) && (
+            <span className="mission-effects__glow" />
+          )}
+          {eventEffects.some((c) => c.includes('supply_ship')) && (
+            <img
+              className="mission-effects__ship"
+              src="/assets/buildings/supply_ship.png"
+              alt=""
+            />
+          )}
+        </div>
         {(Object.keys(spots) as SpotId[]).map((id) => (
           <Hotspot
             key={id}
@@ -198,7 +252,11 @@ export function SceneStage({
       </div>
 
       {showSkipWalk && onSkipWalk ? (
-        <button type="button" className="ui-btn ui-scene__skip" onClick={onSkipWalk}>
+        <button
+          type="button"
+          className="ui-btn ui-scene__skip"
+          onClick={onSkipWalk}
+        >
           Finish walk
         </button>
       ) : null}

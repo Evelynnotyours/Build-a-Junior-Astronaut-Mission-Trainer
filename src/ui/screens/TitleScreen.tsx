@@ -2,20 +2,16 @@ import { SkyBadge } from '../components/SkyBadge';
 import type { SkyLevel, SkySource } from '../../engine/types';
 
 export type TitleAction =
-  | 'start'
-  | 'continue'
-  | 'learn'
-  | 'teachers'
-  | 'sources'
-  | 'settings';
+  'start' | 'continue' | 'teachers' | 'sources' | 'settings';
 
 type TitleScreenProps = {
   canContinue?: boolean;
-  replaceWarning?: boolean;
-  sky?: { level?: SkyLevel; status: SkySource | 'Unavailable'; observationDate?: string };
+  sky?: {
+    level?: SkyLevel;
+    status: SkySource | 'Unavailable';
+    observationDate?: string;
+  };
   onAction: (action: TitleAction) => void;
-  onConfirmStart?: () => void;
-  onCancelStart?: () => void;
 };
 
 /**
@@ -23,11 +19,8 @@ type TitleScreenProps = {
  */
 export function TitleScreen({
   canContinue = false,
-  replaceWarning = false,
   sky,
   onAction,
-  onConfirmStart,
-  onCancelStart,
 }: TitleScreenProps) {
   return (
     <div className="title-shell">
@@ -37,9 +30,14 @@ export function TitleScreen({
       </div>
 
       <div className="title-panel">
-        <p className="title-eyebrow">NASA Space Apps · Junior Astronaut Mission Trainer</p>
+        <img
+          className="title-logo"
+          src="/assets/branding/tiny_habitat_transparent.png"
+          alt="Tiny Habitat logo"
+          draggable={false}
+        />
         <h1 className="title-brand">Mars Mission Survival</h1>
-        <p className="title-tag">Keep the outpost alive for 10 sols.</p>
+        <p className="title-subtitle">Tiny Habitat</p>
 
         {sky ? (
           <div className="title-sky">
@@ -57,7 +55,23 @@ export function TitleScreen({
             className="title-btn title-btn--primary"
             onClick={() => onAction('start')}
           >
-            Start Mission
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--tl"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
+            <span className="title-btn__label">Start New</span>
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--br"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
           </button>
           <button
             type="button"
@@ -65,43 +79,95 @@ export function TitleScreen({
             disabled={!canContinue}
             onClick={() => onAction('continue')}
           >
-            Continue Mission
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--tl"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
+            <span className="title-btn__label">Continue</span>
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--br"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
           </button>
-          <button type="button" className="title-btn" onClick={() => onAction('learn')}>
-            Learn
+          <button
+            type="button"
+            className="title-btn"
+            onClick={() => onAction('teachers')}
+          >
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--tl"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
+            <span className="title-btn__label">Learn</span>
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--br"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
           </button>
-          <button type="button" className="title-btn" onClick={() => onAction('teachers')}>
-            Teachers
+          <button
+            type="button"
+            className="title-btn"
+            onClick={() => onAction('sources')}
+          >
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--tl"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
+            <span className="title-btn__label">Sources & Credits</span>
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--br"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
           </button>
-          <button type="button" className="title-btn" onClick={() => onAction('sources')}>
-            Sources & Credits
-          </button>
-          <button type="button" className="title-btn" onClick={() => onAction('settings')}>
-            Settings
+          <button
+            type="button"
+            className="title-btn"
+            onClick={() => onAction('settings')}
+          >
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--tl"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
+            <span className="title-btn__label">Settings</span>
+            <svg
+              className="title-btn__sparkle title-btn__sparkle--br"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="currentColor"
+            >
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
+            </svg>
           </button>
         </div>
-
-        {!canContinue ? (
-          <p className="title-hint">Continue appears when a valid unfinished save is found.</p>
-        ) : null}
       </div>
-
-      {replaceWarning ? (
-        <div className="title-modal" role="alertdialog" aria-labelledby="replace-title">
-          <div className="title-modal__card">
-            <h2 id="replace-title">Start a new mission?</h2>
-            <p>This will replace your unfinished progress on this device.</p>
-            <div className="title-modal__actions">
-              <button type="button" className="title-btn" onClick={onCancelStart}>
-                Keep current mission
-              </button>
-              <button type="button" className="title-btn title-btn--primary" onClick={onConfirmStart}>
-                Replace saved mission and start
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

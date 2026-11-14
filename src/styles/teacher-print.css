@@ -14,7 +14,11 @@
   place-items: center;
   background:
     radial-gradient(circle at 20% 0%, rgba(0, 210, 255, 0.18), transparent 40%),
-    radial-gradient(circle at 80% 100%, rgba(255, 120, 60, 0.2), transparent 42%),
+    radial-gradient(
+      circle at 80% 100%,
+      rgba(255, 120, 60, 0.2),
+      transparent 42%
+    ),
     linear-gradient(160deg, #2a1840 0%, #6a2f1c 45%, #1a2048 100%);
   font-family: 'Nunito', 'Trebuchet MS', sans-serif;
   color: var(--tn-ink);
@@ -29,8 +33,12 @@
   width: min(1120px, 100%);
   border-radius: 28px;
   padding: 0.85rem 0.95rem 0.95rem;
-  background:
-    linear-gradient(180deg, #2c449c 0%, #243988 18%, var(--tn-navy-deep) 100%);
+  background: linear-gradient(
+    180deg,
+    #2c449c 0%,
+    #243988 18%,
+    var(--tn-navy-deep) 100%
+  );
   border: 4px solid #0d1638;
   box-shadow:
     0 0 0 3px rgba(0, 210, 255, 0.35),
@@ -67,10 +75,22 @@
   text-shadow: 0 0 8px rgba(255, 184, 0, 0.7);
 }
 
-.tn-frame__corner--tl { top: 0.35rem; left: 0.35rem; }
-.tn-frame__corner--tr { top: 0.35rem; right: 0.35rem; }
-.tn-frame__corner--bl { bottom: 0.35rem; left: 0.35rem; }
-.tn-frame__corner--br { bottom: 0.35rem; right: 0.35rem; }
+.tn-frame__corner--tl {
+  top: 0.35rem;
+  left: 0.35rem;
+}
+.tn-frame__corner--tr {
+  top: 0.35rem;
+  right: 0.35rem;
+}
+.tn-frame__corner--bl {
+  bottom: 0.35rem;
+  left: 0.35rem;
+}
+.tn-frame__corner--br {
+  bottom: 0.35rem;
+  right: 0.35rem;
+}
 
 .tn-top {
   position: relative;
@@ -187,7 +207,13 @@
   background: linear-gradient(180deg, #ffd45c, var(--tn-gold));
   color: #1a2030;
   border-color: #c98500;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 50%,
+    calc(100% - 10px) 100%,
+    0 100%
+  );
   padding-right: 1rem;
 }
 
@@ -201,7 +227,7 @@
   border: 2px solid rgba(0, 210, 255, 0.35);
   padding: 0.85rem;
   overflow: auto;
-  max-height: min(62vh, 560px);
+  min-width: 0;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
 }
 
@@ -536,7 +562,11 @@
   border: 4px double var(--tn-navy);
   border-radius: 18px;
   background:
-    radial-gradient(circle at 50% 0%, rgba(255, 230, 150, 0.35), transparent 50%),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 230, 150, 0.35),
+      transparent 50%
+    ),
     #fffdf8;
 }
 
@@ -731,5 +761,494 @@
 
   .tn-main {
     max-height: none;
+  }
+}
+
+/* One navigation area; classroom control remains available in every section. */
+.tn-description {
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+.tn-classroom {
+  color: #fff;
+  max-width: 65ch;
+}
+.tn-classroom p {
+  margin: 0.65rem 0 0;
+  line-height: 1.6;
+}
+.tn-toggle {
+  color: var(--tn-ink);
+  border-radius: 12px;
+  min-height: 44px;
+}
+.tn-toggle input {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.tn-foot {
+  grid-template-columns: 1fr;
+}
+.tn-main {
+  line-height: 1.6;
+}
+.tn-shell button:focus-visible,
+.tn-shell input:focus-visible {
+  outline: 3px solid #ffb800;
+  outline-offset: 3px;
+}
+.tn-shell--classroom .tn-main {
+  font-size: 1.2rem;
+}
+.app-scene--classroom {
+  font-size: 1.25rem;
+}
+.app-scene--classroom .ui-dialogue,
+.app-scene--classroom .ui-banner {
+  font-size: 1.25rem;
+}
+.app-scene--classroom .teacher-pause {
+  position: relative;
+  z-index: 10;
+  max-width: 65ch;
+  margin: 1rem auto;
+}
+.tn-shell .teacher-print__toolbar button {
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border: 2px solid #1a2b6d;
+  border-radius: 10px;
+  background: #1a2b6d;
+  color: #fff;
+  cursor: pointer;
+}
+.tn-shell button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.teacher-album-card figcaption {
+  overflow-wrap: anywhere;
+}
+.teacher-album-card__photo {
+  object-fit: contain;
+  background: #edf3fa;
+}
+@media (max-width: 900px) {
+  .tn-side {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .tn-side__btn {
+    flex: 1 1 9rem;
+  }
+}
+@media (max-width: 640px) {
+  .tn-shell {
+    padding: 0.5rem;
+  }
+  .tn-frame {
+    padding: 0.65rem;
+  }
+  .teacher-album-grid {
+    grid-template-columns: 1fr;
+  }
+  .teacher-print__sheet {
+    overflow-x: auto;
+  }
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  .tn-frame__glow,
+  .tn-frame__corner {
+    display: none;
+  }
+  .tn-shell,
+  .tn-main {
+    color: #000;
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+  }
+  .tn-frame {
+    border-radius: 0;
+  }
+  .tn-main {
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .teacher-print__sheet {
+    border: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .teacher-log th {
+    background: #eee !important;
+    color: #000 !important;
+  }
+  .teacher-log th,
+  .teacher-log td {
+    border: 1px solid #555;
+  }
+  .teacher-log thead {
+    display: table-header-group;
+  }
+  .teacher-log tr,
+  .teacher-vocab__row,
+  .teacher-album-card {
+    break-inside: avoid;
+  }
+  .teacher-album-grid {
+    display: block;
+  }
+  .teacher-album-card {
+    margin: 0 0 8mm;
+    padding: 4mm;
+  }
+  .teacher-album-card__photo {
+    max-height: 65mm;
+    width: 100%;
+    object-fit: contain;
+  }
+  .teacher-album-card a::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+  }
+  .teacher-cert__sheet {
+    min-height: 230mm;
+  }
+}
+
+.app-scene--classroom .ui-dialogue__text,
+.app-scene--classroom .ui-narration__text,
+.app-scene--classroom .ui-after__text,
+.app-scene--classroom .ui-choice {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+/* Learning hub: adapted from Pathopia's History heading, group panel and cards. */
+.learn-shell {
+  display: block;
+  padding: clamp(1rem, 4vw, 3.5rem) 1rem;
+  color: #f2e9dc;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 28, 0.35) 0%,
+      rgba(8, 12, 28, 0.72) 55%,
+      rgba(8, 12, 28, 0.92) 100%
+    ),
+    radial-gradient(
+      circle at 70% 20%,
+      rgba(0, 210, 255, 0.18),
+      transparent 40%
+    ),
+    url('/assets/bg/mars_vista.jpg') center 60% / cover no-repeat;
+  background-attachment: fixed;
+}
+.learn-shell .tn-frame {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.learn-heading {
+  position: relative;
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+}
+.learn-heading h1 {
+  margin: 0.5rem 0 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 500;
+  color: #d9a94f;
+  line-height: 1.15;
+}
+.learn-heading p {
+  margin: 0 auto;
+  max-width: 50ch;
+  color: #c7c9d6;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.6;
+}
+.learn-back {
+  display: block;
+  margin: 0 0 1.5rem;
+  min-height: 44px;
+  border: 1px solid #c7cad666;
+  border-radius: 999px;
+  background: #171334;
+  color: #f2e9dc;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.learn-shell .tn-body {
+  display: block;
+}
+.learn-shell .tn-side {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.learn-shell .tn-side__btn {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid #c6b4ec47;
+  background: #171334;
+  color: #f2e9dc;
+  box-shadow: none;
+}
+.learn-shell .tn-side__btn--active {
+  clip-path: none;
+  border-color: #d9a94f;
+  background: #47336b;
+  color: #d9a94f;
+}
+.learn-shell .tn-main {
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  color: #f2e9dc;
+  box-shadow: none;
+}
+.learn-shell .tn-description {
+  color: #c7c9d6;
+}
+.learn-intro {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f2e9dc24;
+}
+.learn-intro h2 {
+  margin: 0 0 0.5rem;
+  font:
+    500 1.6rem Georgia,
+    serif;
+  color: #d9a94f;
+}
+.learn-intro p {
+  margin: 0;
+  color: #c7c9d6;
+  line-height: 1.6;
+}
+.learn-shell .tn-grid {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+.learn-shell .tn-card {
+  border-radius: 20px;
+  padding: 1.3rem 1.5rem;
+  background: linear-gradient(100deg, #16122e 0%, #191533 18%, #1c1547 100%);
+  border: 1px solid #e2e8ff61;
+  box-shadow: 0 14px 30px #0a071866;
+}
+.learn-shell .tn-card header {
+  padding: 0 0 0.7rem;
+  background: none;
+  color: #d9a94f;
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+.learn-shell .tn-card .tn-list {
+  padding: 0;
+  color: #f2e9dc;
+}
+.learn-shell .tn-list li {
+  line-height: 1.6;
+}
+.learn-shell .tn-list li::before {
+  background: #d9a94f;
+}
+.learn-shell .tn-fun {
+  background: #47336b;
+  border: 1px solid #c6b4ec47;
+  margin: 1rem 0 0 !important;
+  color: #f2e9dc;
+}
+.learn-shell .tn-classroom {
+  max-width: none;
+  padding: 1.2rem 1.5rem;
+  border-radius: 20px;
+  background: #171334;
+  border: 1px solid #e2e8ff61;
+}
+.learn-shell .tn-toggle {
+  background: transparent;
+  color: #d9a94f;
+  border: 0;
+  padding: 0;
+}
+.learn-shell .tn-classroom p {
+  max-width: 75ch;
+  color: #c7c9d6;
+}
+.learn-shell .tn-action,
+.learn-shell .teacher-print__toolbar button {
+  border: 1px solid #c7cad6;
+  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 3px #c7cad633;
+  color: #f2e9dc;
+}
+.learn-shell .tn-action {
+  margin-top: 1rem;
+}
+.learn-shell .teacher-print__toolbar h2 {
+  color: #d9a94f;
+  font-family: Georgia, serif;
+  font-weight: 500;
+}
+.learn-shell .teacher-print__sheet {
+  background: #171334;
+  color: #f2e9dc;
+  border: 1px solid #e2e8ff61;
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+.learn-shell .teacher-print__sheet h3,
+.learn-shell .teacher-print__sheet h4,
+.learn-shell .teacher-vocab dt {
+  color: #d9a94f;
+}
+.learn-shell .teacher-print__note,
+.learn-shell .teacher-print__follow {
+  color: #c7c9d6;
+}
+.learn-shell .teacher-log th {
+  background: #3c2c5e;
+  color: #d9a94f;
+}
+.learn-shell .teacher-log td {
+  border-color: #c7cad666;
+}
+.learn-shell .teacher-album-card {
+  background: #21183c;
+  color: #f2e9dc;
+  border-color: #c7cad666;
+}
+.learn-shell a {
+  color: #d9a94f;
+  text-decoration: underline;
+}
+@media (max-width: 640px) {
+  .learn-heading {
+    padding-top: 0.5rem;
+  }
+  .learn-shell .tn-card,
+  .learn-shell .teacher-print__sheet {
+    padding: 1rem;
+  }
+  .learn-shell .tn-side__btn {
+    flex: 1 1 40%;
+  }
+}
+@media print {
+  .learn-shell,
+  .learn-shell .tn-main,
+  .learn-shell .teacher-print__sheet,
+  .learn-shell .teacher-album-card {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none;
+  }
+  .learn-shell {
+    padding: 0;
+  }
+  .learn-shell .tn-main,
+  .learn-shell .teacher-print__sheet {
+    border: 0;
+    padding: 0;
+  }
+  .learn-shell .teacher-print__sheet h3,
+  .learn-shell .teacher-print__sheet h4,
+  .learn-shell .teacher-vocab dt,
+  .learn-shell .teacher-print__note,
+  .learn-shell .teacher-print__follow,
+  .learn-shell a {
+    color: #000;
+  }
+}
+
+.learn-shell .tn-list--checks li::before {
+  background: none;
+  color: #d9a94f;
+}
+
+/* Translucent group panel, matching Pathopia History without replacing the Mars background. */
+.learn-shell .tn-main {
+  background: rgba(123, 94, 178, 0.22);
+  border: 1px solid rgba(198, 180, 236, 0.28);
+  box-shadow: 0 16px 34px rgba(10, 7, 24, 0.3);
+}
+.learn-heading h1 {
+  color: #d9a94f;
+}
+.learn-heading p {
+  color: #c7c9d6;
+}
+.learn-shell .learn-intro h2 {
+  color: #d9a94f;
+}
+
+/* Both Back to game buttons and print actions share the reference's double silver ring. */
+.learn-shell .learn-back,
+.learn-shell .tn-action,
+.learn-shell .teacher-print__toolbar button {
+  position: relative;
+  overflow: hidden;
+  min-height: 46px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  border: 1px solid #c7cad6;
+  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
+  color: #f2e9dc;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow:
+    inset 0 0 0 1px rgba(199, 202, 214, 0.2),
+    0 12px 26px rgba(20, 16, 43, 0.35);
+  cursor: pointer;
+}
+.learn-shell .learn-back::before,
+.learn-shell .tn-action::before,
+.learn-shell .teacher-print__toolbar button::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  border: 1px solid rgba(199, 202, 214, 0.5);
+  pointer-events: none;
+}
+.learn-shell .learn-back:hover,
+.learn-shell .tn-action:hover,
+.learn-shell .teacher-print__toolbar button:hover:not(:disabled) {
+  border-color: #eef0f6;
+  box-shadow: 0 0 16px rgba(199, 202, 214, 0.25);
+}
+.learn-shell .learn-back:focus-visible,
+.learn-shell .tn-action:focus-visible,
+.learn-shell .teacher-print__toolbar button:focus-visible {
+  outline: 2px solid #eef0f6;
+  outline-offset: 4px;
+}
+@media print {
+  .learn-shell .tn-main {
+    background: #fff !important;
+    border: 0;
+    box-shadow: none;
   }
 }

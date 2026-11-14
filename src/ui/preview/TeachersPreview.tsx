@@ -5,7 +5,7 @@ export function TeachersPreview() {
   return (
     <TeachersScreen
       onClose={() => {
-        window.location.href = '/ui-preview.html';
+        window.location.href = '/';
       }}
     />
   );

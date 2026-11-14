@@ -1,4 +1,5 @@
-import { CREDITS, DATASET_SOURCES, PHOTO_SOURCES } from './menu/fixtureCopy';
+import { getMediaCatalog } from '../../content/media-catalog';
+import { CREDITS, DATASET_SOURCES } from './menu/fixtureCopy';
 
 type SourcesScreenProps = {
   onClose?: () => void;
@@ -12,7 +13,12 @@ export function SourcesScreen({ onClose }: SourcesScreenProps) {
         <header className="menu-top">
           <h1 id="sources-title">Sources & Credits</h1>
           {onClose ? (
-            <button type="button" className="menu-close" aria-label="Close sources" onClick={onClose}>
+            <button
+              type="button"
+              className="menu-close"
+              aria-label="Close sources"
+              onClick={onClose}
+            >
               ✕
             </button>
           ) : null}
@@ -39,14 +45,16 @@ export function SourcesScreen({ onClose }: SourcesScreenProps) {
         <section className="menu-card">
           <h2>Photos</h2>
           <ul className="sources-list">
-            {PHOTO_SOURCES.map((row) => (
-              <li key={row.id}>
+            {Object.entries(getMediaCatalog().photos).map(([id, row]) => (
+              <li key={id}>
                 <div className="sources-list__head">
-                  <strong>{row.title}</strong>
-                  <span className="sources-pill sources-pill--photo">{row.label}</span>
+                  <strong>{row.subject}</strong>
+                  <span className="sources-pill sources-pill--photo">
+                    {row.savedLabel}
+                  </span>
                 </div>
                 <p>{row.credit}</p>
-                <a href={row.url} target="_blank" rel="noreferrer">
+                <a href={row.sourceUrl} target="_blank" rel="noreferrer">
                   Attribution link
                 </a>
               </li>

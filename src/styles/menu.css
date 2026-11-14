@@ -35,46 +35,51 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(8, 12, 28, 0.35) 0%, rgba(8, 12, 28, 0.72) 55%, rgba(8, 12, 28, 0.92) 100%),
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 28, 0.35) 0%,
+      rgba(8, 12, 28, 0.72) 55%,
+      rgba(8, 12, 28, 0.92) 100%
+    ),
     radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.18), transparent 40%);
 }
 
 .title-panel {
   position: relative;
   z-index: 1;
-  width: min(420px, 100%);
-  padding: 1.25rem 1.35rem 1.4rem;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(36, 57, 136, 0.92), rgba(18, 31, 77, 0.96));
-  border: 3px solid #0d1638;
-  box-shadow:
-    0 0 0 3px rgba(0, 210, 255, 0.35),
-    0 22px 48px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 2px rgba(0, 210, 255, 0.35);
-  color: #eaf7ff;
+  width: min(960px, 100%);
+  padding: 0.5rem 1rem 1.5rem;
+  color: #f2ede4;
   text-align: center;
 }
 
-.title-eyebrow {
-  margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--menu-gold);
-  font-weight: 800;
+.title-logo {
+  display: block;
+  width: clamp(160px, 22vw, 240px);
+  height: auto;
+  margin: -1.75rem auto -0.4rem;
+  filter: drop-shadow(0 8px 16px rgba(28, 27, 34, 0.35));
 }
 
 .title-brand {
-  margin: 0.35rem 0 0.25rem;
-  font-size: clamp(1.7rem, 5vw, 2.35rem);
-  line-height: 1.1;
-  color: #fff;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: #f2ede4;
+  text-wrap: balance;
+  background: transparent;
+  text-shadow: none;
 }
 
-.title-tag {
-  margin: 0 0 0.85rem;
-  opacity: 0.92;
+.title-subtitle {
+  margin: 0.6rem 0 1.5rem;
+  color: #ffe08a;
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 8px #1c1b22;
 }
 
 .title-sky {
@@ -85,45 +90,150 @@
 
 .title-actions {
   display: grid;
-  gap: 0.45rem;
+  gap: 1rem;
+  width: min(380px, 100%);
+  margin-inline: auto;
 }
 
+/* Adapted from the team's Pathopia Dashboard action buttons. */
 .title-btn {
-  min-height: 48px;
-  border-radius: 999px;
-  border: 2px solid rgba(0, 210, 255, 0.4);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 48%),
-    linear-gradient(180deg, #2a3f8f, #1a2b6d);
-  color: #fff;
-  font: inherit;
-  font-weight: 800;
+  position: relative;
+  min-height: 54px;
+  padding: 12px 36px;
+  border-radius: 32px;
+  border: 1px solid #c7cad6;
+  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
+  box-shadow:
+    0 0 0 1px rgba(199, 202, 214, 0.2) inset,
+    0 14px 30px rgba(20, 16, 43, 0.35);
+  color: #f2e9dc;
   cursor: pointer;
-  box-shadow: 0 4px 0 #0d1638;
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
-.title-btn:hover:not(:disabled) {
-  filter: brightness(1.08);
+.title-btn::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 26px;
+  border: 1px solid rgba(199, 202, 214, 0.5);
+  pointer-events: none;
+}
+
+/* Faint star specks scattered across the button background — matches the
+   sparkle field in the reference. The two large side stars from that
+   reference are deliberately left out. */
+.title-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(
+      1.6px 1.6px at 15% 32%,
+      rgba(255, 255, 255, 0.9),
+      transparent 60%
+    ),
+    radial-gradient(
+      1.1px 1.1px at 34% 72%,
+      rgba(255, 255, 255, 0.7),
+      transparent 60%
+    ),
+    radial-gradient(
+      1.5px 1.5px at 58% 20%,
+      rgba(255, 255, 255, 0.8),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 72% 62%,
+      rgba(255, 255, 255, 0.6),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 26% 88%,
+      rgba(255, 255, 255, 0.55),
+      transparent 60%
+    ),
+    radial-gradient(
+      1.6px 1.6px at 88% 38%,
+      rgba(255, 255, 255, 0.75),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 50% 52%,
+      rgba(255, 255, 255, 0.45),
+      transparent 60%
+    );
+}
+
+.title-btn:hover:not(:disabled),
+.title-btn:focus-visible:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: #eef0f6;
+  box-shadow:
+    0 0 0 1px rgba(199, 202, 214, 0.35) inset,
+    0 0 18px rgba(199, 202, 214, 0.3),
+    0 18px 34px rgba(20, 16, 43, 0.4);
 }
 
 .title-btn:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
+  border-color: rgba(199, 202, 214, 0.3);
+  box-shadow: 0 10px 20px rgba(20, 16, 43, 0.25);
 }
 
-.title-btn--primary {
-  border-color: rgba(255, 255, 255, 0.4);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 48%),
-    linear-gradient(180deg, #ffd45c, #f0a800);
-  color: #1a2030;
-  box-shadow: 0 4px 0 #b87a00;
+.title-btn:disabled .title-btn__label,
+.title-btn:disabled .title-btn__sparkle {
+  opacity: 0.4;
 }
 
-.title-hint {
-  margin: 0.7rem 0 0;
-  font-size: 0.85rem;
-  opacity: 0.85;
+.title-btn__sparkle {
+  position: absolute;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  color: rgba(232, 234, 255, 0.9);
+}
+
+.title-btn__sparkle--tl {
+  top: 12px;
+  left: 17px;
+}
+
+.title-btn__sparkle--br {
+  bottom: 12px;
+  right: 17px;
+}
+
+.title-btn__label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.title-btn:focus-visible {
+  outline: 2px solid #eef0f6;
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-btn {
+    transition: none;
+  }
+  .title-btn:hover:not(:disabled),
+  .title-btn:focus-visible:not(:disabled) {
+    transform: none;
+  }
 }
 
 .title-modal {
@@ -170,7 +280,11 @@
   padding: 1rem;
   background:
     radial-gradient(circle at 20% 0%, rgba(0, 210, 255, 0.16), transparent 40%),
-    radial-gradient(circle at 80% 100%, rgba(255, 120, 60, 0.18), transparent 42%),
+    radial-gradient(
+      circle at 80% 100%,
+      rgba(255, 120, 60, 0.18),
+      transparent 42%
+    ),
     linear-gradient(160deg, #2a1840 0%, #6a2f1c 45%, #1a2048 100%);
 }
 

@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { ClassroomPause } from './teacher/ClassroomPause';
+import { useClassroomSettings } from '../../services/classroom-settings';
 import { CertificatePrint } from './teacher/CertificatePrint';
 import {
-  AlbumPrintStub,
+  AlbumPrint,
   DiscussionPrint,
   LessonPlanPrint,
   MissionLogPrint,
   VocabularyPrint,
 } from './teacher/Printables';
-import { DISCUSSION_SAMPLES, LESSON_GOALS, LESSON_PLAN_STEPS } from './teacher/fixtureCopy';
+import { LESSON_GOALS, LESSON_PLAN_STEPS } from './teacher/fixtureCopy';
 
 type TeacherTab =
   | 'hub'
@@ -17,13 +17,14 @@ type TeacherTab =
   | 'vocabulary'
   | 'worksheet'
   | 'album'
-  | 'certificate'
-  | 'pause-demo';
+  | 'certificate';
 
 type TeachersScreenProps = {
   classroomMode?: boolean;
   onClassroomModeChange?: (enabled: boolean) => void;
   onClose?: () => void;
+  albumIds?: readonly string[];
+  missionCompleted?: boolean;
 };
 
 const NAV: { id: TeacherTab; label: string; icon: string }[] = [
@@ -32,64 +33,65 @@ const NAV: { id: TeacherTab; label: string; icon: string }[] = [
   { id: 'discussion', label: 'Discussion', icon: '💬' },
   { id: 'vocabulary', label: 'Vocabulary', icon: '✨' },
   { id: 'worksheet', label: 'Mission Log', icon: '📋' },
-  { id: 'album', label: 'Album', icon: '🖼' },
+  { id: 'album', label: 'Photo cards', icon: '🖼' },
   { id: 'certificate', label: 'Certificate', icon: '⭐' },
-  { id: 'pause-demo', label: 'Pause Demo', icon: '⏯' },
 ];
 
 /**
- * Teachers hub inspired by the Teacher Notes reference frame.
- * Member 1 wires from Title; Member 3 replaces fixture copy.
+ * Teachers hub inspired by the Teacher Pack reference frame.
+ * Uses collected mission cards and the shared classroom setting.
  */
 export function TeachersScreen({
-  classroomMode = false,
+  classroomMode,
   onClassroomModeChange,
   onClose,
+  albumIds = [],
+  missionCompleted = false,
 }: TeachersScreenProps) {
   const [tab, setTab] = useState<TeacherTab>('hub');
-  const [localClassroom, setLocalClassroom] = useState(classroomMode);
-  const classroom = onClassroomModeChange ? classroomMode : localClassroom;
-  const sample = DISCUSSION_SAMPLES[2];
-
-  function setClassroom(enabled: boolean) {
-    if (onClassroomModeChange) onClassroomModeChange(enabled);
-    else setLocalClassroom(enabled);
+  const { settings, setClassroom, saveWarning } = useClassroomSettings();
+  const classroom = classroomMode ?? settings.classroomMode;
+  function changeClassroom(enabled: boolean) {
+    setClassroom(enabled);
+    onClassroomModeChange?.(enabled);
   }
-
-  function goPrintable(next: TeacherTab) {
-    setTab(next);
-  }
+  const descriptions: Record<TeacherTab, string> = {
+    hub: '',
+    lesson:
+      'Prepare the group, guide play and reflect on the mission together.',
+    discussion:
+      'Two questions for each sol. Invite ideas rather than score answers.',
+    vocabulary: 'Simple meanings for words children meet during the mission.',
+    worksheet:
+      'Print before playing: predict, record a choice and explain its result.',
+    album:
+      'Print the NASA cards collected in this mission, with captions and credits.',
+    certificate:
+      'Print a Junior Commander certificate after completing the mission.',
+  };
 
   return (
-    <div className={classroom ? 'tn-shell tn-shell--classroom' : 'tn-shell'}>
-      <div className="tn-frame" role="dialog" aria-labelledby="tn-title">
-        <div className="tn-frame__glow" aria-hidden="true" />
-        <span className="tn-frame__corner tn-frame__corner--tl" aria-hidden="true" />
-        <span className="tn-frame__corner tn-frame__corner--tr" aria-hidden="true" />
-        <span className="tn-frame__corner tn-frame__corner--bl" aria-hidden="true" />
-        <span className="tn-frame__corner tn-frame__corner--br" aria-hidden="true" />
-
-        <header className="tn-top no-print">
-          <div className="tn-brand">
-            <span className="tn-brand__icon" aria-hidden="true" />
-            <div>
-              <p className="tn-brand__name">Mars Mission Survival</p>
-              <p className="tn-brand__sub">Junior Astronaut Mission Trainer</p>
-            </div>
-          </div>
-
-          <div className="tn-title-pill" id="tn-title">
-            Teacher Notes
-          </div>
-
+    <div
+      className={
+        classroom
+          ? 'tn-shell learn-shell tn-shell--classroom'
+          : 'tn-shell learn-shell'
+      }
+    >
+      <div className="tn-frame" role="region" aria-labelledby="tn-title">
+        <header className="learn-heading no-print">
           <button
             type="button"
-            className="tn-close"
-            aria-label="Close teacher notes"
+            className="learn-back"
             onClick={onClose}
+            aria-label="Back to game"
           >
-            ✕
+            ← Back to game
           </button>
+          <h1 id="tn-title">Your Mars Learning</h1>
+          <p>
+            Explore the science behind your mission, one discovery at a time.
+          </p>
         </header>
 
         <div className="tn-body">
@@ -99,8 +101,11 @@ export function TeachersScreen({
                 key={item.id}
                 type="button"
                 className={
-                  tab === item.id ? 'tn-side__btn tn-side__btn--active' : 'tn-side__btn'
+                  tab === item.id
+                    ? 'tn-side__btn tn-side__btn--active'
+                    : 'tn-side__btn'
                 }
+                aria-current={tab === item.id ? 'page' : undefined}
                 onClick={() => setTab(item.id)}
               >
                 <span className="tn-side__icon" aria-hidden="true">
@@ -111,18 +116,14 @@ export function TeachersScreen({
             ))}
           </nav>
 
-          <div className="tn-main">
+          <div className="tn-main" key={tab}>
+            {descriptions[tab] && (
+              <p className="tn-description no-print">{descriptions[tab]}</p>
+            )}
             {tab === 'hub' ? (
               <section className="tn-panel no-print">
-                <div className="tn-banner">
-                  <img src="/assets/bg/mars_vista.jpg" alt="" draggable={false} />
-                  <div className="tn-banner__copy">
-                    <h2>About This Game</h2>
-                    <p>
-                      A 10-sol Mars outpost mission for ages 7–12. Students balance Life Support,
-                      Power, and Shielding while exploring real NASA-inspired science.
-                    </p>
-                  </div>
+                <div className="learn-intro">
+                  <h2>Explore Mars together</h2>
                 </div>
 
                 <div className="tn-grid">
@@ -147,29 +148,28 @@ export function TeachersScreen({
                   </article>
 
                   <article className="tn-card tn-card--wide">
-                    <header>Quick Facts</header>
+                    <header>How to use this pack</header>
                     <ul className="tn-list tn-list--checks">
-                      <li>One shared mission — Classroom is a setting, not a new mode</li>
-                      <li>No student accounts, quizzes, or voting boards</li>
-                      <li>Printables: lesson plan, discussion, vocabulary, worksheet, certificate</li>
+                      <li>
+                        Before playing: introduce Life Support, Power and
+                        Shielding
+                      </li>
+                      <li>
+                        During play: ask children to explain their choices
+                      </li>
+                      <li>
+                        After playing: discuss what helped the outpost survive
+                      </li>
                     </ul>
                     <div className="tn-fun">
                       <span aria-hidden="true">💡</span>
                       <p>
-                        Fun fact: a sol is a Martian day — a little longer than a day on Earth.
+                        Fun fact: a sol is a Martian day — a little longer than
+                        a day on Earth.
                       </p>
                     </div>
                   </article>
                 </div>
-
-                <label className="tn-toggle">
-                  <input
-                    type="checkbox"
-                    checked={classroom}
-                    onChange={(e) => setClassroom(e.target.checked)}
-                  />
-                  Classroom mode (bigger text · discussion pauses)
-                </label>
               </section>
             ) : null}
 
@@ -177,49 +177,34 @@ export function TeachersScreen({
             {tab === 'discussion' ? <DiscussionPrint /> : null}
             {tab === 'vocabulary' ? <VocabularyPrint /> : null}
             {tab === 'worksheet' ? <MissionLogPrint /> : null}
-            {tab === 'album' ? <AlbumPrintStub /> : null}
-            {tab === 'certificate' ? <CertificatePrint /> : null}
-            {tab === 'pause-demo' ? (
-              <div className="no-print">
-                <ClassroomPause
-                  sol={sample.sol}
-                  question={sample.question}
-                  teacherNote={sample.followUp}
-                  showTeacherNotes
-                  onContinue={() => setTab('hub')}
-                />
-              </div>
+            {tab === 'album' ? <AlbumPrint albumIds={albumIds} /> : null}
+            {tab === 'certificate' ? (
+              <CertificatePrint missionCompleted={missionCompleted} />
             ) : null}
           </div>
         </div>
 
         <footer className="tn-foot no-print">
-          <div className="tn-mascot">
-            <img
-              src="/assets/characters/commander_idle.png"
-              alt=""
-              className="tn-mascot__sprite"
-              draggable={false}
-            />
-            <div className="tn-bubble">
-              Tip: print the Mission Log before class so students can predict, choose, and reflect!
-            </div>
-          </div>
-
-          <div className="tn-actions">
-            <button type="button" className="tn-action" onClick={() => goPrintable('lesson')}>
-              📄 Lesson Plan
-            </button>
-            <button type="button" className="tn-action" onClick={() => goPrintable('worksheet')}>
-              📋 Mission Log
-            </button>
-            <button
-              type="button"
-              className="tn-action tn-action--gold"
-              onClick={() => goPrintable('certificate')}
-            >
-              ⭐ Certificate
-            </button>
+          <div className="tn-classroom">
+            <label className="tn-toggle">
+              <input
+                type="checkbox"
+                checked={classroom}
+                onChange={(e) => changeClassroom(e.target.checked)}
+              />
+              Classroom presentation &amp; discussion pauses
+            </label>
+            <p>
+              Play the same ten-sol mission together on a projector. Bigger text
+              and a pause after each sol’s learning card. The teacher presses
+              Continue. Turning this on sets sound off and reduced motion on.
+            </p>
+            {onClose && (
+              <button type="button" className="tn-action" onClick={onClose}>
+                Back to game
+              </button>
+            )}
+            {saveWarning && <p role="status">{saveWarning}</p>}
           </div>
         </footer>
       </div>

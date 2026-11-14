@@ -73,6 +73,7 @@ export function RoverDrive({
 }: RoverDriveProps) {
   const titleId = useId();
   const finished = useRef(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [rover, setRover] = useState<Vec>(START);
   const [facing, setFacing] = useState<Facing>('right');
   const [activeDir, setActiveDir] = useState<Facing | null>(null);
@@ -85,7 +86,10 @@ export function RoverDrive({
   const startDist = useMemo(() => dist(START, GOAL), []);
   const progress = Math.max(
     0,
-    Math.min(100, Math.round(((startDist - dist(rover, GOAL)) / startDist) * 100)),
+    Math.min(
+      100,
+      Math.round(((startDist - dist(rover, GOAL)) / startDist) * 100),
+    ),
   );
 
   const pathD = useMemo(() => {
@@ -97,6 +101,7 @@ export function RoverDrive({
   function finish(result: 'done' | 'skipped') {
     if (finished.current) return;
     finished.current = true;
+    setIsFinished(true);
     if (result === 'done') {
       setReached(1);
       setCelebrating(true);
@@ -144,6 +149,11 @@ export function RoverDrive({
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest('button, input, textarea, select, a')
+      )
+        return;
       if (finished.current) return;
       const map: Record<string, Facing | 'go'> = {
         ArrowUp: 'up',
@@ -173,7 +183,10 @@ export function RoverDrive({
       aria-labelledby={titleId}
     >
       <div className="mg-rover__hud">
-        <div className="mg-rover__chip mg-rover__chip--ghost" aria-hidden="true">
+        <div
+          className="mg-rover__chip mg-rover__chip--ghost"
+          aria-hidden="true"
+        >
           <span className="mg-rover__chip-icon">◎</span>
           Sol {sol}
         </div>
@@ -186,7 +199,10 @@ export function RoverDrive({
           </div>
         </div>
 
-        <div className="mg-rover__chip" aria-label={`Objectives ${reached} of 1`}>
+        <div
+          className="mg-rover__chip"
+          aria-label={`Objectives ${reached} of 1`}
+        >
           <span className="mg-rover__chip-flag" aria-hidden="true">
             ⚑
           </span>
@@ -217,7 +233,11 @@ export function RoverDrive({
         >
           <path
             d={pathD}
-            className={reduceMotion ? 'mg-rover__path-line' : 'mg-rover__path-line mg-rover__path-line--flow'}
+            className={
+              reduceMotion
+                ? 'mg-rover__path-line'
+                : 'mg-rover__path-line mg-rover__path-line--flow'
+            }
             fill="none"
           />
         </svg>
@@ -239,7 +259,9 @@ export function RoverDrive({
 
         <div
           className={
-            reduceMotion ? 'mg-rover__pad' : 'mg-rover__pad mg-rover__pad--pulse'
+            reduceMotion
+              ? 'mg-rover__pad'
+              : 'mg-rover__pad mg-rover__pad--pulse'
           }
           style={{ left: `${GOAL.x}%`, top: `${GOAL.y}%` }}
           aria-label="Target landing pad"
@@ -277,39 +299,59 @@ export function RoverDrive({
       </div>
 
       <div className="mg-rover__controls">
-        <div className="mg-rover__dpad" role="group" aria-label="Direction controls">
+        <div
+          className="mg-rover__dpad"
+          role="group"
+          aria-label="Direction controls"
+        >
           <button
             type="button"
-            className={activeDir === 'up' ? 'mg-dir mg-dir--active mg-dir--up' : 'mg-dir mg-dir--up'}
+            className={
+              activeDir === 'up'
+                ? 'mg-dir mg-dir--active mg-dir--up'
+                : 'mg-dir mg-dir--up'
+            }
             aria-label="Move up"
-            disabled={finished.current}
+            disabled={isFinished}
             onClick={() => tryStep('up')}
           >
             ▲
           </button>
           <button
             type="button"
-            className={activeDir === 'left' ? 'mg-dir mg-dir--active mg-dir--left' : 'mg-dir mg-dir--left'}
+            className={
+              activeDir === 'left'
+                ? 'mg-dir mg-dir--active mg-dir--left'
+                : 'mg-dir mg-dir--left'
+            }
             aria-label="Move left"
-            disabled={finished.current}
+            disabled={isFinished}
             onClick={() => tryStep('left')}
           >
             ◀
           </button>
           <button
             type="button"
-            className={activeDir === 'down' ? 'mg-dir mg-dir--active mg-dir--down' : 'mg-dir mg-dir--down'}
+            className={
+              activeDir === 'down'
+                ? 'mg-dir mg-dir--active mg-dir--down'
+                : 'mg-dir mg-dir--down'
+            }
             aria-label="Move down"
-            disabled={finished.current}
+            disabled={isFinished}
             onClick={() => tryStep('down')}
           >
             ▼
           </button>
           <button
             type="button"
-            className={activeDir === 'right' ? 'mg-dir mg-dir--active mg-dir--right' : 'mg-dir mg-dir--right'}
+            className={
+              activeDir === 'right'
+                ? 'mg-dir mg-dir--active mg-dir--right'
+                : 'mg-dir mg-dir--right'
+            }
             aria-label="Move right"
-            disabled={finished.current}
+            disabled={isFinished}
             onClick={() => tryStep('right')}
           >
             ▶
@@ -324,7 +366,7 @@ export function RoverDrive({
               type="button"
               className="mg-go"
               aria-label="Go forward"
-              disabled={finished.current}
+              disabled={isFinished}
               onClick={goForward}
             >
               GO
@@ -332,7 +374,7 @@ export function RoverDrive({
             <button
               type="button"
               className="mg-skip"
-              disabled={finished.current}
+              disabled={isFinished}
               onClick={() => finish('skipped')}
             >
               Skip

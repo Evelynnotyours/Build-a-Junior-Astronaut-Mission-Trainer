@@ -1,4 +1,10 @@
-import type { EventId, HistoryEntry, MeterId, Meters, Sol } from '../../../engine/types';
+import type {
+  EventId,
+  HistoryEntry,
+  MeterId,
+  Meters,
+  Sol,
+} from '../../../engine/types';
 
 /** Preview-only copy. Member 3 replaces via story.json keys. */
 export const ENDING_COPY = {
@@ -10,8 +16,10 @@ export const ENDING_COPY = {
     'The outpost has to power down, but the crew is safe in the emergency shelter, and the supply ship is on its way.',
   gentle: {
     life: 'Air and water ran very low, so the crew moved to the emergency shelter to wait for the supply ship.',
-    power: 'The batteries ran out, so the outpost powered down. The crew is safe in the shelter.',
-    shield: 'Radiation got too strong, so the crew moved into the shelter to stay safe.',
+    power:
+      'The batteries ran out, so the outpost powered down. The crew is safe in the shelter.',
+    shield:
+      'Protection ran too low, so the crew moved into the shelter to stay safe.',
   } satisfies Record<MeterId, string>,
   hint: {
     life: 'Try the ice hunt early, and watch the air.',
@@ -44,35 +52,6 @@ const EVENT_LABELS: Record<EventId, string> = {
 
 export function eventLabel(eventId: EventId): string {
   return EVENT_LABELS[eventId] ?? eventId;
-}
-
-/** Top 2–3 history steps that drained a meter most (presentation helper). */
-export function topDrainsForMeter(
-  history: HistoryEntry[],
-  meter: MeterId,
-  limit = 3,
-): { sol: Sol; eventId: EventId; choiceId: HistoryEntry['choiceId']; amount: number }[] {
-  const drains: {
-    sol: Sol;
-    eventId: EventId;
-    choiceId: HistoryEntry['choiceId'];
-    amount: number;
-  }[] = [];
-  for (let i = 0; i < history.length; i++) {
-    const prev = i === 0 ? null : history[i - 1];
-    const cur = history[i];
-    const before = prev ? prev.meters[meter] : 100;
-    const amount = before - cur.meters[meter];
-    if (amount > 0) {
-      drains.push({
-        sol: cur.sol,
-        eventId: cur.eventId,
-        choiceId: cur.choiceId,
-        amount,
-      });
-    }
-  }
-  return drains.sort((a, b) => b.amount - a.amount).slice(0, limit);
 }
 
 function meters(life: number, power: number, shield: number): Meters {

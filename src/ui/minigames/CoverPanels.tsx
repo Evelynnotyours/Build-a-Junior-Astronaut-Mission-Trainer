@@ -25,11 +25,14 @@ export function CoverPanels({
 }: CoverPanelsProps) {
   const titleId = useId();
   const finished = useRef(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [covered, setCovered] = useState<boolean[]>(() =>
     Array.from({ length: PANEL_COUNT }, () => false),
   );
   const [focusIndex, setFocusIndex] = useState(0);
-  const [hint, setHint] = useState('Tap each glowing panel to pull its cover over.');
+  const [hint, setHint] = useState(
+    'Tap each glowing panel to pull its cover over.',
+  );
   const [celebrating, setCelebrating] = useState(false);
 
   const doneCount = covered.filter(Boolean).length;
@@ -37,6 +40,7 @@ export function CoverPanels({
   function finish(result: 'done' | 'skipped') {
     if (finished.current) return;
     finished.current = true;
+    setIsFinished(true);
     if (result === 'done') {
       setCelebrating(true);
       setHint('All panels covered — nice work!');
@@ -66,6 +70,11 @@ export function CoverPanels({
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest('button, input, textarea, select, a')
+      )
+        return;
       if (finished.current) return;
       if (event.key >= '1' && event.key <= '4') {
         event.preventDefault();
@@ -105,7 +114,10 @@ export function CoverPanels({
             <p>Protect the solar panels from the dust!</p>
           </div>
         </div>
-        <div className="mg-panels__chip" aria-label={`Covered ${doneCount} of ${PANEL_COUNT}`}>
+        <div
+          className="mg-panels__chip"
+          aria-label={`Covered ${doneCount} of ${PANEL_COUNT}`}
+        >
           {doneCount} / {PANEL_COUNT}
         </div>
       </div>
@@ -133,17 +145,21 @@ export function CoverPanels({
               type="button"
               className={[
                 'mg-panels__slot',
-                isCovered ? 'mg-panels__slot--covered' : 'mg-panels__slot--open',
+                isCovered
+                  ? 'mg-panels__slot--covered'
+                  : 'mg-panels__slot--open',
                 focusIndex === index ? 'mg-panels__slot--focus' : '',
                 !isCovered && !reduceMotion ? 'mg-panels__slot--glow' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
               aria-label={
-                isCovered ? `Panel ${index + 1}, covered` : `Panel ${index + 1}, tap to cover`
+                isCovered
+                  ? `Panel ${index + 1}, covered`
+                  : `Panel ${index + 1}, tap to cover`
               }
               aria-pressed={isCovered}
-              disabled={finished.current}
+              disabled={isFinished}
               onClick={() => coverAt(index)}
               onFocus={() => setFocusIndex(index)}
             >
@@ -189,7 +205,7 @@ export function CoverPanels({
         <button
           type="button"
           className="mg-skip"
-          disabled={finished.current}
+          disabled={isFinished}
           onClick={() => finish('skipped')}
         >
           Skip

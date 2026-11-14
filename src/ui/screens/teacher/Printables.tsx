@@ -1,4 +1,4 @@
-import { FIXTURE_ALBUM } from '../album/fixtureCopy';
+import { getMediaCatalog } from '../../../content/media-catalog';
 import {
   DISCUSSION_SAMPLES,
   LESSON_GOALS,
@@ -11,7 +11,11 @@ export function LessonPlanPrint() {
     <section className="teacher-print" id="print-lesson-plan">
       <header className="teacher-print__toolbar no-print">
         <h2>Lesson plan</h2>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={() => window.print()}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--cta"
+          onClick={() => window.print()}
+        >
           Print
         </button>
       </header>
@@ -32,7 +36,14 @@ export function LessonPlanPrint() {
           ))}
         </ol>
         <p className="teacher-print__note">
-          Setup: browser with sound off for Classroom mode; projector-friendly text size recommended.
+          Setup: open the mission in a browser and prepare a shared screen or
+          projector. Enable classroom discussion pauses for bigger text, sound
+          off and reduced motion. Print a Mission Log for each learner.
+        </p>
+        <h4>Extension</h4>
+        <p>
+          Use the vocabulary list to explain cargo and launch weight. Compare
+          two cargo plans and explain which tradeoffs each plan makes.
         </p>
       </article>
     </section>
@@ -44,13 +55,20 @@ export function DiscussionPrint() {
     <section className="teacher-print" id="print-discussion">
       <header className="teacher-print__toolbar no-print">
         <h2>Discussion questions</h2>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={() => window.print()}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--cta"
+          onClick={() => window.print()}
+        >
           Print
         </button>
       </header>
       <article className="teacher-print__sheet">
         <h3>Event-matched discussion questions</h3>
-        <p>No quiz scoring. Use one main question per pause; follow-ups are optional.</p>
+        <p>
+          No quiz scoring. Use one main question per pause; follow-ups are
+          optional.
+        </p>
         <ol>
           {DISCUSSION_SAMPLES.map((item) => (
             <li key={item.sol}>
@@ -58,7 +76,9 @@ export function DiscussionPrint() {
                 Sol {item.sol} · {item.event}
               </strong>
               <p>{item.question}</p>
-              <p className="teacher-print__follow">Follow-up: {item.followUp}</p>
+              <p className="teacher-print__follow">
+                Follow-up: {item.followUp}
+              </p>
             </li>
           ))}
         </ol>
@@ -72,7 +92,11 @@ export function VocabularyPrint() {
     <section className="teacher-print" id="print-vocabulary">
       <header className="teacher-print__toolbar no-print">
         <h2>Vocabulary</h2>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={() => window.print()}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--cta"
+          onClick={() => window.print()}
+        >
           Print
         </button>
       </header>
@@ -97,7 +121,11 @@ export function MissionLogPrint() {
     <section className="teacher-print" id="print-mission-log">
       <header className="teacher-print__toolbar no-print">
         <h2>Mission log worksheet</h2>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={() => window.print()}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--cta"
+          onClick={() => window.print()}
+        >
           Print
         </button>
       </header>
@@ -127,40 +155,76 @@ export function MissionLogPrint() {
           </tbody>
         </table>
         <p className="teacher-print__note">
-          Full 10-sol mission. Reflect on Life Support, Power, and Shielding after each choice.
+          Full 10-sol mission. Reflect on Life Support, Power, and Shielding
+          after each choice.
         </p>
       </article>
     </section>
   );
 }
 
-export function AlbumPrintStub() {
+export function AlbumPrint({
+  albumIds = [],
+}: {
+  albumIds?: readonly string[];
+}) {
+  const catalog = getMediaCatalog();
+  const cards = [...new Set(albumIds)].flatMap((id) => {
+    const moment = catalog.realMoments[id];
+    return moment
+      ? [{ id, moment, photo: catalog.photos[moment.photoId] }]
+      : [];
+  });
   return (
     <section className="teacher-print" id="print-album">
       <header className="teacher-print__toolbar no-print">
-        <h2>Mission Album print</h2>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={() => window.print()}>
-          Print
+        <h2>Collected NASA photo cards</h2>
+        <button
+          type="button"
+          className="ui-btn ui-btn--cta"
+          disabled={!cards.length}
+          onClick={() => window.print()}
+        >
+          Print photo cards
         </button>
       </header>
       <article className="teacher-print__sheet">
         <h3>Mission Album</h3>
-        <p>
-          Fixture cards for print layout. Member 2/3 replace photos via realMoments; engine supplies
-          album IDs. Full viewer: MissionAlbumScreen.
-        </p>
+        {!cards.length && (
+          <p>
+            No cards collected yet. Explore the Real Mars cards during the
+            mission, then return here to print them.
+          </p>
+        )}
         <div className="teacher-album-grid">
-          {FIXTURE_ALBUM.map((card) => (
-            <figure key={card.id} className="teacher-album-card">
-              {card.photoSrc ? (
-                <img src={card.photoSrc} alt={card.photoAlt} className="teacher-album-card__photo" />
-              ) : (
-                <div className="teacher-album-card__photo">No photo</div>
-              )}
+          {cards.map(({ id, moment, photo }) => (
+            <figure key={id} className="teacher-album-card">
+              <img
+                src={photo.src}
+                alt={photo.altText}
+                className="teacher-album-card__photo"
+                loading="lazy"
+              />
               <figcaption>
-                Saved photo · {card.title}
-                <br />
-                {card.fact}
+                <h4>{moment.title}</h4>
+                <p>
+                  {photo.savedLabel}
+                  {photo.captureDate
+                    ? ` · Captured ${photo.captureDate}`
+                    : photo.publishedDate
+                      ? ` · Published ${photo.publishedDate}`
+                      : ''}
+                </p>
+                <p>{photo.caption}</p>
+                {moment.contextNote && <p>{moment.contextNote}</p>}
+                {photo.contextNote &&
+                  photo.contextNote !== moment.contextNote && (
+                    <p>{photo.contextNote}</p>
+                  )}
+                <p>Credit: {photo.credit}</p>
+                <a href={photo.sourceUrl} target="_blank" rel="noreferrer">
+                  NASA source
+                </a>
               </figcaption>
             </figure>
           ))}

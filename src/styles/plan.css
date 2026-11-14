@@ -9,7 +9,11 @@
   color: #142033;
   background:
     radial-gradient(circle at 15% 0%, rgba(0, 210, 255, 0.16), transparent 40%),
-    radial-gradient(circle at 85% 100%, rgba(255, 140, 60, 0.2), transparent 42%),
+    radial-gradient(
+      circle at 85% 100%,
+      rgba(255, 140, 60, 0.2),
+      transparent 42%
+    ),
     linear-gradient(160deg, #1a2048 0%, #6a2f1c 48%, #15203a 100%);
 }
 
@@ -180,4 +184,21 @@
   .plan-btn {
     flex: 1;
   }
+}
+
+.ui-cargo-card--over-budget {
+  border-style: dashed;
+  border-color: #ca934a;
+}
+.ui-cargo-card__limit {
+  font-size: 0.8rem;
+  color: #794608;
+  grid-column: 2;
+}
+.plan-replace-notice {
+  padding: 0.75rem;
+  border: 1px solid #d6ae62;
+  border-radius: 0.75rem;
+  background: #302617;
+  color: #fff0d2;
 }
