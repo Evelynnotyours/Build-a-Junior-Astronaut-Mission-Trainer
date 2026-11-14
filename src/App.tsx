@@ -19,7 +19,7 @@ import {
 } from './engine/scene-player';
 import type { SceneOptions, SceneTransition } from './engine/scene-player';
 import type { SceneInput } from './engine/scene-types';
-import type { CargoId, GameState } from './engine/types';
+import type { CargoId, GameState, MoodId } from './engine/types';
 import { createMissionStorage, createSaveEnvelope } from './services/storage';
 import type { DurableTransition } from './engine/contracts';
 import { registerBundledDonkiArchive } from './content/donkiArchive';
@@ -36,6 +36,8 @@ import {
 import { SceneStage } from './ui/components/SceneStage';
 import { MISSION_SPOTS } from './ui/components/outpostLayout';
 import { scenePresentation } from './ui/mission-presentation';
+import type { SceneLayerFlags } from './ui/components/types';
+import { alertForMood } from './ui/presentation/eventAlert';
 import { PlanScreen } from './ui/screens/PlanScreen';
 import { PrologueScreen } from './ui/screens/PrologueScreen';
 import { SceneScreen } from './ui/screens/SceneScreen';
@@ -54,6 +56,54 @@ const VERSION = 'sol1-v1';
 type AppPhase = 'title' | 'plan' | 'scene' | 'report';
 type Overlay =
   'teachers' | 'sources' | 'settings' | 'album' | 'certificate' | null;
+
+/** Member 4 mood wash. Classes live on the overlay tint, not the old mission-mood root. */
+function moodTintClass(mood: MoodId | undefined): string | undefined {
+  switch (mood) {
+    case 'dust_storm':
+      return 'ui-mood--dust';
+    case 'solar_storm':
+    case 'finale_storm':
+      return 'ui-mood--solar';
+    case 'alarm_amber':
+      return 'ui-mood--amber';
+    case 'alarm_red':
+      return 'ui-mood--red';
+    case 'cold_night':
+      return 'ui-mood--cold';
+    case 'meteors':
+      return 'ui-mood--meteors';
+    case 'dusk_night':
+      return 'ui-mood--dusk';
+    case 'golden_dawn':
+    case 'finale_dawn':
+      return 'ui-mood--dawn';
+    default:
+      return undefined;
+  }
+}
+
+/** sky_* art for the weather crossfade. Hazard moods use dusk rather than a flat day plate. */
+function skyForMood(mood: MoodId | undefined): SceneLayerFlags['sky'] {
+  switch (mood) {
+    case 'dusk_night':
+    case 'cold_night':
+      return 'night';
+    case 'dust_storm':
+      return 'dust';
+    case 'golden_dawn':
+    case 'finale_dawn':
+      return 'dawn';
+    case 'solar_storm':
+    case 'alarm_amber':
+    case 'alarm_red':
+    case 'meteors':
+    case 'finale_storm':
+      return 'dusk';
+    default:
+      return 'day';
+  }
+}
 
 export default function App() {
   const [storage] = useState(() =>
@@ -415,8 +465,12 @@ export default function App() {
           <SceneScreen
             meters={state.meters}
             sol={state.sol}
-            phaseLabel={presentation?.layers.sky === 'night' ? 'Night' : 'Day'}
+            phaseLabel={
+              skyForMood(presentation?.mood) === 'night' ? 'Night' : 'Day'
+            }
             reduceMotion={settings.reduceMotion}
+            eventAlert={alertForMood(presentation?.mood)}
+            onLearn={() => setOverlay('teachers')}
             onSettings={() => setOverlay('settings')}
             onHelp={() =>
               setStatus(
@@ -438,9 +492,8 @@ export default function App() {
                   hotspotsEnabled={false}
                   commander={presentation!.commander}
                   settings={settings}
-                  backdropSrc="/assets/bg/mars_vista.jpg"
                   showBuildings
-                  moodTintClassName="mission-mood--dusk_night"
+                  moodTintClassName="ui-mood--dusk"
                   onSelectSpot={() => {}}
                 />
               </div>
@@ -462,15 +515,15 @@ export default function App() {
                   spots={MISSION_SPOTS}
                   layers={{
                     ...presentation!.layers,
+                    sky: skyForMood(presentation!.mood),
                     extraPanels: state.cargo.includes('solar_extra'),
                     batteryBox: state.cargo.includes('batteries'),
                     shieldPlating: state.cargo.includes('shield_plating'),
                   }}
                   settings={settings}
-                  backdropSrc="/assets/bg/mars_vista.jpg"
                   showBuildings
                   commanderStart={presentation!.commander}
-                  moodTintClassName={`mission-mood--${presentation!.mood}`}
+                  moodTintClassName={moodTintClass(presentation!.mood)}
                 />
                 {step.type === 'classroom_pause' && (
                   <div className="mission-classroom">

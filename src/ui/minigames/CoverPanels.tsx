@@ -123,17 +123,6 @@ export function CoverPanels({
       </div>
 
       <div className="mg-panels__stage">
-        <div className="mg-panels__vista" aria-hidden="true">
-          <img src="/assets/bg/sky_dust.png" alt="" draggable={false} />
-          <img
-            className="mg-panels__ground"
-            src="/assets/bg/mars_ground.png"
-            alt=""
-            draggable={false}
-          />
-          <div className="mg-panels__haze" />
-        </div>
-
         <div
           className="mg-panels__field"
           role="group"

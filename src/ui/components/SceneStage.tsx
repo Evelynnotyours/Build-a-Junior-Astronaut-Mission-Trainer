@@ -1,8 +1,24 @@
+import { useEffect, useRef, useState } from 'react';
 import { Commander } from './Commander';
 import { Hotspot } from './Hotspot';
 import { Overlay } from './Overlay';
-import { OUTPOST_BUILDINGS, type BuildingSlot } from './outpostLayout';
+import {
+  OUTPOST_BUILDINGS,
+  OUTPOST_ROCKS,
+  rockSrc,
+  scaledWidth,
+  type BuildingSlot,
+  type RockSlot,
+} from './outpostLayout';
 import type { SceneLayerFlags, SpotId, SpotLayout, UiSettings } from './types';
+
+const SKY_FADE_MS = 1250;
+const FADE_TICK_MS = 32;
+
+function smoothstep(t: number): number {
+  const x = Math.min(1, Math.max(0, t));
+  return x * x * (3 - 2 * x);
+}
 
 type SceneStageProps = {
   layers: SceneLayerFlags;
@@ -20,19 +36,20 @@ type SceneStageProps = {
   onCommanderArrived?: () => void;
   onSkipWalk?: () => void;
   showSkipWalk?: boolean;
-  /**
-   * Full-bleed landscape (reference vista). When set, replaces stacked sky/ground/mountain.
-   * Building cutouts remain optional via showBuildings.
-   */
+  /** Optional sky override; otherwise uses `bg/sky_*` for weather/time. */
   backdropSrc?: string;
   showBuildings?: boolean;
   eventEffects?: readonly string[];
   cameraPan?: boolean;
 };
 
-const SKY: Record<SceneLayerFlags['sky'], string> = {
+/**
+ * Landscape backdrops with a road + ground plane.
+ * `sky_dawn.png` is atmosphere-only, so dawn reuses day terrain; mood tint supplies the glow.
+ */
+export const SKY_BACKDROPS: Record<SceneLayerFlags['sky'], string> = {
   day: '/assets/bg/sky_day.png',
-  dawn: '/assets/bg/sky_dawn.png',
+  dawn: '/assets/bg/sky_day.png',
   dusk: '/assets/bg/sky_dusk.png',
   night: '/assets/bg/sky_night.png',
   dust: '/assets/bg/sky_dust.png',
@@ -54,6 +71,7 @@ function BuildingSprite({
   slot: BuildingSlot;
   className?: string;
 }) {
+  const width = scaledWidth(slot.baseWidth, slot.bottom);
   return (
     <img
       className={`ui-scene__prop ${className}`.trim()}
@@ -61,12 +79,96 @@ function BuildingSprite({
       alt=""
       draggable={false}
       style={{
-        left: `${slot.left}%`,
-        top: `${slot.top}%`,
-        width: `${slot.width}%`,
+        left: `${slot.x}%`,
+        bottom: `${slot.bottom}%`,
+        width: `${width}%`,
         zIndex: slot.z,
       }}
     />
+  );
+}
+
+function RockSprite({ slot }: { slot: RockSlot }) {
+  const width = scaledWidth(slot.baseWidth, slot.bottom);
+  return (
+    <img
+      className="ui-scene__prop ui-scene__prop--rock"
+      src={rockSrc(slot.size)}
+      alt=""
+      draggable={false}
+      style={{
+        left: `${slot.x}%`,
+        bottom: `${slot.bottom}%`,
+        width: `${width}%`,
+        zIndex: slot.z,
+      }}
+    />
+  );
+}
+
+/** Crossfades sky art when weather / event mood changes the backdrop. */
+function SceneBackdrop({ src, reduceMotion }: { src: string; reduceMotion: boolean }) {
+  const [baseSrc, setBaseSrc] = useState(src);
+  const [fadeSrc, setFadeSrc] = useState<string | null>(null);
+  const [fadeOpacity, setFadeOpacity] = useState(0);
+  const baseRef = useRef(src);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      baseRef.current = src;
+      setBaseSrc(src);
+      setFadeSrc(null);
+      setFadeOpacity(0);
+      return;
+    }
+
+    if (src === baseRef.current) {
+      setFadeSrc(null);
+      setFadeOpacity(0);
+      return;
+    }
+
+    setFadeSrc(src);
+    setFadeOpacity(0);
+    const start = performance.now();
+    let timer = 0;
+
+    const tick = () => {
+      const t = smoothstep((performance.now() - start) / SKY_FADE_MS);
+      setFadeOpacity(t);
+      if (t >= 1) {
+        baseRef.current = src;
+        setBaseSrc(src);
+        setFadeSrc(null);
+        setFadeOpacity(0);
+        return;
+      }
+      timer = window.setTimeout(tick, FADE_TICK_MS);
+    };
+    timer = window.setTimeout(tick, FADE_TICK_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [src, reduceMotion]);
+
+  return (
+    <>
+      <img
+        className="ui-scene__layer ui-scene__backdrop"
+        src={baseSrc}
+        alt=""
+        draggable={false}
+      />
+      {fadeSrc && fadeSrc !== baseSrc ? (
+        <img
+          key={fadeSrc}
+          className="ui-scene__layer ui-scene__backdrop ui-scene__backdrop--fade"
+          src={fadeSrc}
+          alt=""
+          draggable={false}
+          style={{ opacity: fadeOpacity }}
+        />
+      ) : null}
+    </>
   );
 }
 
@@ -84,48 +186,25 @@ export function SceneStage({
   onSkipWalk,
   showSkipWalk = false,
   backdropSrc,
-  showBuildings = !backdropSrc,
+  showBuildings = true,
   eventEffects = [],
   cameraPan = false,
 }: SceneStageProps) {
+  const skySrc = backdropSrc ?? SKY_BACKDROPS[layers.sky];
+
   return (
     <div className="ui-scene">
       <div
         className={`ui-scene__stage ${cameraPan && !settings.reduceMotion ? 'mission-camera-pan' : ''}`}
         aria-label="Mars outpost"
       >
-        {backdropSrc ? (
-          <img
-            className="ui-scene__layer ui-scene__backdrop"
-            src={backdropSrc}
-            alt=""
-            draggable={false}
-          />
-        ) : (
-          <>
-            <img
-              className="ui-scene__layer"
-              src={SKY[layers.sky]}
-              alt=""
-              draggable={false}
-            />
-            <img
-              className="ui-scene__layer"
-              src="/assets/bg/mount_sharp.png"
-              alt=""
-              draggable={false}
-            />
-            <img
-              className="ui-scene__layer"
-              src="/assets/bg/mars_ground.png"
-              alt=""
-              draggable={false}
-            />
-          </>
-        )}
+        <SceneBackdrop src={skySrc} reduceMotion={settings.reduceMotion} />
 
         {showBuildings ? (
           <div className="ui-scene__props" aria-hidden="true">
+            {OUTPOST_ROCKS.map((rock) => (
+              <RockSprite key={rock.id} slot={rock} />
+            ))}
             <BuildingSprite
               src="/assets/buildings/greenhouse.png"
               slot={OUTPOST_BUILDINGS.greenhouse}

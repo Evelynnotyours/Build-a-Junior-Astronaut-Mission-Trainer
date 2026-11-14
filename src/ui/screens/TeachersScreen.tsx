@@ -122,8 +122,15 @@ export function TeachersScreen({
             )}
             {tab === 'hub' ? (
               <section className="tn-panel no-print">
-                <div className="learn-intro">
-                  <h2>Explore Mars together</h2>
+                <div className="tn-banner">
+                  <img src="/assets/bg/sky_day.png" alt="" draggable={false} />
+                  <div className="tn-banner__copy">
+                    <h2>About This Game</h2>
+                    <p>
+                      A 10-sol Mars outpost mission for ages 7–12. Students balance Life Support,
+                      Power, and Shielding while exploring real NASA-inspired science.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="tn-grid">

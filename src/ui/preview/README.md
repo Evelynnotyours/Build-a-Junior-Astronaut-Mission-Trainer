@@ -54,13 +54,12 @@ import { SceneScreen } from '../ui/screens';
       shieldPlating: state.cargo.includes('shield_plating'),
     }}
     settings={…}
-    backdropSrc="/assets/bg/mars_vista.jpg"
     showBuildings
   />
 </SceneScreen>
 ```
 
-Engine alone mutates meters/flags. UI never awards mini-game bonuses.
+Gameplay backdrop is `bg/sky_*` (dawn/day/dusk/night/dust) from mood cues. Engine alone mutates meters/flags. UI never awards mini-game bonuses.
 
 ## Blocked on others
 

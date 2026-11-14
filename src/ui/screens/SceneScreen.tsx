@@ -1,7 +1,11 @@
 import type { ReactNode } from 'react';
 import type { Meters } from '../../engine/types';
+import { Banner } from '../components/Banner';
+import { EventAlert } from '../components/EventAlert';
 import { Meters as MetersBar } from '../components/Meters';
 import { SolBadge } from '../components/SolBadge';
+import type { EventAlertContent } from '../presentation/eventAlert';
+import { primaryMeterWarning } from '../presentation/meterWarnings';
 
 type SceneScreenProps = {
   meters: Meters;
@@ -12,15 +16,17 @@ type SceneScreenProps = {
   goalTitle?: string;
   goalBody?: string;
   challenges?: string[];
+  /** Hazard mood alert (dust storm, solar storm, …) */
+  eventAlert?: EventAlertContent | null;
+  onLearn?: () => void;
+  onHelp?: () => void;
+  onSettings?: () => void;
   /** ScenePresenter output: stage + dock */
   children: ReactNode;
-  onSettings?: () => void;
-  onHelp?: () => void;
 };
 
 /**
  * Scene HUD chrome over the outpost stage.
- * Member 1 wraps ScenePresenter with this screen; do not edit App.tsx from Member 4.
  */
 export function SceneScreen({
   meters,
@@ -31,10 +37,14 @@ export function SceneScreen({
   goalTitle = 'Mission Goal',
   goalBody = 'Survive for 10 Sols on Mars!',
   challenges = ['☢ Radiation', '❄ Extreme cold', '💧 Limited water'],
-  children,
-  onSettings,
+  eventAlert = null,
+  onLearn,
   onHelp,
+  onSettings,
+  children,
 }: SceneScreenProps) {
+  const warning = primaryMeterWarning(meters);
+
   return (
     <div className="ui-game">
       {children}
@@ -62,7 +72,23 @@ export function SceneScreen({
         </div>
       </header>
 
+      {eventAlert ? (
+        <div className="ui-game__alert">
+          <EventAlert {...eventAlert} reduceMotion={reduceMotion} />
+        </div>
+      ) : null}
+
+      {warning ? (
+        <div className="ui-game__warn">
+          <Banner tone="warning" message={warning.message} />
+        </div>
+      ) : null}
+
       <aside className="ui-rail ui-rail--left" aria-label="Mission tools">
+        <button type="button" className="ui-rail__btn" onClick={onLearn}>
+          <span aria-hidden="true">📘</span>
+          Learn
+        </button>
         <button type="button" className="ui-rail__btn" onClick={onHelp}>
           <span aria-hidden="true">❓</span>
           Help

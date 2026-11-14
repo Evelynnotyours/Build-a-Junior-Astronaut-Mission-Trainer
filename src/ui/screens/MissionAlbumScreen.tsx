@@ -97,7 +97,7 @@ export function MissionAlbumScreen({
                 <header>
                   <h2>{open.title}</h2>
                   <span className="album-pill">
-                    {open.mediaLabel ?? 'Saved photo'}
+                    {open.savedLabel ?? open.mediaLabel ?? 'Saved photo'}
                   </span>
                 </header>
                 {open.photoSrc ? (
@@ -105,16 +105,17 @@ export function MissionAlbumScreen({
                     src={open.photoSrc}
                     alt={open.photoAlt}
                     credit={open.photoCredit}
-                    savedLabel
-                    mediaLabel={open.mediaLabel}
+                    savedLabel={open.savedLabel ?? open.mediaLabel ?? true}
                   />
                 ) : (
                   <p className="album-missing">Photo not bundled yet.</p>
                 )}
                 <p className="album-fact">{open.fact}</p>
-                {open.photoCaption && <p>{open.photoCaption}</p>}
-                {open.contextNote && <p>{open.contextNote}</p>}
-                {open.observationNote && <p>{open.observationNote}</p>}
+                {open.photoCaption ? <p>{open.photoCaption}</p> : null}
+                {open.contextNote ? (
+                  <p className="album-note">{open.contextNote}</p>
+                ) : null}
+                {open.observationNote ? <p>{open.observationNote}</p> : null}
                 <p className="album-source">{open.sourceLabel}</p>
                 {open.sourceUrl ? (
                   <a
@@ -138,7 +139,7 @@ export function MissionAlbumScreen({
                     <img src={card.photoSrc} alt={card.photoAlt} />
                   ) : null}
                   <p>
-                    {card.mediaLabel ?? 'Saved photo'} · {card.fact}
+                    {card.savedLabel ?? card.mediaLabel ?? 'Saved photo'} · {card.fact}
                   </p>
                   {card.photoCaption && <p>{card.photoCaption}</p>}
                   {card.contextNote && <p>{card.contextNote}</p>}

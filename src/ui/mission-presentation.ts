@@ -2,7 +2,7 @@ import type { SceneDefinition, SceneStep } from '../engine/scene-types';
 import type { ScenePlayback } from '../engine/scene-player';
 import type { MoodId } from '../engine/types';
 import type { SceneLayerFlags } from './components/types';
-import { MISSION_SPOTS } from './components/outpostLayout';
+import { MISSION_SPOTS, OUTPOST_PATH_START } from './components/outpostLayout';
 
 /** Rebuild presentation from the actual authored route; refreshing never replays resource effects. */
 export function scenePresentation(
@@ -36,7 +36,9 @@ export function scenePresentation(
     lastWalk &&
     (lastWalk.id !== playback.cursor.stepId ||
       playback.game.phase === 'WALKING');
-  const stand = walked ? MISSION_SPOTS[lastWalk.target].stand : [46, 70];
+  const stand = walked
+    ? MISSION_SPOTS[lastWalk.target].stand
+    : [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y];
   const sky: SceneLayerFlags['sky'] = [
     'dusk_night',
     'cold_night',

@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { SceneInput, SceneStep } from '../../engine/scene-types';
-import type { ChoiceId, Meters } from '../../engine/types';
+import type { ChoiceId, Meters, MoodId } from '../../engine/types';
 import { ScenePresenter } from '../components/ScenePresenter';
 import { SceneScreen } from '../screens/SceneScreen';
+import { OUTPOST_PATH_START } from '../components/outpostLayout';
+import { alertForMood } from '../presentation/eventAlert';
 import {
-  PREVIEW_BACKDROP,
   PREVIEW_LAYERS,
   PREVIEW_METERS,
   PREVIEW_NOTES,
@@ -23,10 +24,27 @@ import {
 export function UiPreview() {
   const [reduceMotion, setReduceMotion] = useState(true);
   const [showBuildings, setShowBuildings] = useState(true);
+  const [previewMood, setPreviewMood] = useState<MoodId | null>(null);
   const [stepId, setStepId] = useState(SOL1_PREVIEW_STEPS[0].id);
   const [choiceId, setChoiceId] = useState<ChoiceId | undefined>();
   const [meters, setMeters] = useState<Meters>(PREVIEW_METERS);
   const [log, setLog] = useState<string[]>([]);
+  const eventAlert = useMemo(() => alertForMood(previewMood), [previewMood]);
+  const layers = useMemo(
+    () => ({
+      ...PREVIEW_LAYERS,
+      sky: (previewMood === 'dust_storm'
+        ? 'dust'
+        : previewMood === 'cold_night'
+          ? 'night'
+          : previewMood === 'solar_storm' || previewMood === 'finale_storm'
+            ? 'dusk'
+            : PREVIEW_LAYERS.sky) as typeof PREVIEW_LAYERS.sky,
+      solar: (previewMood === 'dust_storm' ? 'dusty' : 'clean') as 'clean' | 'dusty',
+      frost: previewMood === 'cold_night',
+    }),
+    [previewMood],
+  );
 
   const step = useMemo(
     () => SOL1_PREVIEW_STEPS.find((s) => s.id === stepId) ?? SOL1_PREVIEW_STEPS[0],
@@ -101,6 +119,22 @@ export function UiPreview() {
           />
           Buildings
         </label>
+        <label>
+          Event alert
+          <select
+            value={previewMood ?? ''}
+            onChange={(e) =>
+              setPreviewMood(e.target.value === '' ? null : (e.target.value as MoodId))
+            }
+          >
+            <option value="">None</option>
+            <option value="dust_storm">Dust storm</option>
+            <option value="solar_storm">Solar storm</option>
+            <option value="alarm_red">Critical</option>
+            <option value="cold_night">Cold night</option>
+            <option value="meteors">Meteors</option>
+          </select>
+        </label>
         <nav className="ui-preview__modes" aria-label="Jump to step type">
           {(['narration', 'walk', 'dialogue', 'choice', 'after', 'real_card'] as const).map(
             (type) => (
@@ -128,7 +162,7 @@ export function UiPreview() {
           {PREVIEW_NOTES.map((note) => (
             <li key={note}>{note}</li>
           ))}
-          <li>Next step: ScenePresenter + SceneScreen consume Gate A SceneInput contracts.</li>
+          <li>Real Mars cards resolve from media catalog (imageType / savedLabel / credit).</li>
         </ul>
         {log.length > 0 ? (
           <ol className="ui-preview__notes">
@@ -145,6 +179,7 @@ export function UiPreview() {
         phaseLabel="Day"
         clockLabel="08:00"
         reduceMotion={reduceMotion}
+        eventAlert={eventAlert}
       >
         <ScenePresenter
           step={step}
@@ -152,10 +187,19 @@ export function UiPreview() {
           onInput={onInput}
           content={content}
           spots={PREVIEW_SPOTS}
-          layers={PREVIEW_LAYERS}
+          layers={layers}
+          moodTintClassName={
+            previewMood === 'dust_storm'
+              ? 'ui-mood--dust'
+              : previewMood === 'cold_night'
+                ? 'ui-mood--cold'
+                : previewMood === 'solar_storm' || previewMood === 'finale_storm'
+                  ? 'ui-mood--solar'
+                  : undefined
+          }
           settings={{ reduceMotion, soundEnabled: false }}
-          backdropSrc={PREVIEW_BACKDROP}
           showBuildings={showBuildings}
+          commanderStart={{ ...OUTPOST_PATH_START }}
         />
       </SceneScreen>
     </div>
