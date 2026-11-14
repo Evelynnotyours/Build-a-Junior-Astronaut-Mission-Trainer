@@ -516,7 +516,7 @@
 
 .teacher-album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   margin-top: 0.75rem;
 }
@@ -1245,6 +1245,76 @@
   outline: 2px solid #eef0f6;
   outline-offset: 4px;
 }
+
+/* Screen gallery: broad, readable cards rather than narrow text columns. */
+@media screen {
+  .learn-shell .teacher-album-grid {
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+    grid-auto-rows: auto;
+    align-items: stretch;
+  }
+
+  .learn-shell .teacher-album-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(199, 202, 214, 0.3);
+    box-shadow: 0 8px 20px rgba(10, 7, 24, 0.18);
+  }
+
+  .learn-shell .teacher-album-card__photo {
+    flex-shrink: 0;
+    aspect-ratio: 16 / 10;
+    border-radius: 10px;
+    background: #100d20;
+    object-fit: contain;
+  }
+
+  .learn-shell .teacher-album-card figcaption {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-top: 0.85rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+  }
+
+  .learn-shell .teacher-album-card h4 {
+    margin: 0 0 0.65rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+
+  .learn-shell .teacher-album-card p {
+    margin: 0 0 0.75rem;
+  }
+
+  .learn-shell .teacher-album-card figcaption > p:first-of-type {
+    font-size: 0.82rem;
+    color: #c7c9d6;
+  }
+
+  .learn-shell .teacher-album-card a {
+    margin-top: auto;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 700;
+    text-underline-offset: 3px;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 900px) {
+  .teacher-album-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media print {
   .learn-shell .tn-main {
     background: #fff !important;
@@ -1258,4 +1328,106 @@
   display: block;
   width: fit-content;
   margin-top: 1rem;
+}
+
+/* Compact photo cards keep the same height; expanded copy scrolls inside. */
+@media screen {
+  .learn-shell .teacher-album-card {
+    height: 32rem;
+    box-sizing: border-box;
+  }
+
+  .learn-shell .teacher-album-card__photo {
+    height: 10rem;
+    aspect-ratio: auto;
+  }
+
+  .learn-shell .teacher-album-card figcaption {
+    min-height: 0;
+  }
+
+  .learn-shell .teacher-album-card h4 {
+    flex-shrink: 0;
+    min-height: 3rem;
+  }
+
+  .learn-shell .teacher-album-card figcaption > p:first-of-type {
+    flex-shrink: 0;
+    min-height: 2.6rem;
+  }
+
+  .learn-shell .teacher-album-copy {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .learn-shell .teacher-album-copy.is-expanded {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(199, 202, 214, 0.35) transparent;
+    padding-right: 0.35rem;
+  }
+
+  .learn-shell .teacher-album-copy::-webkit-scrollbar {
+    width: 4px;
+    background: transparent;
+  }
+
+  .learn-shell .teacher-album-copy::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .learn-shell .teacher-album-copy::-webkit-scrollbar-thumb {
+    background: rgba(199, 202, 214, 0.35);
+    border-radius: 999px;
+  }
+
+  .learn-shell .teacher-album-copy::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .learn-shell .teacher-album-copy:not(.is-expanded) .teacher-album-context {
+    display: none;
+  }
+
+  .learn-shell .teacher-album-copy:not(.is-expanded) .teacher-album-caption,
+  .learn-shell .teacher-album-copy:not(.is-expanded) .teacher-album-credit {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .teacher-album-more {
+    align-self: flex-start;
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #eac276;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .teacher-album-more:focus-visible {
+    outline: 2px solid #eef0f6;
+    outline-offset: 3px;
+  }
+}
+
+.teacher-album-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

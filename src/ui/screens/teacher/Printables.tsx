@@ -1,4 +1,5 @@
 import '../../../styles/learning-printables.css';
+import { useState } from 'react';
 import { getMediaCatalog } from '../../../content/media-catalog';
 import {
   DISCUSSION_SAMPLES,
@@ -421,6 +422,9 @@ export function AlbumPrint({
 }: {
   albumIds?: readonly string[];
 }) {
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(
+    () => new Set(),
+  );
   const catalog = getMediaCatalog();
   const cards = [...new Set(albumIds)].flatMap((id) => {
     const moment = catalog.realMoments[id];
@@ -468,13 +472,46 @@ export function AlbumPrint({
                       ? ` · Published ${photo.publishedDate}`
                       : ''}
                 </p>
-                <p>{photo.caption}</p>
-                {moment.contextNote && <p>{moment.contextNote}</p>}
-                {photo.contextNote &&
-                  photo.contextNote !== moment.contextNote && (
-                    <p>{photo.contextNote}</p>
-                  )}
-                <p>Credit: {photo.credit}</p>
+                <div
+                  id={`album-copy-${id}`}
+                  className={`teacher-album-copy${expandedCards.has(id) ? ' is-expanded' : ''}`}
+                  tabIndex={expandedCards.has(id) ? 0 : undefined}
+                >
+                  <p className="teacher-album-caption">{photo.caption}</p>
+                  <div className="teacher-album-context">
+                    {moment.contextNote && <p>{moment.contextNote}</p>}
+                    {photo.contextNote &&
+                      photo.contextNote !== moment.contextNote && (
+                        <p>{photo.contextNote}</p>
+                      )}
+                  </div>
+                  <p className="teacher-album-credit">Credit: {photo.credit}</p>
+                </div>
+                {(moment.contextNote ||
+                  photo.contextNote ||
+                  photo.caption.length > 100 ||
+                  photo.credit.length > 40) && (
+                  <button
+                    type="button"
+                    className="teacher-album-more no-print"
+                    aria-expanded={expandedCards.has(id)}
+                    aria-controls={`album-copy-${id}`}
+                    onClick={() =>
+                      setExpandedCards((current) => {
+                        const next = new Set(current);
+                        if (next.has(id)) next.delete(id);
+                        else next.add(id);
+                        return next;
+                      })
+                    }
+                  >
+                    {expandedCards.has(id) ? 'See less' : 'See more'}
+                    <span className="teacher-album-sr-only">
+                      {' '}
+                      about {moment.title}
+                    </span>
+                  </button>
+                )}
                 <a href={photo.sourceUrl} target="_blank" rel="noreferrer">
                   NASA source
                 </a>
