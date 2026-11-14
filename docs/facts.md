@@ -2,5 +2,27 @@
 
 Add verified facts here before using them in the game. Do not treat unverified draft claims as confirmed.
 
-| Fact ID | Child-friendly wording | NASA source URL | Source date / observation date | Verified on | Notes / simulation simplifications |
-|---|---|---|---|---|---|
+| Fact ID | Child-friendly wording | NASA source URL | Source date / observation date | Verified on | Notes / simulation simplifications | resource place(website or sth) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **F001** | Gale Crater is a giant bowl on Mars about 154 km (96 miles) wide! | https://mars.nasa.gov/msl/mission/science/gale-crater/ | N/A | Nov 14, 2026 | Used for Sol 1 location setting. | NASA Mars Exploration |
+| **F002** | Mount Sharp is a huge mountain in the middle of Gale Crater, standing 5 km (3 miles) tall! | https://mars.nasa.gov/msl/mission/science/gale-crater/ | N/A | Nov 14, 2026 | Visual landmark for Sol 1. | NASA Mars Exploration |
+| **F003** | NASA's Curiosity rover safely landed inside Gale Crater in August 2012. | https://mars.nasa.gov/msl/mission/overview/ | Aug 5, 2012 | Nov 14, 2026 | Rover cameo in Sol 4. | NASA Mars Exploration |
+| **F004** | Mars has two tiny moons named Phobos and Deimos. | https://science.nasa.gov/mars/moons/ | N/A | Nov 14, 2026 | Mentioned in Sol 2 night scene. | NASA Science |
+| **F005** | Curiosity uses a weather station to measure how cold the Martian ground gets. | https://mars.nasa.gov/msl/weather/ | N/A | Nov 14, 2026 | REMS instrument tracking. | NASA Mars Exploration |
+| **F006** | Curiosity stays warm on cold nights using heat from its own special nuclear battery! | https://mars.nasa.gov/msl/spacecraft/rover/power/ | N/A | Nov 14, 2026 | MMRTG power source. | NASA Mars Exploration |
+| **F007** | Mars nights are freezing! They normally drop to -72°C (-98°F) and can get as cold as -127°C (-197°F). | https://mars.nasa.gov/msl/weather/ | N/A | Nov 14, 2026 | Used in Sol 9 (Coldest Night). | NASA Mars Exploration |
+| **F008** | In 2018, a giant dust storm covered the entire planet of Mars! | https://mars.nasa.gov/news/8348/opportunity-hunkers-down-during-dust-storm/ | Summer 2018 | Nov 14, 2026 | Inspiration for Sol 3 & 10. | NASA Mars Exploration |
+| **F009** | The 2018 storm blocked out the Sun, so the solar-powered Opportunity rover couldn't get enough energy. | https://mars.nasa.gov/mer/mission/rover-status/opportunity/2018/all/ | June 10, 2018 | Nov 14, 2026 | Teaches solar power limits. | NASA Mars Exploration |
+| **F010** | Martian dirt has a little bit of water trapped inside it—like two pints of water in a bucket of dirt! | https://www.nasa.gov/news-release/nasas-curiosity-rover-finds-water-in-martian-soil/ | Sep 26, 2013 | Nov 14, 2026 | Simplification: Game ice is easily reachable for fun. | NASA Main Website |
+| **F011** | Because Mars is so far away, a message takes anywhere from 3 to 22 minutes to reach Earth. | https://mars.nasa.gov/mars2020/spacecraft/rover/communications/ | N/A | Nov 14, 2026 | Base fact for Sol 5 signal delay. | NASA Mars Exploration |
+| **F012** | Today, it takes about 11 minutes for a message to reach Earth from Mars! | https://eyes.nasa.gov/apps/solar-system/ | Nov 2026 | Nov 14, 2026 | Live data placeholder for Sol 5. | NASA Eyes on the Solar System |
+| **F013** | Rovers have to drive themselves safely because remote control from Earth is too slow! | https://mars.nasa.gov/msl/mission/communications/ | N/A | Nov 14, 2026 | Explains rover autonomy. | NASA Mars Exploration |
+| **F014** | NASA scientists watch the Sun every single day to keep astronauts safe from space weather. | https://www.swpc.noaa.gov/ | N/A | Nov 14, 2026 | Foundation for Sol 6. | NOAA/NASA Space Weather |
+| **F015** | Solar flares are rated by letters like C (small), M (medium), and X (giant!). | https://spaceplace.nasa.gov/solar-activity/en/ | N/A | Nov 14, 2026 | Background for Sol 6 scaling. | NASA Space Place |
+| **F016** | NASA recently observed an M1-class flare and a huge X5.1-class flare! | https://blogs.nasa.gov/solarcycle25/ | Nov 11, 2026 / Nov 11, 2025 | Nov 14, 2026 | Live data placeholders for Sol 6 Active/Stormy. | NASA Solar Cycle Blog |
+| **F017** | Curiosity has a special tool that has been measuring invisible space radiation since it landed. | https://mars.nasa.gov/msl/spacecraft/instruments/rad/ | N/A | Nov 14, 2026 | RAD instrument facts for Sol 6. | NASA Mars Exploration |
+| **F018** | Just like Earth, Mars can have beautiful glowing auroras in the sky during solar storms! | https://mars.nasa.gov/news/nasa-missions-see-auroras-on-mars/ | N/A | Nov 14, 2026 | Mentioned in Sol 6 stormy card. | NASA Mars Exploration |
+| **F019** | Mars rocks are sharp! Curiosity's wheels got little holes in them, so NASA had to drive it carefully. | https://mars.nasa.gov/msl/spacecraft/rover/wheels/ | N/A | Nov 14, 2026 | Sol 7 Equipment Failure inspiration. | NASA Mars Exploration |
+| **F020** | Real space stations sometimes get tiny air leaks, and astronauts use special tools to patch them. | https://blogs.nasa.gov/spacestation/ | N/A | Nov 14, 2026 | Sol 8 Leak inspiration (ISS context). | NASA Space Station Blog |
+| **F021** | Mars has very thin air, so small space rocks can easily reach the ground and make fresh craters! | https://mars.nasa.gov/mro/mission/instruments/hirise/ | N/A | Nov 14, 2026 | Sol 8 Meteors inspiration. | NASA Mars Exploration |
+| **F022** | NASA is practicing on the Moon right now so humans can safely explore Mars in the future. | https://www.nasa.gov/specials/artemis/ | N/A | Nov 14, 2026 | Sol 10 Finale context. | NASA Artemis Page |
