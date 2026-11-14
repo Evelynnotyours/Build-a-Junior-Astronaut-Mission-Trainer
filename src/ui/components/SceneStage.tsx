@@ -1,6 +1,7 @@
 import { Commander } from './Commander';
 import { Hotspot } from './Hotspot';
 import { Overlay } from './Overlay';
+import { OUTPOST_BUILDINGS, type BuildingSlot } from './outpostLayout';
 import type { SceneLayerFlags, SpotId, SpotLayout, UiSettings } from './types';
 
 type SceneStageProps = {
@@ -37,6 +38,31 @@ const SOLAR: Record<SceneLayerFlags['solar'], string> = {
   covered: '/assets/buildings/solar_panels_covered.png',
   damaged: '/assets/buildings/solar_panels_damaged.png',
 };
+
+function BuildingSprite({
+  src,
+  slot,
+  className = '',
+}: {
+  src: string;
+  slot: BuildingSlot;
+  className?: string;
+}) {
+  return (
+    <img
+      className={`ui-scene__prop ${className}`.trim()}
+      src={src}
+      alt=""
+      draggable={false}
+      style={{
+        left: `${slot.left}%`,
+        top: `${slot.top}%`,
+        width: `${slot.width}%`,
+        zIndex: slot.z,
+      }}
+    />
+  );
+}
 
 /** 16:9 outpost stage. Camera transforms should wrap this whole stage so hotspots stay aligned. */
 export function SceneStage({
@@ -83,88 +109,65 @@ export function SceneStage({
         )}
 
         {showBuildings ? (
-          <>
-            <img
-              className="ui-scene__layer ui-scene__building"
+          <div className="ui-scene__props" aria-hidden="true">
+            <BuildingSprite
               src="/assets/buildings/greenhouse.png"
-              alt=""
-              draggable={false}
+              slot={OUTPOST_BUILDINGS.greenhouse}
             />
-            <img
-              className="ui-scene__layer ui-scene__building"
-              src="/assets/buildings/habitat.png"
-              alt=""
-              draggable={false}
+            <BuildingSprite
+              src="/assets/buildings/shelter_closed.png"
+              slot={OUTPOST_BUILDINGS.shelter}
+              className={layers.shelterOpen ? 'is-hidden' : ''}
             />
-            <img
-              className="ui-scene__layer ui-scene__building"
-              src="/assets/buildings/air_module.png"
-              alt=""
-              draggable={false}
-            />
-            <img
-              className="ui-scene__layer ui-scene__building"
-              src={SOLAR[layers.solar]}
-              alt=""
-              draggable={false}
-            />
+            {layers.shelterOpen ? (
+              <BuildingSprite
+                src="/assets/buildings/shelter_open.png"
+                slot={OUTPOST_BUILDINGS.shelter}
+              />
+            ) : null}
+            <BuildingSprite src={SOLAR[layers.solar]} slot={OUTPOST_BUILDINGS.solar} />
+            <BuildingSprite src={SOLAR[layers.solar]} slot={OUTPOST_BUILDINGS.solarB} />
             {layers.extraPanels ? (
-              <img
-                className="ui-scene__layer ui-scene__building"
+              <BuildingSprite
                 src="/assets/buildings/extra_panels.png"
-                alt=""
-                draggable={false}
+                slot={OUTPOST_BUILDINGS.extraPanels}
               />
             ) : null}
-            {layers.batteryBox ? (
-              <img
-                className="ui-scene__layer ui-scene__building"
-                src="/assets/buildings/battery_box.png"
-                alt=""
-                draggable={false}
-              />
-            ) : null}
-            {layers.shieldPlating ? (
-              <img
-                className="ui-scene__layer ui-scene__building"
-                src="/assets/buildings/shield_plating.png"
-                alt=""
-                draggable={false}
-              />
-            ) : null}
-            <img
-              className="ui-scene__layer ui-scene__building"
+            <BuildingSprite
+              src="/assets/buildings/air_module.png"
+              slot={OUTPOST_BUILDINGS.air}
+            />
+            <BuildingSprite
+              src="/assets/buildings/habitat.png"
+              slot={OUTPOST_BUILDINGS.habitat}
+            />
+            <BuildingSprite
               src="/assets/buildings/comms_dish.png"
-              alt=""
-              draggable={false}
+              slot={OUTPOST_BUILDINGS.dish}
             />
-            <img
-              className="ui-scene__layer ui-scene__building"
-              src={
-                layers.garageOpen
-                  ? '/assets/buildings/rover_garage_open.png'
-                  : '/assets/buildings/rover_garage_closed.png'
-              }
-              alt=""
-              draggable={false}
-            />
-            <img
-              className="ui-scene__layer ui-scene__building"
+            {layers.shieldPlating ? (
+              <BuildingSprite
+                src="/assets/buildings/shield_plating.png"
+                slot={OUTPOST_BUILDINGS.shieldPlating}
+              />
+            ) : null}
+            {layers.garageOpen ? (
+              <BuildingSprite
+                src="/assets/buildings/rover_garage_open.png"
+                slot={OUTPOST_BUILDINGS.garage}
+              />
+            ) : null}
+            <BuildingSprite
               src="/assets/buildings/outpost_rover.png"
-              alt=""
-              draggable={false}
+              slot={OUTPOST_BUILDINGS.rover}
             />
-            <img
-              className="ui-scene__layer ui-scene__building"
-              src={
-                layers.shelterOpen
-                  ? '/assets/buildings/shelter_open.png'
-                  : '/assets/buildings/shelter_closed.png'
-              }
-              alt=""
-              draggable={false}
-            />
-          </>
+            {layers.batteryBox ? (
+              <BuildingSprite
+                src="/assets/buildings/battery_box.png"
+                slot={OUTPOST_BUILDINGS.batteryBox}
+              />
+            ) : null}
+          </div>
         ) : null}
 
         <Overlay
@@ -196,7 +199,7 @@ export function SceneStage({
 
       {showSkipWalk && onSkipWalk ? (
         <button type="button" className="ui-btn ui-scene__skip" onClick={onSkipWalk}>
-          Skip walk
+          Finish walk
         </button>
       ) : null}
     </div>

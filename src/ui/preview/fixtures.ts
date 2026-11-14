@@ -1,14 +1,17 @@
 import type { ChoiceOption, SceneLayerFlags, SpotLayout } from '../components/types';
 import type { Meters, SpotId } from '../../engine/types';
 
-/** Tuned for mars_vista.jpg path composition — still placeholders until measured spots.json. */
+/**
+ * Hotspots aligned to outpostLayout building slots (reference composition).
+ * stand = Commander feet percent [x, y].
+ */
 export const PREVIEW_SPOTS: Record<SpotId, SpotLayout> = {
-  habitat: { x: 42, y: 38, w: 18, h: 18, stand: [50, 72], label: 'Habitat control' },
-  air: { x: 34, y: 40, w: 10, h: 16, stand: [40, 70], label: 'Air module' },
-  greenhouse: { x: 18, y: 36, w: 16, h: 20, stand: [28, 68], label: 'Greenhouse' },
-  solar: { x: 8, y: 52, w: 16, h: 18, stand: [22, 74], label: 'Solar panels' },
-  dish: { x: 62, y: 28, w: 10, h: 16, stand: [64, 58], label: 'Comms dish' },
-  rover: { x: 70, y: 58, w: 16, h: 16, stand: [74, 76], label: 'Rover garage' },
+  greenhouse: { x: 7, y: 34, w: 18, h: 22, stand: [15, 62], label: 'Greenhouse' },
+  solar: { x: 30, y: 56, w: 12, h: 14, stand: [34, 72], label: 'Solar panels' },
+  air: { x: 38, y: 48, w: 10, h: 14, stand: [42, 68], label: 'Air module' },
+  habitat: { x: 54, y: 28, w: 18, h: 24, stand: [62, 64], label: 'Habitat' },
+  dish: { x: 72, y: 22, w: 8, h: 12, stand: [74, 48], label: 'Comms dish' },
+  rover: { x: 80, y: 52, w: 12, h: 16, stand: [86, 72], label: 'Rover garage' },
 };
 
 export const PREVIEW_METERS: Meters = {
@@ -18,12 +21,12 @@ export const PREVIEW_METERS: Meters = {
 };
 
 export const PREVIEW_LAYERS: SceneLayerFlags = {
-  sky: 'night',
+  sky: 'dawn',
   solar: 'clean',
   garageOpen: false,
   shelterOpen: false,
-  extraPanels: true,
-  batteryBox: true,
+  extraPanels: false,
+  batteryBox: false,
   shieldPlating: false,
   frost: false,
 };

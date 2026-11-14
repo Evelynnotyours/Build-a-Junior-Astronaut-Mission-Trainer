@@ -57,9 +57,22 @@
   font-size: 0.92rem;
 }
 
+.plan-sky {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: end;
+  text-align: right;
+}
+
 .plan-sky .ui-sky-badge {
   background: rgba(255, 255, 255, 0.12);
   color: #eaf7ff;
+}
+
+.plan-sky__detail {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
 .plan-robo {

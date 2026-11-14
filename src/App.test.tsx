@@ -31,9 +31,11 @@ async function launch() {
   fireEvent.click(screen.getByRole('button', { name: 'Start Mission' }));
   await screen.findByRole('heading', { name: 'Pack your cargo' });
   fireEvent.click(screen.getByRole('button', { name: 'Launch mission' }));
+  // Prologue: skip straight into Sol 1 for integration tests.
+  fireEvent.click(screen.getByRole('button', { name: 'Skip prologue' }));
 }
 function readToChoice() {
-  for (let count = 0; count < 30; count++) {
+  for (let count = 0; count < 40; count++) {
     if (screen.queryByRole('button', { name: 'Air system first' })) return;
     const target = screen.queryByRole('button', { name: 'Habitat' });
     if (target && !(target as HTMLButtonElement).disabled) {
@@ -45,7 +47,18 @@ function readToChoice() {
       fireEvent.click(arrival);
       continue;
     }
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    const cont = screen.queryByRole('button', { name: 'Continue' });
+    if (cont) {
+      fireEvent.click(cont);
+      continue;
+    }
+    const explore = screen.queryByRole('button', { name: 'Real Mars, tap to read' });
+    if (explore) {
+      fireEvent.click(explore);
+      const close = screen.queryByRole('button', { name: 'Close' });
+      if (close) fireEvent.click(close);
+      continue;
+    }
   }
   throw new Error('Tutorial did not reach its choice');
 }
@@ -61,10 +74,16 @@ describe('Sol 1 app integration', () => {
     ).toBeInTheDocument();
     first.unmount();
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Continue mission' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue Mission' }));
     expect(screen.getByText(/Air first! Breathing/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    const explore = screen.queryByRole('button', { name: 'Real Mars, tap to read' });
+    if (explore) {
+      fireEvent.click(explore);
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    } else {
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    }
     expect(
       screen.getByText(
         'Sol 1 is complete and saved. Sol 2 is not connected yet.',

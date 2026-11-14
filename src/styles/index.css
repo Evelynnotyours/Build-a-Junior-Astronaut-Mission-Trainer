@@ -25,6 +25,54 @@ body {
   margin: 0;
 }
 
+.app-scene {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-meter-readout {
+  position: fixed;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 30;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(12, 18, 28, 0.82);
+  color: #f4f1ea;
+  font-size: 0.85rem;
+}
+
+.app-caution {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(8, 12, 24, 0.55);
+  text-align: center;
+}
+
+.app-caution > div,
+.app-caution {
+  color: #f4f1ea;
+}
+
+.app-caution button {
+  min-height: 44px;
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: #2465be;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .mission-shell {
   display: grid;
   min-height: 100vh;

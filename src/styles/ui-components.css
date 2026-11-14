@@ -419,6 +419,32 @@
   object-fit: cover;
   object-position: center 55%;
   image-rendering: auto;
+  z-index: 0;
+}
+
+.ui-scene__props {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ui-scene__prop {
+  position: absolute;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+  user-select: none;
+  image-rendering: pixelated;
+  /* Knock out solid black sprite backdrops against the Mars vista */
+  mix-blend-mode: lighten;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
+}
+
+.ui-scene__prop.is-hidden {
+  display: none;
 }
 
 .ui-scene__building {

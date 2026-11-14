@@ -96,7 +96,7 @@ export function TitleScreen({
                 Keep current mission
               </button>
               <button type="button" className="title-btn title-btn--primary" onClick={onConfirmStart}>
-                Replace and start
+                Replace saved mission and start
               </button>
             </div>
           </div>

@@ -38,7 +38,7 @@ export function PlanScreen({
   const [roboLine, setRoboLine] = useState<string>(PLAN_COPY.welcome);
   const used = useMemo(() => cargoWeight(selected), [selected]);
   const briefing = SKY_BRIEFING[skyLevel];
-  const canLaunch = selected.length > 0 && used <= CARGO_BUDGET;
+  const canLaunch = used <= CARGO_BUDGET;
   const gain =
     selected.includes('solar_extra') && solarGainPreview === 12
       ? 15
@@ -81,7 +81,7 @@ export function PlanScreen({
         <header className="plan-top">
           <div>
             <p className="plan-eyebrow">Plan phase</p>
-            <h1>Pack the rocket</h1>
+            <h1>Pack your cargo</h1>
             <p className="plan-sub">{PLAN_COPY.alwaysIncluded}</p>
           </div>
           <div className="plan-sky">
@@ -90,6 +90,18 @@ export function PlanScreen({
               status={skyStatus}
               observationDate={observationDate}
             />
+            <p className="plan-sky__detail">
+              NASA input:{' '}
+              {skyStatus === 'live'
+                ? 'Live'
+                : skyStatus === 'cache'
+                  ? 'Cached'
+                  : skyStatus === 'saved'
+                    ? 'Saved'
+                    : 'Unavailable'}{' '}
+              · {skyLevel}
+              {observationDate ? ` · observed ${observationDate}` : ''}
+            </p>
           </div>
         </header>
 
@@ -145,7 +157,7 @@ export function PlanScreen({
             disabled={!canLaunch}
             onClick={launch}
           >
-            Launch!
+            Launch mission
           </button>
         </footer>
       </div>
