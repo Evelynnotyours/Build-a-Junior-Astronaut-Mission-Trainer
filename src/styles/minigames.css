@@ -774,3 +774,607 @@
     padding-top: 16%;
   }
 }
+
+/* Repair Wires */
+
+.mg-wires {
+  --mg-panel: rgba(18, 28, 48, 0.82);
+  --mg-line: rgba(120, 190, 255, 0.85);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  min-height: min(88vh, 720px);
+  padding: 0.65rem;
+  border-radius: 22px;
+  color: #f4f1ea;
+  background: linear-gradient(165deg, #0d1422 0%, #141018 100%);
+  border: 2px solid rgba(120, 190, 255, 0.22);
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+}
+
+.mg-wires--won {
+  box-shadow: 0 0 0 2px rgba(120, 190, 255, 0.35);
+}
+
+.mg-wires__hud {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+  justify-items: center;
+}
+
+.mg-wires__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 14px;
+  background: var(--mg-panel);
+  border: 2px solid var(--mg-line);
+  font-weight: 800;
+}
+
+.mg-wires__title-card {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  border-radius: 18px;
+  background: var(--mg-panel);
+  border: 2px solid var(--mg-line);
+}
+
+.mg-wires__title-card h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.mg-wires__title-card p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #d7e7ff;
+}
+
+.mg-wires__title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  border: 2px solid #0d1422;
+  background: url('/assets/minigames/wire_board.png') center / cover no-repeat;
+}
+
+.mg-wires__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: clamp(260px, 50vh, 460px);
+  padding: 0.5rem;
+  border-radius: 20px;
+  border: 3px solid #121820;
+  background: rgba(8, 12, 22, 0.55);
+}
+
+.mg-wires__board-wrap {
+  position: relative;
+  width: min(100%, 640px);
+  aspect-ratio: 320 / 180;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.mg-wires__board {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  image-rendering: pixelated;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.mg-wires__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mg-wires__line {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+}
+
+.mg-wires__line--pulse {
+  animation: mg-wire-glow 1.4s ease-in-out infinite;
+}
+
+.mg-wires__port {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 3.1rem;
+  min-height: 3.1rem;
+  padding: 0.2rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+  border-radius: 14px;
+  border: 3px solid #1a2538;
+  background: rgba(12, 18, 32, 0.92);
+  color: #f4f1ea;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 2px var(--mg-wire-color),
+    0 4px 0 #0a1020;
+}
+
+.mg-wires__port-symbol {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.mg-wires__port-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d7e7ff;
+}
+
+.mg-wires__port--idle:not(:disabled) {
+  animation: mg-wire-idle 2.2s ease-in-out infinite;
+}
+
+.mg-wires__port--selected {
+  outline: 3px solid #ffe27a;
+  outline-offset: 3px;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.mg-wires__port--focus {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 3px;
+}
+
+.mg-wires__port--linked {
+  opacity: 0.92;
+  cursor: default;
+  transform: translate(-50%, -50%) scale(0.96);
+  box-shadow:
+    0 0 0 2px var(--mg-wire-color),
+    0 0 12px var(--mg-wire-color);
+}
+
+.mg-wires__port:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 3px;
+}
+
+.mg-wires__port:disabled:not(.mg-wires__port--linked) {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.mg-wires__spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3rem;
+  height: 3rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  image-rendering: pixelated;
+  animation: mg-spark-pop 0.36s ease-out;
+}
+
+.mg-wires__toast {
+  margin: 0;
+  max-width: min(92%, 32rem);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(14, 20, 34, 0.85);
+  border: 1px solid rgba(120, 190, 255, 0.35);
+  text-align: center;
+  font-weight: 700;
+}
+
+.mg-wires__celebrate {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 12%;
+  transform: translateX(-50%);
+  padding: 0.9rem 1.2rem;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(16, 24, 40, 0.94);
+  border: 2px solid #7ec8ff;
+}
+
+.mg-wires__celebrate p {
+  margin: 0;
+  color: #ffe27a;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.mg-wires__celebrate span {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.mg-wires__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mg-wires__instruction {
+  margin: 0;
+  max-width: 40rem;
+  color: #d7e7ff;
+  font-size: 0.9rem;
+}
+
+.mg-wires__fallback {
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(20, 28, 44, 0.9);
+  border: 2px solid rgba(255, 160, 120, 0.5);
+}
+
+.mg-wires--nudge .mg-wires__board-wrap {
+  animation: mg-wire-nudge 0.42s ease-out;
+}
+
+@keyframes mg-wire-glow {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes mg-wire-idle {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes mg-wire-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes mg-spark-pop {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-wires__port--idle,
+  .mg-wires__line--pulse,
+  .mg-wires--nudge .mg-wires__board-wrap {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .mg-wires__hud {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-wires__port {
+    min-width: 2.85rem;
+    min-height: 2.85rem;
+  }
+
+  .mg-wires__port-label {
+    font-size: 0.5rem;
+  }
+}
+
+/* Patch Leak */
+
+.mg-leak {
+  --mg-panel: rgba(18, 28, 48, 0.82);
+  --mg-line: rgba(120, 190, 255, 0.85);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  min-height: min(88vh, 720px);
+  padding: 0.65rem;
+  border-radius: 22px;
+  color: #f4f1ea;
+  background: linear-gradient(165deg, #0d1422 0%, #12141c 100%);
+  border: 2px solid rgba(120, 190, 255, 0.22);
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+}
+
+.mg-leak--won {
+  box-shadow: 0 0 0 2px rgba(120, 190, 255, 0.35);
+}
+
+.mg-leak__hud {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+  justify-items: center;
+}
+
+.mg-leak__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 14px;
+  background: var(--mg-panel);
+  border: 2px solid var(--mg-line);
+  font-weight: 800;
+}
+
+.mg-leak__title-card {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  border-radius: 18px;
+  background: var(--mg-panel);
+  border: 2px solid var(--mg-line);
+}
+
+.mg-leak__title-card h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.mg-leak__title-card p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #d7e7ff;
+}
+
+.mg-leak__title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  border: 2px solid #0d1422;
+  background: url('/assets/minigames/air_module_cutaway.png') center / cover no-repeat;
+}
+
+.mg-leak__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: clamp(260px, 50vh, 460px);
+  padding: 0.5rem;
+  border-radius: 20px;
+  border: 3px solid #121820;
+  background: rgba(8, 12, 22, 0.55);
+}
+
+.mg-leak__module-wrap {
+  position: relative;
+  width: min(100%, 640px);
+  aspect-ratio: 320 / 180;
+  border-radius: 12px;
+}
+
+.mg-leak__module {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  image-rendering: pixelated;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.mg-leak__spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 3.4rem;
+  min-height: 3.4rem;
+  padding: 0.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  background: rgba(8, 14, 28, 0.55);
+  cursor: pointer;
+  font: inherit;
+  color: #f4f1ea;
+}
+
+.mg-leak__spot--open {
+  border-color: rgba(255, 140, 120, 0.75);
+  box-shadow: 0 0 0 2px rgba(255, 120, 90, 0.25);
+}
+
+.mg-leak__spot--open.mg-leak__spot--hiss {
+  animation: mg-leak-wobble 2.4s ease-in-out infinite;
+}
+
+.mg-leak__spot--patched {
+  border-color: rgba(120, 220, 160, 0.85);
+  background: rgba(12, 28, 22, 0.72);
+  cursor: default;
+  box-shadow: 0 0 12px rgba(100, 220, 150, 0.35);
+}
+
+.mg-leak__spot--focus {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 3px;
+}
+
+.mg-leak__spot:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 3px;
+}
+
+.mg-leak__spot:disabled {
+  opacity: 0.95;
+}
+
+.mg-leak__marker {
+  width: 2rem;
+  height: 2rem;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.mg-leak__spot-tag {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #d7e7ff;
+}
+
+.mg-leak__hiss {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.45rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  pointer-events: none;
+  image-rendering: pixelated;
+  animation: mg-leak-hiss 0.38s ease-out;
+}
+
+.mg-leak__toast {
+  margin: 0;
+  max-width: min(92%, 32rem);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(14, 20, 34, 0.85);
+  border: 1px solid rgba(120, 190, 255, 0.35);
+  text-align: center;
+  font-weight: 700;
+}
+
+.mg-leak__celebrate {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 12%;
+  transform: translateX(-50%);
+  padding: 0.9rem 1.2rem;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(16, 24, 40, 0.94);
+  border: 2px solid #7ec8ff;
+}
+
+.mg-leak__celebrate p {
+  margin: 0;
+  color: #ffe27a;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.mg-leak__celebrate span {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.mg-leak__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mg-leak__instruction {
+  margin: 0;
+  max-width: 40rem;
+  color: #d7e7ff;
+  font-size: 0.9rem;
+}
+
+.mg-leak__fallback {
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(20, 28, 44, 0.9);
+  border: 2px solid rgba(255, 160, 120, 0.5);
+}
+
+@keyframes mg-leak-wobble {
+  0%,
+  100% {
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% - 2px));
+  }
+}
+
+@keyframes mg-leak-hiss {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-leak__spot--hiss,
+  .mg-leak__hiss {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .mg-leak__hud {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-leak__spot {
+    min-width: 3rem;
+    min-height: 3rem;
+  }
+
+  .mg-leak__marker {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
