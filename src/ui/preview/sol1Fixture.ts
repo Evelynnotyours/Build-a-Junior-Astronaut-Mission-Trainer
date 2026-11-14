@@ -84,14 +84,21 @@ export function contentForStep(
               ? 'The ping reached Earth. A little power was used for the radio.'
               : 'Systems check complete. The outpost is awake and ready.',
       };
-    case 'real_card':
+    case 'real_card': {
+      // Prefer resolveRealCard in App; preview falls back to catalog if present.
       return {
         realCard: {
           title: 'Gale Crater',
-          fact: 'Gale Crater is a giant bowl on Mars with a mountain in the middle.',
-          sourceLabel: 'Fixture only — Member 3 verifies before release.',
+          fact: 'Gale Crater is a giant bowl on Mars about 154 km (96 miles) wide!',
+          sourceLabel: 'NASA Mars Exploration · Gale Crater',
+          photoSrc: '/assets/photos/sol1-gale-crater.jpg',
+          photoAlt:
+            'Layered rocky slopes and small buttes near the base of Mount Sharp, with a dark foreground.',
+          photoCredit: 'NASA/JPL-Caltech/MSSS',
+          savedLabel: 'Saved photo',
         },
       };
+    }
     default:
       return {};
   }

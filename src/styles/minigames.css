@@ -503,16 +503,46 @@
 .mg-panels {
   --mg-panel: rgba(18, 28, 48, 0.82);
   --mg-line: rgba(120, 190, 255, 0.85);
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 0.65rem;
+  gap: 0.55rem;
   min-height: min(88vh, 720px);
   padding: 0.65rem;
   border-radius: 22px;
   color: #f4f1ea;
-  background: linear-gradient(165deg, #0d1422 0%, #1a120e 100%);
+  background: #1a120e;
   border: 2px solid rgba(120, 190, 255, 0.22);
   font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  overflow: hidden;
+}
+
+/* Full-bleed Mars landscape behind HUD, stage, and footer */
+.mg-panels::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('/assets/bg/sky_dust.png') center 55% / cover no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.mg-panels::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 70% 18%, rgba(210, 140, 80, 0.2), transparent 42%),
+    linear-gradient(180deg, rgba(12, 16, 28, 0.18), transparent 30%, rgba(12, 16, 28, 0.28) 100%);
+  pointer-events: none;
+}
+
+.mg-panels > * {
+  position: relative;
+  z-index: 1;
 }
 
 .mg-panels--won {
@@ -571,40 +601,9 @@
 .mg-panels__stage {
   position: relative;
   min-height: clamp(280px, 52vh, 480px);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 3px solid #121820;
-}
-
-.mg-panels__vista {
-  position: absolute;
-  inset: 0;
-}
-
-.mg-panels__vista img {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  object-fit: cover;
-}
-
-.mg-panels__vista img:first-child {
-  top: 0;
-  height: 42%;
-}
-
-.mg-panels__ground {
-  top: 28% !important;
-  height: 78% !important;
-}
-
-.mg-panels__haze {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 70% 20%, rgba(210, 140, 80, 0.28), transparent 40%),
-    linear-gradient(180deg, rgba(12, 16, 28, 0.2), transparent 35%);
-  pointer-events: none;
+  border-radius: 18px;
+  overflow: visible;
+  background: transparent;
 }
 
 .mg-panels__field {
@@ -615,7 +614,7 @@
   gap: clamp(0.45rem, 2vw, 1rem);
   align-content: center;
   height: 100%;
-  padding: 12% 6% 10%;
+  padding: 8% 4% 8%;
 }
 
 .mg-panels__slot {

@@ -8,7 +8,7 @@ type DialogueBoxProps = SpeakerPortrait & {
   continueLabel?: string;
 };
 
-/** Character speech bubble. Parent passes resolved story text, never hard-coded keys here. */
+/** Character dialogue — dark translucent panel + gold double border (reference). */
 export function DialogueBox({
   speakerName,
   text,
@@ -18,13 +18,15 @@ export function DialogueBox({
 }: DialogueBoxProps) {
   return (
     <section className="ui-dialogue" aria-label={`${speakerName} says`}>
-      <Portrait {...portrait} alt="" />
+      <div className="ui-dialogue__speaker" aria-hidden="true">
+        <Portrait {...portrait} size="hero" alt="" />
+      </div>
       <div className="ui-dialogue__bubble">
         <header className="ui-dialogue__name">{speakerName}</header>
         <p className="ui-dialogue__text">{text}</p>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={onContinue}>
+        <button type="button" className="ui-dialogue__continue" onClick={onContinue}>
           {continueLabel}
-          <span aria-hidden="true"> ›</span>
+          <span aria-hidden="true"> ››</span>
         </button>
       </div>
     </section>

@@ -5,6 +5,7 @@ export { CargoCard } from './CargoCard';
 export { ChoicePanel } from './ChoicePanel';
 export { Commander } from './Commander';
 export { DialogueBox } from './DialogueBox';
+export { EventAlert } from './EventAlert';
 export { Hotspot } from './Hotspot';
 export { Meters } from './Meters';
 export { NarrationCard } from './NarrationCard';

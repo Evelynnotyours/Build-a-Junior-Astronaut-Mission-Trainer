@@ -1,3 +1,4 @@
+import { meterZone } from '../../engine/resources';
 import type { MeterId, Meters as MeterValues } from '../../engine/types';
 
 const METER_LABELS: Record<MeterId, string> = {
@@ -35,8 +36,16 @@ export function Meters({
       {(Object.keys(METER_LABELS) as MeterId[]).map((id) => {
         const value = clampMeter(values[id]);
         const from = previous?.[id];
+        const zone = meterZone(values[id]);
         return (
-          <div key={id} className="ui-meter" data-meter={id}>
+          <div
+            key={id}
+            className={
+              zone === 'ok' ? 'ui-meter' : `ui-meter ui-meter--${zone}`
+            }
+            data-meter={id}
+            data-zone={zone}
+          >
             <span className="ui-meter__icon" aria-hidden="true">
               {METER_GLYPH[id]}
             </span>
@@ -50,11 +59,13 @@ export function Meters({
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={value}
-              aria-label={METER_LABELS[id]}
+              aria-label={`${METER_LABELS[id]}${zone === 'ok' ? '' : `, ${zone}`}`}
             >
               <div
                 className={
-                  reduceMotion ? 'ui-meter__fill' : 'ui-meter__fill ui-meter__fill--animated'
+                  reduceMotion
+                    ? 'ui-meter__fill'
+                    : 'ui-meter__fill ui-meter__fill--animated'
                 }
                 style={{
                   width: `${value}%`,

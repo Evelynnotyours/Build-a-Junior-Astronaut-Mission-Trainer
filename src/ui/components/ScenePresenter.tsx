@@ -32,11 +32,12 @@ export type ResolvedSceneContent = {
     title: string;
     fact: string;
     sourceLabel: string;
+    sourceUrl?: string;
     photoSrc?: string;
     photoAlt?: string;
     photoCredit?: string;
     mediaLabel?: string;
-    sourceUrl?: string;
+    savedLabel?: string;
     photoSourceUrl?: string;
     photoCaption?: string;
     contextNote?: string;
@@ -85,7 +86,7 @@ function ScenePresenterFrame({
   settings,
   backdropSrc,
   showBuildings,
-  commanderStart = { x: 50, y: 78 },
+  commanderStart = { x: 48, y: 68 },
   moodTintClassName,
   roverObstacleBlocking = true,
   eventEffects,

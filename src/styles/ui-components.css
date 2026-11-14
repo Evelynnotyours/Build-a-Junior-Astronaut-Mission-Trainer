@@ -222,39 +222,68 @@
 
 .ui-game__dock {
   position: absolute;
-  z-index: 4;
-  left: 0.7rem;
-  right: 0.7rem;
+  z-index: 5;
+  left: 50%;
   bottom: 0.7rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) auto;
+  transform: translateX(-50%);
+  width: min(56rem, calc(100% - 1.4rem));
+  max-height: min(78vh, 34rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   gap: 0.65rem;
-  align-items: end;
   pointer-events: none;
+  overflow: visible;
+  padding-inline: 0.35rem;
+  box-sizing: border-box;
 }
 
 .ui-game__dock > * {
   pointer-events: auto;
+  width: 100%;
+  max-width: min(40rem, 100%);
+  margin-inline: auto;
 }
 
 .ui-game__dock-row,
 .ui-game__dock-stack,
 .ui-preview__plan {
-  grid-column: 1 / -1;
+  width: 100%;
+  max-width: min(48rem, 100%);
 }
 
 .ui-game__dock .ui-speech,
-.ui-game__dock .ui-dialogue,
-.ui-game__dock .ui-after,
 .ui-game__dock .ui-banner,
-.ui-game__dock .ui-real-mars,
 .ui-game__dock .ui-real-mars-badge {
   max-width: min(36rem, 100%);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
+.ui-game__dock .ui-dialogue {
+  max-width: min(52rem, 100%);
+  width: 100%;
+}
+
+.ui-game__dock .ui-real-mars {
+  max-width: min(28rem, 100%);
+  max-height: min(62vh, 28rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* Center photo / Real Mars cards in the middle of the stage */
+.ui-game__dock:has(.ui-real-mars) {
+  top: 58%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  justify-content: center;
+  max-height: min(64vh, 30rem);
+}
+
 .ui-game__dock .ui-btn--cta {
-  justify-self: end;
+  align-self: end;
 }
 
 .ui-btn {
@@ -360,6 +389,267 @@
   background: currentColor;
 }
 
+.ui-meter--low {
+  outline: 1px solid rgba(255, 196, 80, 0.85);
+  border-radius: 10px;
+}
+
+.ui-meter--danger,
+.ui-meter--empty {
+  outline: 2px solid rgba(255, 96, 96, 0.95);
+  border-radius: 10px;
+  animation: ui-meter-pulse 1.2s ease-in-out infinite;
+}
+
+.ui-meter--empty .ui-meter__value {
+  color: #ffb4b4;
+  font-weight: 800;
+}
+
+@keyframes ui-meter-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+.ui-game__warn,
+.ui-game__alert {
+  position: absolute;
+  left: 50%;
+  top: 4.75rem;
+  z-index: 6;
+  transform: translateX(-50%);
+  width: min(40rem, calc(100% - 2rem));
+  pointer-events: none;
+  display: grid;
+  justify-items: center;
+}
+
+.ui-game__warn {
+  width: min(28rem, calc(100% - 2rem));
+}
+
+.ui-game__alert + .ui-game__warn {
+  top: 8.6rem;
+}
+
+/* Event / hazard alert — matches sci-fi HUD reference */
+.ui-event-alert {
+  --alert-glow: #ff3b1a;
+  --alert-fill: rgba(72, 6, 6, 0.82);
+  --alert-ink: #ff5a2a;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 38rem;
+  padding: 0.55rem 1.55rem 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--alert-fill);
+  border: 2.5px solid var(--alert-glow);
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(255, 80, 40, 0.35),
+    0 0 18px rgba(255, 40, 20, 0.55),
+    inset 0 0 24px rgba(255, 30, 10, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+.ui-event-alert--solar {
+  --alert-glow: #ff7a18;
+  --alert-fill: rgba(70, 22, 0, 0.82);
+  --alert-ink: #ff8a2a;
+}
+
+.ui-event-alert--cold {
+  --alert-glow: #4ec8ff;
+  --alert-fill: rgba(8, 28, 56, 0.84);
+  --alert-ink: #7ad8ff;
+  box-shadow:
+    0 0 0 1px rgba(80, 180, 255, 0.35),
+    0 0 18px rgba(40, 140, 255, 0.5),
+    inset 0 0 24px rgba(40, 120, 255, 0.18);
+}
+
+.ui-event-alert--meteors {
+  --alert-glow: #ffb020;
+  --alert-fill: rgba(56, 24, 0, 0.84);
+  --alert-ink: #ffc040;
+}
+
+.ui-event-alert--critical {
+  --alert-glow: #ff2040;
+  --alert-fill: rgba(64, 0, 12, 0.86);
+  --alert-ink: #ff4060;
+}
+
+.ui-event-alert__stripes {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  gap: 4px;
+  height: 68%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ui-event-alert__stripes--left {
+  left: -14px;
+  flex-direction: row;
+}
+
+.ui-event-alert__stripes--right {
+  right: -14px;
+  flex-direction: row-reverse;
+}
+
+.ui-event-alert__stripes span {
+  display: block;
+  width: 7px;
+  height: 100%;
+  background: var(--alert-glow);
+  border-radius: 1px;
+  box-shadow: 0 0 8px var(--alert-glow);
+  transform: skewX(-28deg);
+  opacity: 0.95;
+}
+
+.ui-event-alert__stripes--right span {
+  transform: skewX(28deg);
+}
+
+.ui-event-alert__icon {
+  flex: 0 0 auto;
+  color: var(--alert-ink);
+  filter: drop-shadow(0 0 6px var(--alert-glow));
+  line-height: 0;
+}
+
+.ui-event-alert__triangle,
+.ui-event-alert__bang {
+  filter: drop-shadow(0 0 4px var(--alert-glow));
+}
+
+.ui-event-alert__copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.ui-event-alert__title {
+  margin: 0;
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: var(--alert-ink);
+  text-shadow:
+    0 0 8px rgba(255, 60, 20, 0.85),
+    0 0 16px rgba(255, 40, 10, 0.45);
+}
+
+.ui-event-alert--cold .ui-event-alert__title {
+  text-shadow:
+    0 0 8px rgba(80, 180, 255, 0.85),
+    0 0 16px rgba(40, 140, 255, 0.45);
+}
+
+.ui-event-alert__body {
+  margin: 0;
+  font-size: clamp(0.78rem, 1.8vw, 0.92rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ui-event-alert--pulse {
+  animation: ui-event-alert-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ui-event-alert-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 80, 40, 0.35),
+      0 0 18px rgba(255, 40, 20, 0.55),
+      inset 0 0 24px rgba(255, 30, 10, 0.18);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(255, 80, 40, 0.55),
+      0 0 28px rgba(255, 40, 20, 0.8),
+      inset 0 0 28px rgba(255, 30, 10, 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-event-alert--pulse {
+    animation: none;
+  }
+}
+
+.ui-mood--dust {
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(210, 140, 70, 0.28),
+    transparent 65%
+  );
+}
+
+.ui-mood--solar,
+.ui-mood--amber {
+  background: radial-gradient(
+    ellipse at 70% 10%,
+    rgba(255, 180, 60, 0.32),
+    transparent 60%
+  );
+}
+
+.ui-mood--red {
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    rgba(255, 70, 70, 0.28),
+    transparent 55%
+  );
+}
+
+.ui-mood--cold {
+  background: radial-gradient(
+    ellipse at 40% 80%,
+    rgba(140, 200, 255, 0.22),
+    transparent 60%
+  );
+}
+
+.ui-mood--meteors {
+  background: radial-gradient(
+    ellipse at 80% 15%,
+    rgba(255, 220, 160, 0.2),
+    transparent 50%
+  );
+}
+
+.ui-mood--dusk {
+  background: linear-gradient(
+    180deg,
+    rgba(40, 20, 60, 0.22),
+    transparent 45%
+  );
+}
+
+.ui-mood--dawn {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255, 200, 120, 0.25),
+    transparent 55%
+  );
+}
+
 .ui-meter__fill--animated {
   transition: width 0.6s ease;
 }
@@ -413,13 +703,21 @@
   object-fit: fill;
   pointer-events: none;
   user-select: none;
+  image-rendering: pixelated;
 }
 
 .ui-scene__backdrop {
   object-fit: cover;
+  /* Keep road + mid-ground visible; buildings sit in this band */
   object-position: center 55%;
-  image-rendering: auto;
+  image-rendering: pixelated;
   z-index: 0;
+}
+
+/* Weather / event sky crossfade — opacity driven by SceneBackdrop timer */
+.ui-scene__backdrop--fade {
+  z-index: 1;
+  opacity: 0;
 }
 
 .ui-scene__props {
@@ -438,9 +736,17 @@
   pointer-events: none;
   user-select: none;
   image-rendering: pixelated;
-  /* Knock out solid black sprite backdrops against the Mars vista */
+  /* Knock out solid black sprite mattes on sky landscapes */
   mix-blend-mode: lighten;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  /* Bottom-center foot anchor (left/bottom set in JS as %) */
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+}
+
+.ui-scene__prop--rock {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 }
 
 .ui-scene__prop.is-hidden {
@@ -464,6 +770,11 @@
   inset: 0;
   pointer-events: none;
   z-index: 4;
+}
+
+.ui-overlay__tint {
+  position: absolute;
+  inset: 0;
 }
 
 .ui-overlay__frost {
@@ -524,6 +835,11 @@
   .ui-meter__fill--animated {
     transition: none;
   }
+
+  .ui-meter--danger,
+  .ui-meter--empty {
+    animation: none;
+  }
 }
 
 .ui-commander {
@@ -570,10 +886,6 @@
   background-size: 24px 32px;
 }
 
-.ui-narration,
-.ui-dialogue,
-.ui-after,
-.ui-real-mars,
 .ui-banner {
   display: grid;
   gap: 0.65rem;
@@ -584,10 +896,30 @@
   color: var(--ui-ink);
 }
 
+.ui-real-mars {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 1rem 1rem;
+  border-radius: 18px;
+  background: rgba(28, 18, 12, 0.92);
+  border: 2px solid rgba(232, 145, 58, 0.75);
+  color: #fff8ef;
+  box-shadow:
+    0 0 0 1px rgba(255, 170, 60, 0.25),
+    0 0 18px rgba(232, 120, 40, 0.35);
+}
+
 .ui-speech {
+  display: grid;
   grid-template-columns: auto 1fr;
+  gap: 0.65rem;
   align-items: end;
   position: relative;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 248, 239, 0.96);
+  border: 2px solid rgba(20, 24, 32, 0.55);
+  color: var(--ui-ink);
 }
 
 .ui-speech__body {
@@ -596,13 +928,71 @@
   justify-items: start;
 }
 
+/*
+ * Dialogue panel — white fill, gold double border,
+ * pill nameplate on top-left, Continue pill bottom-right.
+ */
 .ui-dialogue {
-  grid-template-columns: auto 1fr;
-  align-items: start;
+  --dialogue-fill: #ffffff;
+  --dialogue-inner: #c45a1a;
+  --dialogue-gold: #f0c419;
+  --dialogue-gold-soft: rgba(240, 180, 40, 0.45);
+  --dialogue-ink: #1a1410;
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.9rem 0 0 clamp(6rem, 15vw, 9.5rem);
+  background: transparent;
+  border: none;
+  color: var(--dialogue-ink);
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.ui-dialogue--solo {
+  padding-left: 0;
+}
+
+.ui-dialogue__speaker {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  bottom: 0.15rem;
+  max-width: clamp(6.5rem, 16vw, 10rem);
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
+.ui-dialogue__bubble {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name name'
+    'text cta';
+  gap: 0.55rem 1rem;
+  align-items: end;
+  min-height: clamp(5.75rem, 17vh, 8rem);
+  max-height: min(30vh, 12rem);
+  padding: 1.35rem 1.35rem 1rem 1.5rem;
+  background: var(--dialogue-fill);
+  border: 3px solid var(--dialogue-inner);
+  border-radius: 22px;
+  color: var(--dialogue-ink);
+  box-shadow:
+    0 0 0 2px var(--dialogue-gold),
+    0 0 0 3px rgba(196, 90, 26, 0.35),
+    0 0 18px var(--dialogue-gold-soft),
+    0 14px 32px rgba(0, 0, 0, 0.28);
+  overflow: visible;
 }
 
 .ui-portrait {
+  display: block;
   object-fit: contain;
+  object-position: bottom center;
   image-rendering: auto;
   background: rgba(255, 255, 255, 0.65);
   border-radius: 14px;
@@ -621,19 +1011,88 @@
   width: 96px;
   height: 96px;
 }
-
-.ui-dialogue__name {
-  font-weight: 800;
-  margin-bottom: 0.25rem;
-  color: #8a4b12;
+.ui-portrait--hero {
+  width: clamp(6.75rem, 17vw, 10rem);
+  height: clamp(8.5rem, 26vh, 12.5rem);
+  max-width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
-.ui-dialogue__text,
-.ui-narration__text,
-.ui-after__text {
+.ui-portrait--hero.ui-portrait--robo {
+  image-rendering: pixelated;
+}
+
+.ui-dialogue__name {
+  grid-area: name;
+  justify-self: start;
+  position: absolute;
+  z-index: 2;
+  top: -0.95rem;
+  left: 1.15rem;
   margin: 0;
-  line-height: 1.4;
-  font-size: 1rem;
+  padding: 0.28rem 1rem;
+  width: fit-content;
+  max-width: 75%;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #fff8ef;
+  background: #8a4b12;
+  border: 2px solid var(--dialogue-inner);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 1.5px var(--dialogue-gold),
+    0 0 10px var(--dialogue-gold-soft);
+}
+
+.ui-dialogue__text {
+  grid-area: text;
+  position: relative;
+  z-index: 1;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  line-height: 1.45;
+  font-size: clamp(1rem, 2.1vw, 1.18rem);
+  font-weight: 700;
+  color: var(--dialogue-ink);
+  overflow: auto;
+  max-height: min(16vh, 6.75rem);
+}
+
+.ui-dialogue__continue {
+  grid-area: cta;
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  appearance: none;
+  white-space: nowrap;
+  min-height: 2.55rem;
+  padding: 0.4rem 1.15rem;
+  border-radius: 999px;
+  border: 2.5px solid var(--dialogue-inner);
+  background: linear-gradient(180deg, #ffe066 0%, var(--dialogue-gold) 100%);
+  color: #2a1a00;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(196, 90, 26, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.ui-dialogue__continue:hover,
+.ui-dialogue__continue:focus-visible {
+  background: linear-gradient(180deg, #fff0a0 0%, #ffd24a 100%);
+  color: #1a1000;
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgba(196, 90, 26, 0.65),
+    0 0 16px rgba(240, 180, 40, 0.55);
 }
 
 .ui-choices {
@@ -703,18 +1162,70 @@
 .ui-real-mars__header h2 {
   margin: 0;
   font-size: 1.05rem;
+  color: #ffe8a3;
 }
 
 .ui-real-mars__tag {
   font-size: 0.75rem;
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
-  background: #d9e8f5;
+  background: rgba(255, 180, 80, 0.2);
+  color: #ffe8a3;
+  border: 1px solid rgba(255, 180, 80, 0.35);
+}
+
+.ui-real-mars__figure {
+  margin: 0;
+  width: 100%;
+  max-height: min(34vh, 12.5rem);
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .ui-real-mars__figure img {
-  max-width: 100%;
+  display: block;
+  width: 100%;
+  max-height: min(34vh, 12.5rem);
+  height: auto;
+  object-fit: contain;
+  object-position: center;
   border-radius: 8px;
+}
+
+.ui-real-mars__figure figcaption {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(255, 248, 239, 0.7);
+}
+
+.ui-real-mars__fact,
+.ui-real-mars__source,
+.ui-real-mars__missing {
+  margin: 0;
+  color: #fff8ef;
+  line-height: 1.35;
+}
+
+.ui-real-mars__note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 232, 180, 0.85);
+  line-height: 1.35;
+}
+
+.ui-real-mars__link {
+  font-weight: 800;
+  color: #7ec8ff;
+  width: fit-content;
+}
+
+.ui-real-mars .ui-btn {
+  justify-self: center;
+  min-width: 8rem;
+  background: rgba(255, 232, 163, 0.95);
+  color: #2a1a00;
+  border-color: rgba(0, 0, 0, 0.25);
 }
 
 .ui-photo-frame__mat {
@@ -860,11 +1371,68 @@
   }
 
   .ui-game__dock {
+    width: min(56rem, calc(100% - 1rem));
+    max-height: min(72vh, 30rem);
+  }
+
+  .ui-speech {
     grid-template-columns: 1fr;
   }
 
-  .ui-dialogue,
-  .ui-speech {
+  .ui-dialogue {
+    padding: clamp(4.75rem, 22vw, 6.25rem) 0 0;
+  }
+
+  .ui-dialogue--solo {
+    padding-top: 0.85rem;
+  }
+
+  .ui-dialogue__speaker {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: auto;
+    top: 0;
+  }
+
+  .ui-portrait--hero {
+    width: clamp(5.75rem, 30vw, 8rem);
+    height: clamp(7.25rem, 26vw, 10rem);
+  }
+
+  .ui-dialogue__bubble {
+    width: 100%;
+    padding: 1.45rem 1.15rem 1rem;
+    max-height: none;
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'name'
+      'text'
+      'cta';
+  }
+
+  .ui-dialogue__name {
+    position: relative;
+    top: 0;
+    left: 0;
+    justify-self: center;
+    margin-bottom: 0.2rem;
+  }
+
+  .ui-dialogue__text {
+    text-align: center;
+    max-height: min(22vh, 8rem);
+  }
+
+  .ui-dialogue__continue {
+    justify-self: center;
+  }
+
+  .ui-game__dock .ui-real-mars {
+    max-height: min(62vh, 26rem);
+  }
+
+  .ui-real-mars__figure,
+  .ui-real-mars__figure img {
+    max-height: min(28vh, 10rem);
   }
 }

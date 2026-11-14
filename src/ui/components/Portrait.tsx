@@ -2,7 +2,7 @@ import type { CrewExpression, RoboExpression, SpeakerPortrait } from '../../engi
 
 type PortraitProps = SpeakerPortrait & {
   alt?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'hero';
 };
 
 const ROBO: Record<RoboExpression, string> = {
@@ -43,7 +43,7 @@ export function Portrait({ alt, size = 'md', ...portrait }: PortraitProps) {
   const label = alt ?? `${portrait.speaker} ${portrait.expression}`;
   return (
     <img
-      className={`ui-portrait ui-portrait--${size}`}
+      className={`ui-portrait ui-portrait--${size}${portrait.speaker === 'robo' ? ' ui-portrait--robo' : ''}`}
       src={portraitSrc(portrait)}
       alt={label}
       draggable={false}
