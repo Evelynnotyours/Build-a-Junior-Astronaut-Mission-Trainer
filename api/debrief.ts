@@ -17,7 +17,7 @@ export default async function handler(
     (typeof req.headers['x-forwarded-for'] === 'string'
       ? req.headers['x-forwarded-for'].split(',')[0]
       : undefined) ??
-  req.socket?.remoteAddress ??
+    req.socket?.remoteAddress ??
     'anonymous';
 
   const result = await handleDebriefPost(req.body, clientKey, req.query);

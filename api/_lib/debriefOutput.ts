@@ -1,7 +1,8 @@
 import type { DebriefResponse } from '../../src/engine/contracts';
 
 const URL_PATTERN = /https?:\/\/|www\./i;
-const BLOCKED_WORDS = /\b(died|death|kill|killed|blood|stupid|idiot|damn|hell)\b/i;
+const BLOCKED_WORDS =
+  /\b(died|death|kill|killed|blood|stupid|idiot|damn|hell)\b/i;
 
 export interface OutputAcceptance {
   ok: true;

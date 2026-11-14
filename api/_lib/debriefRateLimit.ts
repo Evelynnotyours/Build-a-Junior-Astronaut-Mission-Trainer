@@ -12,7 +12,10 @@ export function clearDebriefRateLimits(): void {
   ipBuckets.clear();
 }
 
-export function checkDebriefRateLimit(clientKey: string, now = Date.now()): boolean {
+export function checkDebriefRateLimit(
+  clientKey: string,
+  now = Date.now(),
+): boolean {
   const key = clientKey.trim() || 'anonymous';
   const state = ipBuckets.get(key);
   if (!state || now - state.windowStart >= WINDOW_MS) {

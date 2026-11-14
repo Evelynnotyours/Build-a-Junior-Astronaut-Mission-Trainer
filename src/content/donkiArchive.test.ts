@@ -31,7 +31,11 @@ describe('donkiArchive.json', () => {
 
   it('rejects invented or malformed archive payloads', () => {
     expect(() => parseDonkiArchiveFile({ events: [] })).toThrow();
-    expect(() => parseDonkiArchiveFile({ events: [{ id: 'x', type: 'FLR', level: 'bogus' }] })).toThrow();
+    expect(() =>
+      parseDonkiArchiveFile({
+        events: [{ id: 'x', type: 'FLR', level: 'bogus' }],
+      }),
+    ).toThrow();
   });
 
   it('validates each event level against NASA classification rules', () => {
@@ -44,8 +48,14 @@ describe('donkiArchive registration', () => {
     resetSkyServiceState();
     registerDonkiArchive(getBundledDonkiArchive());
 
-    const first = pickArchivedResponse('2026-11-14', Date.parse('2026-11-14T12:00:00.000Z'));
-    const second = pickArchivedResponse('2026-11-14', Date.parse('2026-11-14T18:00:00.000Z'));
+    const first = pickArchivedResponse(
+      '2026-11-14',
+      Date.parse('2026-11-14T12:00:00.000Z'),
+    );
+    const second = pickArchivedResponse(
+      '2026-11-14',
+      Date.parse('2026-11-14T18:00:00.000Z'),
+    );
     expect(first?.event?.id).toBe(second?.event?.id);
     expect(first?.source).toBe('saved');
     expect(first?.event?.sourceUrl).toMatch(/^https:\/\//);

@@ -66,7 +66,8 @@ export interface SkyClassificationFailure {
   reason: SkyInputIssue;
 }
 
-export type SkyClassificationResult = SkyClassificationSuccess | SkyClassificationFailure;
+export type SkyClassificationResult =
+  SkyClassificationSuccess | SkyClassificationFailure;
 
 export class SkyClassificationError extends Error {
   readonly reason: SkyInputIssue;
@@ -108,7 +109,9 @@ function channelState(value: unknown): ChannelState {
 }
 
 /** Requires all three DONKI channels to be present as arrays (empty allowed). */
-export function validateDonkiObservationSet(input: DonkiObservationSet): SkyInputIssue | null {
+export function validateDonkiObservationSet(
+  input: DonkiObservationSet,
+): SkyInputIssue | null {
   if (!isRecord(input)) return 'invalid_shape';
 
   const states = [
@@ -122,7 +125,10 @@ export function validateDonkiObservationSet(input: DonkiObservationSet): SkyInpu
   return null;
 }
 
-function readString(record: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readString(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const v = record[key];
     if (typeof v === 'string' && v.trim() !== '') return v.trim();
@@ -130,7 +136,10 @@ function readString(record: Record<string, unknown>, ...keys: string[]): string 
   return undefined;
 }
 
-function readNumber(record: Record<string, unknown>, key: string): number | undefined {
+function readNumber(
+  record: Record<string, unknown>,
+  key: string,
+): number | undefined {
   const v = record[key];
   if (typeof v === 'number' && Number.isFinite(v)) return v;
   if (typeof v === 'string' && v.trim() !== '') {
@@ -140,12 +149,20 @@ function readNumber(record: Record<string, unknown>, key: string): number | unde
   return undefined;
 }
 
-function parseFlareClassLetter(classType: unknown): 'X' | 'M' | 'C' | 'B' | 'A' | null {
+function parseFlareClassLetter(
+  classType: unknown,
+): 'X' | 'M' | 'C' | 'B' | 'A' | null {
   if (typeof classType !== 'string') return null;
   const trimmed = classType.trim();
   if (!trimmed) return null;
   const letter = trimmed.charAt(0).toUpperCase();
-  if (letter === 'X' || letter === 'M' || letter === 'C' || letter === 'B' || letter === 'A') {
+  if (
+    letter === 'X' ||
+    letter === 'M' ||
+    letter === 'C' ||
+    letter === 'B' ||
+    letter === 'A'
+  ) {
     return letter;
   }
   return null;
@@ -183,7 +200,10 @@ function bestCmeSpeed(
   return { speed: bestSpeed, sourceUrl: bestLink };
 }
 
-function classifyFlareRecord(raw: unknown): { level: SkyLevel | null; event?: ClassifiedDonkiEvent } {
+function classifyFlareRecord(raw: unknown): {
+  level: SkyLevel | null;
+  event?: ClassifiedDonkiEvent;
+} {
   if (!isRecord(raw)) return { level: null };
 
   const classType = raw.classType;
@@ -212,11 +232,15 @@ function classifyFlareRecord(raw: unknown): { level: SkyLevel | null; event?: Cl
   };
 }
 
-function classifyCmeRecord(raw: unknown): { level: SkyLevel | null; event?: ClassifiedDonkiEvent } {
+function classifyCmeRecord(raw: unknown): {
+  level: SkyLevel | null;
+  event?: ClassifiedDonkiEvent;
+} {
   if (!isRecord(raw)) return { level: null };
 
   const speedInfo = bestCmeSpeed(raw);
-  if (speedInfo === undefined || speedInfo.speed < FAST_CME_SPEED_KM_S) return { level: null };
+  if (speedInfo === undefined || speedInfo.speed < FAST_CME_SPEED_KM_S)
+    return { level: null };
 
   const eventDate = readString(raw, 'time21_5', 'startTime', 'activityID');
   const eventId = readString(raw, 'associatedCMEID', 'activityID', 'cmeID');
@@ -239,7 +263,10 @@ function classifyCmeRecord(raw: unknown): { level: SkyLevel | null; event?: Clas
   };
 }
 
-function classifySepRecord(raw: unknown): { level: SkyLevel | null; event?: ClassifiedDonkiEvent } {
+function classifySepRecord(raw: unknown): {
+  level: SkyLevel | null;
+  event?: ClassifiedDonkiEvent;
+} {
   if (!isRecord(raw)) return { level: null };
 
   const eventDate = readString(raw, 'eventTime');
@@ -300,7 +327,9 @@ function dedupeKey(event: ClassifiedDonkiEvent): string {
   ].join('|');
 }
 
-function dedupeQualifying(events: ClassifiedDonkiEvent[]): ClassifiedDonkiEvent[] {
+function dedupeQualifying(
+  events: ClassifiedDonkiEvent[],
+): ClassifiedDonkiEvent[] {
   const seen = new Set<string>();
   const out: ClassifiedDonkiEvent[] = [];
   for (const event of events) {
@@ -312,7 +341,9 @@ function dedupeQualifying(events: ClassifiedDonkiEvent[]): ClassifiedDonkiEvent[
   return out;
 }
 
-function pickPrimary(candidates: ScoredEvent[]): ClassifiedDonkiEvent | undefined {
+function pickPrimary(
+  candidates: ScoredEvent[],
+): ClassifiedDonkiEvent | undefined {
   if (candidates.length === 0) return undefined;
 
   let best = candidates[0];
@@ -333,7 +364,9 @@ function pickPrimary(candidates: ScoredEvent[]): ClassifiedDonkiEvent | undefine
  * Classify mission sky from DONKI FLR, CME and SEP payloads (already fetched elsewhere).
  * Valid empty windows classify as `calm`. Missing or invalid channel data returns `ok: false`.
  */
-export function classifySkyFromDonki(input: DonkiObservationSet): SkyClassificationResult {
+export function classifySkyFromDonki(
+  input: DonkiObservationSet,
+): SkyClassificationResult {
   const issue = validateDonkiObservationSet(input);
   if (issue !== null) {
     return { ok: false, reason: issue };
@@ -347,15 +380,18 @@ export function classifySkyFromDonki(input: DonkiObservationSet): SkyClassificat
 
   for (const raw of flares) {
     const { level, event } = classifyFlareRecord(raw);
-    if (level !== null && event) candidates.push({ level, event, sortKey: eventSortKey(event) });
+    if (level !== null && event)
+      candidates.push({ level, event, sortKey: eventSortKey(event) });
   }
   for (const raw of cmes) {
     const { level, event } = classifyCmeRecord(raw);
-    if (level !== null && event) candidates.push({ level, event, sortKey: eventSortKey(event) });
+    if (level !== null && event)
+      candidates.push({ level, event, sortKey: eventSortKey(event) });
   }
   for (const raw of seps) {
     const { level, event } = classifySepRecord(raw);
-    if (level !== null && event) candidates.push({ level, event, sortKey: eventSortKey(event) });
+    if (level !== null && event)
+      candidates.push({ level, event, sortKey: eventSortKey(event) });
   }
 
   const qualifyingEvents = dedupeQualifying(candidates.map((c) => c.event));

@@ -18,7 +18,7 @@ function normalizeModelId(raw: string): string {
 
 function buildUserPrompt(payload: DebriefRequest): string {
   return [
-    'Write Robo\'s mission debrief using ONLY this JSON evidence.',
+    "Write Robo's mission debrief using ONLY this JSON evidence.",
     'Do not invent events, consequences, cargo, facts, or player details.',
     JSON.stringify(payload),
   ].join('\n\n');

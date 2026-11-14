@@ -12,7 +12,10 @@ export interface DonkiCacheRecord {
 
 const memoryCache = new Map<string, DonkiCacheRecord>();
 
-export function readDonkiCache(key: string, now = Date.now()): DonkiCacheRecord | undefined {
+export function readDonkiCache(
+  key: string,
+  now = Date.now(),
+): DonkiCacheRecord | undefined {
   const entry = memoryCache.get(key);
   if (!entry) return undefined;
   if (now >= entry.expiresAt) {

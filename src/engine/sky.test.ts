@@ -8,16 +8,24 @@ import {
   validateDonkiObservationSet,
 } from './sky';
 
-const validEmpty = { flares: [] as unknown[], cmes: [] as unknown[], seps: [] as unknown[] };
+const validEmpty = {
+  flares: [] as unknown[],
+  cmes: [] as unknown[],
+  seps: [] as unknown[],
+};
 
 describe('validateDonkiObservationSet', () => {
   it('requires all three DONKI arrays', () => {
     expect(validateDonkiObservationSet({})).toBe('missing_channels');
-    expect(validateDonkiObservationSet({ flares: [] })).toBe('missing_channels');
+    expect(validateDonkiObservationSet({ flares: [] })).toBe(
+      'missing_channels',
+    );
   });
 
   it('rejects non-array channels', () => {
-    expect(validateDonkiObservationSet({ flares: [], cmes: {}, seps: [] })).toBe('invalid_shape');
+    expect(
+      validateDonkiObservationSet({ flares: [], cmes: {}, seps: [] }),
+    ).toBe('invalid_shape');
   });
 });
 
@@ -70,7 +78,13 @@ describe('classifySkyFromDonki', () => {
   it('classifies fast CME as active', () => {
     const result = classifySkyFromDonki({
       ...validEmpty,
-      cmes: [{ speed: FAST_CME_SPEED_KM_S + 250, time21_5: '2024-04-04T10:00Z', link: 'https://x' }],
+      cmes: [
+        {
+          speed: FAST_CME_SPEED_KM_S + 250,
+          time21_5: '2024-04-04T10:00Z',
+          link: 'https://x',
+        },
+      ],
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -80,7 +94,9 @@ describe('classifySkyFromDonki', () => {
   it('returns calm when valid data has no qualifying events', () => {
     const result = classifySkyFromDonki({
       flares: [{ classType: 'C1.0', peakTime: '2024-05-01T00:00Z' }],
-      cmes: [{ speed: FAST_CME_SPEED_KM_S - 100, time21_5: '2024-05-02T00:00Z' }],
+      cmes: [
+        { speed: FAST_CME_SPEED_KM_S - 100, time21_5: '2024-05-02T00:00Z' },
+      ],
       seps: [],
     });
     expect(result.ok).toBe(true);
@@ -125,7 +141,9 @@ describe('classifySkyFromDonki', () => {
   it('picks the highest severity when multiple observations differ', () => {
     const result = classifySkyFromDonki({
       flares: [{ classType: 'M1.0', peakTime: '2024-06-01T00:00Z' }],
-      cmes: [{ speed: FAST_CME_SPEED_KM_S + 50, time21_5: '2024-06-02T00:00Z' }],
+      cmes: [
+        { speed: FAST_CME_SPEED_KM_S + 50, time21_5: '2024-06-02T00:00Z' },
+      ],
       seps: [{ sepID: 'sep-1', eventTime: '2024-06-03T12:00Z' }],
     });
     expect(result.ok).toBe(true);

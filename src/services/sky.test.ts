@@ -121,7 +121,9 @@ describe('fetchSkyForMission', () => {
     writeSkyCache({ ...validApiBody, source: 'live' }, storage, now);
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
+      vi
+        .fn()
+        .mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
     );
 
     const result = await fetchSkyForMission({ queryDate: '2026-11-14', now });
@@ -133,7 +135,9 @@ describe('fetchSkyForMission', () => {
   it('falls back to bundled archive when live and cache are missing', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
+      vi
+        .fn()
+        .mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
     );
 
     const result = await fetchSkyForMission({ queryDate: '2026-11-14' });
@@ -187,7 +191,10 @@ describe('fetchSkyForMission', () => {
     const fetchPromise = new Promise((resolve) => {
       resolveFetch = resolve;
     });
-    vi.stubGlobal('fetch', vi.fn(() => fetchPromise));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => fetchPromise),
+    );
 
     const pending = fetchSkyForMission({ queryDate: '2026-11-14' });
     freezeMissionSkySnapshot({
@@ -206,7 +213,9 @@ describe('fetchSkyForMission', () => {
     if (!result.ok) return;
     expect(result.snapshot.level).toBe('calm');
     expect(result.snapshot.source).toBe('saved');
-    expect(applyLateSkyResponseIfAllowed({ ...validApiBody, level: 'stormy' })).toBe(false);
+    expect(
+      applyLateSkyResponseIfAllowed({ ...validApiBody, level: 'stormy' }),
+    ).toBe(false);
   });
 });
 
@@ -226,5 +235,103 @@ describe('pickArchivedResponse', () => {
     const a = pickArchivedResponse('2026-11-14');
     const b = pickArchivedResponse('2026-11-14');
     expect(a?.event?.id).toBe(b?.event?.id);
+  });
+});
+describe('sky validation and corrupt-cache regressions', () => {
+  let storage: Storage;
+  const now = Date.parse('2026-11-14T09:00:00Z');
+  beforeEach(() => {
+    resetSkyServiceState();
+    registerDonkiArchive(archive);
+    storage = memoryStorage();
+    vi.stubGlobal('window', { localStorage: storage });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it.each([
+    'null',
+    '[]',
+    '42',
+    '"text"',
+    '{}',
+    '{bad json',
+    '{"storedAt": null}',
+  ])(
+    'uses the archive rather than throwing for corrupt cache %s',
+    async (raw) => {
+      storage.setItem(skyCacheKey('2026-11-14'), raw);
+      const result = await fetchSkyForMission({ queryDate: '2026-11-14', now });
+      expect(result.ok && result.resolvedSource).toBe('saved');
+    },
+  );
+  it.each(['2026-02-30', '2026-13-01', 'not-a-date'])(
+    'rejects impossible query date %s before fetching',
+    async (queryDate) => {
+      expect((await fetchSkyForMission({ queryDate, now })).ok).toBe(false);
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+  it.each([
+    { ...validApiBody, date: '2026-02-30' },
+    { ...validApiBody, fetchedAt: 'not-a-time' },
+    { ...validApiBody, fetchedAt: '2026-02-30T00:00Z' },
+    {
+      ...validApiBody,
+      event: { ...validApiBody.event, observedAt: '2026-11-10T25:00Z' },
+    },
+    {
+      ...validApiBody,
+      event: { ...validApiBody.event, sourceUrl: 'not-a-url' },
+    },
+  ])('rejects malformed observation metadata', (raw) => {
+    expect(parseSkyResponse(raw)).toBeNull();
+  });
+  it('accepts valid NASA minute precision and leap-day timestamps', () => {
+    expect(
+      parseSkyResponse({
+        ...validApiBody,
+        event: { ...validApiBody.event, observedAt: '2024-02-29T12:00Z' },
+      }),
+    ).not.toBeNull();
+  });
+  it('falls back when a successful live response belongs to another query date', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ ...validApiBody, date: '2026-11-13' }),
+      }),
+    );
+    const result = await fetchSkyForMission({ queryDate: '2026-11-14', now });
+    expect(result.ok && result.resolvedSource).toBe('saved');
+    expect(storage.getItem(skyCacheKey('2026-11-13'))).toBeNull();
+  });
+  it('rejects mismatched, future-dated and expired cache records', async () => {
+    for (const record of [
+      {
+        response: { ...validApiBody, date: '2026-11-13' },
+        storedAt: new Date(now).toISOString(),
+      },
+      { response: validApiBody, storedAt: new Date(now + 1000).toISOString() },
+      {
+        response: validApiBody,
+        storedAt: new Date(now - SKY_CACHE_TTL_MS - 1).toISOString(),
+      },
+    ]) {
+      storage.setItem(skyCacheKey('2026-11-14'), JSON.stringify(record));
+      const result = await fetchSkyForMission({ queryDate: '2026-11-14', now });
+      expect(result.ok && result.resolvedSource).toBe('saved');
+    }
+  });
+  it('returns unavailable without inventing calm when both cache and archive are unusable', async () => {
+    storage.setItem(skyCacheKey('2026-11-14'), 'null');
+    registerDonkiArchive({ events: [] });
+    expect(await fetchSkyForMission({ queryDate: '2026-11-14', now })).toEqual({
+      ok: false,
+      reason: 'unavailable',
+    });
   });
 });

@@ -1,15 +1,11 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { resetSkyServiceState, writeSkyCache } from './services/sky';
 
 beforeEach(() => {
   localStorage.clear();
+  resetSkyServiceState();
 });
 afterEach(() => {
   cleanup();
@@ -79,36 +75,49 @@ describe('Sol 1 app integration', () => {
     ).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledTimes(1);
   });
-  it('does not invent calm observations when NASA and the backend fallback are unavailable', async () => {
+  it('starts with the bundled archive when the NASA service is unavailable', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Start Mission' }));
-    await screen.findByText(/NASA observations are unavailable/);
-    expect(
-      screen.queryByRole('heading', { name: 'Pack your cargo' }),
-    ).not.toBeInTheDocument();
+    await screen.findByRole('heading', { name: 'Pack your cargo' });
+    expect(screen.getByText(/NASA input: Saved/)).toBeInTheDocument();
+    expect(screen.getByText(/observed /)).toBeInTheDocument();
     expect(localStorage.getItem('mms.activeRun')).toBeNull();
   });
-  it('keeps a saved mission when an attempted replacement lookup fails', async () => {
+  it('keeps the old save while a replacement mission plans with archive fallback', async () => {
     backend();
     const first = render(<App />);
     await launch();
     first.unmount();
     const saved = localStorage.getItem('mms.activeRun');
+    localStorage.removeItem('mms.sky.' + new Date().toISOString().slice(0, 10));
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Start Mission' }));
     fireEvent.click(
       screen.getByRole('button', { name: 'Replace saved mission and start' }),
     );
-    await waitFor(() =>
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'NASA observations are unavailable',
-      ),
-    );
+    await screen.findByRole('heading', { name: 'Pack your cargo' });
+    expect(screen.getByText(/NASA input: Saved/)).toBeInTheDocument();
     expect(localStorage.getItem('mms.activeRun')).toBe(saved);
     expect(
-      screen.getByRole('button', { name: 'Continue mission' }),
+      screen.getByRole('button', { name: 'Launch mission' }),
     ).toBeInTheDocument();
   });
+});
+
+it('prefers a valid cached sky response before the archive when offline', async () => {
+  const date = new Date().toISOString().slice(0, 10);
+  writeSkyCache({
+    date,
+    level: 'active',
+    event: null,
+    source: 'live',
+    fetchedAt: new Date().toISOString(),
+  });
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+  render(<App />);
+  fireEvent.click(screen.getByRole('button', { name: 'Start Mission' }));
+  await screen.findByRole('heading', { name: 'Pack your cargo' });
+  expect(screen.getByText(/NASA input: Cached.*active/)).toBeInTheDocument();
 });

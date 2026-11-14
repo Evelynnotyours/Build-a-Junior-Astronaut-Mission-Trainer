@@ -56,10 +56,14 @@ describe('validateDebriefOutput', () => {
   });
 
   it('rejects links and overly long output', () => {
-    expect(validateDebriefOutput('http://bad.test. Now two short lines here?')).toMatchObject({
+    expect(
+      validateDebriefOutput('http://bad.test. Now two short lines here?'),
+    ).toMatchObject({
       ok: false,
     });
-    expect(validateDebriefOutput(`${'word '.repeat(61)}A. B?`)).toMatchObject({ ok: false });
+    expect(validateDebriefOutput(`${'word '.repeat(61)}A. B?`)).toMatchObject({
+      ok: false,
+    });
   });
 });
 
@@ -150,7 +154,9 @@ describe('handleDebriefPost', () => {
     process.env.GEMINI_MODEL = 'gemini-2.0-flash';
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
+      vi
+        .fn()
+        .mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
     );
 
     const result = await handleDebriefPost(validPayload, 'client', {});

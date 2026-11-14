@@ -3,6 +3,10 @@
  */
 
 import { z } from 'zod';
+import {
+  isCalendarDate,
+  isObservationTimestamp,
+} from '../engine/observation-time';
 
 import type { SkyResponse } from '../engine/contracts';
 import type { FrozenSky, SkyLevel, SkySource } from '../engine/types';
@@ -11,28 +15,36 @@ export const SKY_CLIENT_TIMEOUT_MS = 2_000;
 export const SKY_CACHE_TTL_MS = 48 * 60 * 60 * 1000;
 export const SKY_STORAGE_PREFIX = 'mms.sky.';
 
-const skyLevelSchema = z.union([z.literal('calm'), z.literal('active'), z.literal('stormy')]);
-const skySourceSchema = z.union([z.literal('live'), z.literal('cache'), z.literal('saved')]);
+const skyLevelSchema = z.union([
+  z.literal('calm'),
+  z.literal('active'),
+  z.literal('stormy'),
+]);
+const skySourceSchema = z.union([
+  z.literal('live'),
+  z.literal('cache'),
+  z.literal('saved'),
+]);
 
 const skyEventSchema = z
   .object({
     id: z.string().min(1),
     type: z.string().min(1),
-    observedAt: z.string().min(1),
-    sourceUrl: z.string().min(1),
+    observedAt: z.string().refine(isObservationTimestamp),
+    sourceUrl: z.string().url(),
     classType: z.string().optional(),
   })
   .strict();
 
 export const skyResponseSchema = z
   .object({
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    date: z.string().refine(isCalendarDate),
     level: skyLevelSchema,
     event: skyEventSchema.nullable(),
     source: skySourceSchema,
-    fetchedAt: z.string().min(1),
-    windowStart: z.string().optional(),
-    windowEnd: z.string().optional(),
+    fetchedAt: z.string().refine(isObservationTimestamp),
+    windowStart: z.string().refine(isCalendarDate).optional(),
+    windowEnd: z.string().refine(isCalendarDate).optional(),
   })
   .strict();
 
@@ -82,7 +94,10 @@ export type SkyFetchResult = SkyFetchSuccess | SkyFetchFailure;
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
-function snapshotToResponse(queryDate: string, snapshot: FrozenSky): SkyFetchSuccess {
+function snapshotToResponse(
+  queryDate: string,
+  snapshot: FrozenSky,
+): SkyFetchSuccess {
   return {
     ok: true,
     response: {
@@ -166,7 +181,10 @@ function hashQueryDate(date: string): number {
   return Math.abs(hash);
 }
 
-export function pickArchivedResponse(queryDate: string, now = Date.now()): SkyResponse | null {
+export function pickArchivedResponse(
+  queryDate: string,
+  now = Date.now(),
+): SkyResponse | null {
   if (bundledArchive.events.length === 0) return null;
   const index = hashQueryDate(queryDate) % bundledArchive.events.length;
   const entry = bundledArchive.events[index];
@@ -203,15 +221,23 @@ export function readSkyCache(
 
   if (!raw) return null;
 
-  let record: SkyCacheRecord;
+  let record: unknown;
   try {
-    record = JSON.parse(raw) as SkyCacheRecord;
+    record = JSON.parse(raw);
   } catch {
     return null;
   }
 
-  const storedAt = Date.parse(record.storedAt);
-  if (Number.isNaN(storedAt) || now - storedAt > SKY_CACHE_TTL_MS) {
+  if (!record || typeof record !== 'object' || Array.isArray(record))
+    return null;
+  const cached = record as Record<string, unknown>;
+  if (
+    typeof cached.storedAt !== 'string' ||
+    !isObservationTimestamp(cached.storedAt)
+  )
+    return null;
+  const storedAt = Date.parse(cached.storedAt);
+  if (storedAt > now || now - storedAt > SKY_CACHE_TTL_MS) {
     try {
       storage.removeItem(skyCacheKey(queryDate));
     } catch {
@@ -220,8 +246,8 @@ export function readSkyCache(
     return null;
   }
 
-  const response = parseSkyResponse(record.response);
-  if (!response) return null;
+  const response = parseSkyResponse(cached.response);
+  if (!response || response.date !== queryDate) return null;
 
   return {
     ...response,
@@ -272,7 +298,7 @@ async function fetchLiveSky(
 
     const body: unknown = await res.json();
     const parsed = parseSkyResponse(body);
-    if (!parsed) return null;
+    if (!parsed || parsed.date !== queryDate) return null;
 
     if (options.generation !== activeFetchGeneration) return null;
     if (missionFrozenSnapshot) return null;
@@ -303,7 +329,11 @@ function resolveWithFallback(
  * Resolves NASA sky input for Plan (Start Mission). Does not block navigation: callers
  * should show UI immediately and await this without locking the shell.
  */
-export async function fetchSkyForMission(options: FetchSkyOptions): Promise<SkyFetchResult> {
+export async function fetchSkyForMission(
+  options: FetchSkyOptions,
+): Promise<SkyFetchResult> {
+  if (!isCalendarDate(options.queryDate))
+    return { ok: false, reason: 'unavailable' };
   const fetchImpl = options.fetchImpl ?? fetch;
   const now = options.now ?? Date.now();
   const storage = defaultStorage();

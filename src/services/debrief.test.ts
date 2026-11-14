@@ -62,7 +62,9 @@ const memoryStorage = (): Storage => {
 
 describe('parseDebriefResponse', () => {
   it('accepts valid debrief wire payloads', () => {
-    expect(parseDebriefResponse({ source: 'ai', text: goodAiText })?.source).toBe('ai');
+    expect(
+      parseDebriefResponse({ source: 'ai', text: goodAiText })?.source,
+    ).toBe('ai');
   });
 
   it('rejects malformed bodies', () => {
@@ -76,19 +78,24 @@ describe('fetchDebriefForMission', () => {
     resetDebriefServiceState();
     registerDebriefTemplates({
       choiceObservations: {
-        '3_dust_storm_A': 'You covered the panels during the dust storm to protect solar power.',
+        '3_dust_storm_A':
+          'You covered the panels during the dust storm to protect solar power.',
       },
       endings: {
-        success: 'You kept the outpost running through ten sols until the supply ship arrived.',
+        success:
+          'You kept the outpost running through ten sols until the supply ship arrived.',
         gentle: {
           life: 'Life Support ran out, so the crew moved into the shelter to wait safely.',
-          power: 'Stored power ran out, so the crew waited safely in the shelter.',
-          shield: 'Protection ran too low, so the crew moved into the shelter to stay safe.',
+          power:
+            'Stored power ran out, so the crew waited safely in the shelter.',
+          shield:
+            'Protection ran too low, so the crew moved into the shelter to stay safe.',
         },
       },
       hints: {
         life: 'Next time, check how each choice affects air and water before sending the crew onward.',
-        power: 'Next time, compare repair and heating costs and plan which power supplies to bring.',
+        power:
+          'Next time, compare repair and heating costs and plan which power supplies to bring.',
         shield:
           'Next time, compare shielding and shelter choices before continuing research during the solar encounter.',
         success:
@@ -117,7 +124,10 @@ describe('fetchDebriefForMission', () => {
       }),
     );
 
-    const pending = fetchDebriefForMission({ payload: validPayload, displayDeadlineMs: 3_000 });
+    const pending = fetchDebriefForMission({
+      payload: validPayload,
+      displayDeadlineMs: 3_000,
+    });
     await vi.advanceTimersByTimeAsync(50);
     const result = await pending;
 
@@ -129,7 +139,9 @@ describe('fetchDebriefForMission', () => {
   it('falls back to the local template when the API is unavailable', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
+      vi
+        .fn()
+        .mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
     );
 
     const pending = fetchDebriefForMission({ payload: validPayload });
@@ -138,7 +150,9 @@ describe('fetchDebriefForMission', () => {
 
     expect(result.source).toBe('template');
     expect(result.label).toBe(DEBRIEF_LABEL_TEMPLATE);
-    expect(result.text).toContain('You covered the panels during the dust storm');
+    expect(result.text).toContain(
+      'You covered the panels during the dust storm',
+    );
   });
 
   it('uses the local template when the display deadline expires', async () => {
@@ -146,9 +160,15 @@ describe('fetchDebriefForMission', () => {
     const fetchPromise = new Promise((resolve) => {
       resolveFetch = resolve;
     });
-    vi.stubGlobal('fetch', vi.fn(() => fetchPromise));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => fetchPromise),
+    );
 
-    const pending = fetchDebriefForMission({ payload: validPayload, displayDeadlineMs: 3_000 });
+    const pending = fetchDebriefForMission({
+      payload: validPayload,
+      displayDeadlineMs: 3_000,
+    });
     await vi.advanceTimersByTimeAsync(DEBRIEF_DISPLAY_DEADLINE_MS);
     const result = await pending;
 
@@ -173,7 +193,10 @@ describe('fetchDebriefForMission', () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ source: 'ai', text: 'http://evil.test Bad one liner' }),
+        json: async () => ({
+          source: 'ai',
+          text: 'http://evil.test Bad one liner',
+        }),
       }),
     );
 
@@ -203,12 +226,17 @@ describe('fetchDebriefForMission', () => {
       generic: { observation: 'Generic.' },
     });
 
-    const pending = fetchDebriefForMission({ payload: validPayload, displayDeadlineMs: 3_000 });
+    const pending = fetchDebriefForMission({
+      payload: validPayload,
+      displayDeadlineMs: 3_000,
+    });
     await vi.advanceTimersByTimeAsync(DEBRIEF_DISPLAY_DEADLINE_MS);
     const shown = await pending;
     expect(shown.source).toBe('template');
 
-    expect(applyLateDebriefIfAllowed(sessionKey, { source: 'ai', text: goodAiText })).toBe(false);
+    expect(
+      applyLateDebriefIfAllowed(sessionKey, { source: 'ai', text: goodAiText }),
+    ).toBe(false);
     expect(getFrozenDebrief(sessionKey)?.text).toBe(shown.text);
   });
 });

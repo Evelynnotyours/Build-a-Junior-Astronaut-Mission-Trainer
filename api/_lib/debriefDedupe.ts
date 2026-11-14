@@ -18,7 +18,10 @@ export function fingerprintDebriefRequest(payload: DebriefRequest): string {
   return JSON.stringify(payload);
 }
 
-export function readDedupedDebrief(fingerprint: string, now = Date.now()): DebriefResponse | undefined {
+export function readDedupedDebrief(
+  fingerprint: string,
+  now = Date.now(),
+): DebriefResponse | undefined {
   const hit = dedupeStore.get(fingerprint);
   if (!hit) return undefined;
   if (now >= hit.expiresAt) {
@@ -28,6 +31,10 @@ export function readDedupedDebrief(fingerprint: string, now = Date.now()): Debri
   return hit.response;
 }
 
-export function writeDedupedDebrief(fingerprint: string, response: DebriefResponse, now = Date.now()): void {
+export function writeDedupedDebrief(
+  fingerprint: string,
+  response: DebriefResponse,
+  now = Date.now(),
+): void {
   dedupeStore.set(fingerprint, { response, expiresAt: now + DEDUPE_TTL_MS });
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isCalendarDate } from '../../src/engine/observation-time';
 
 import type { DonkiObservationSet } from '../../src/engine/sky';
 import { SkyApiError } from './skyErrors';
@@ -23,7 +24,7 @@ export function parseQueryDate(raw: unknown): string {
     throw new SkyApiError('invalid_date', 400, 'Use ?date=YYYY-MM-DD');
   }
   const parsed = Date.parse(`${raw}T00:00:00.000Z`);
-  if (Number.isNaN(parsed)) {
+  if (!isCalendarDate(raw) || Number.isNaN(parsed)) {
     throw new SkyApiError('invalid_date', 400, 'Use ?date=YYYY-MM-DD');
   }
   return raw;
@@ -48,7 +49,11 @@ export function cacheKeyForWindow(window: DonkiWindow): string {
   return `${window.windowStart}:${window.windowEnd}`;
 }
 
-function buildDonkiUrl(path: DonkiPath, window: DonkiWindow, apiKey: string): URL {
+function buildDonkiUrl(
+  path: DonkiPath,
+  window: DonkiWindow,
+  apiKey: string,
+): URL {
   const url = new URL(`${NASA_DONKI_ORIGIN}/${path}`);
   url.searchParams.set('startDate', window.windowStart);
   url.searchParams.set('endDate', window.windowEnd);
@@ -65,7 +70,10 @@ async function fetchDonkiPath(
   const url = buildDonkiUrl(path, window, apiKey);
   let response: Response;
   try {
-    response = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    response = await fetch(url, {
+      signal,
+      headers: { Accept: 'application/json' },
+    });
   } catch {
     if (signal.aborted) {
       throw new SkyApiError('nasa_timeout', 504);
@@ -108,7 +116,9 @@ export async function fetchDonkiObservations(
 
   try {
     const [flares, cmes, seps] = await Promise.all(
-      DONKI_PATHS.map((path) => fetchDonkiPath(path, window, apiKey, controller.signal)),
+      DONKI_PATHS.map((path) =>
+        fetchDonkiPath(path, window, apiKey, controller.signal),
+      ),
     );
     return { flares, cmes, seps };
   } finally {

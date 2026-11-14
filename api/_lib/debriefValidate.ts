@@ -31,8 +31,16 @@ const solSchema = z.union([
 ]);
 
 const choiceSchema = z.union([z.literal('A'), z.literal('B'), z.literal('C')]);
-const meterSchema = z.union([z.literal('life'), z.literal('power'), z.literal('shield')]);
-const skyLevelSchema = z.union([z.literal('calm'), z.literal('active'), z.literal('stormy')]);
+const meterSchema = z.union([
+  z.literal('life'),
+  z.literal('power'),
+  z.literal('shield'),
+]);
+const skyLevelSchema = z.union([
+  z.literal('calm'),
+  z.literal('active'),
+  z.literal('stormy'),
+]);
 const miniGameSchema = z.union([z.literal('done'), z.literal('skipped')]);
 
 const cargoIdSchema = z.enum(CARGO_IDS);
@@ -77,7 +85,8 @@ export const debriefRequestSchema = z
   })
   .strict();
 
-const forbiddenPromptKeys = /^(name|player|prompt|message|text|instruction|system)$/i;
+const forbiddenPromptKeys =
+  /^(name|player|prompt|message|text|instruction|system)$/i;
 
 export function assertPayloadSize(raw: unknown): void {
   const serialized = typeof raw === 'string' ? raw : JSON.stringify(raw ?? '');
@@ -94,7 +103,11 @@ export function parseDebriefRequest(raw: unknown): DebriefRequest {
 
   for (const key of Object.keys(raw as object)) {
     if (forbiddenPromptKeys.test(key)) {
-      throw new DebriefApiError('invalid_payload', 400, 'Forbidden field in payload');
+      throw new DebriefApiError(
+        'invalid_payload',
+        400,
+        'Forbidden field in payload',
+      );
     }
   }
 

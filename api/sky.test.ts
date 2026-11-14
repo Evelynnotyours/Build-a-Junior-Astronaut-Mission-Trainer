@@ -2,8 +2,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildSkyResponse } from './_lib/buildSkyResponse';
-import { donkiWindowForQueryDate, fetchDonkiObservations } from './_lib/donkiClient';
-import { clearDonkiCache, readDonkiCache, writeDonkiCache } from './_lib/skyCache';
+import {
+  donkiWindowForQueryDate,
+  fetchDonkiObservations,
+} from './_lib/donkiClient';
+import {
+  clearDonkiCache,
+  readDonkiCache,
+  writeDonkiCache,
+} from './_lib/skyCache';
 import { handleSkyGet } from './_lib/handleSkyGet';
 import { SkyApiError } from './_lib/skyErrors';
 
@@ -164,7 +171,6 @@ describe('handleSkyGet', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.body.error).toBe('malformed_response');
   });
-
 });
 
 describe('fetchDonkiObservations timeout', () => {

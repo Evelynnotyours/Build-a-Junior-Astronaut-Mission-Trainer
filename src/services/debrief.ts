@@ -56,16 +56,19 @@ type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 const DEFAULT_DEBRIEF_TEMPLATES: DebriefTemplateLines = {
   choiceObservations: {},
   endings: {
-    success: 'You kept the outpost running through ten sols until the supply ship arrived.',
+    success:
+      'You kept the outpost running through ten sols until the supply ship arrived.',
     gentle: {
       life: 'Life Support ran out, so the crew moved into the shelter to wait safely.',
       power: 'Stored power ran out, so the crew waited safely in the shelter.',
-      shield: 'Protection ran too low, so the crew moved into the shelter to stay safe.',
+      shield:
+        'Protection ran too low, so the crew moved into the shelter to stay safe.',
     },
   },
   hints: {
     life: 'Next time, check how each choice affects air and water before sending the crew onward.',
-    power: 'Next time, compare repair and heating costs and plan which power supplies to bring.',
+    power:
+      'Next time, compare repair and heating costs and plan which power supplies to bring.',
     shield:
       'Next time, compare shielding and shelter choices before continuing research during the solar encounter.',
     success:
@@ -92,7 +95,9 @@ function defaultStorage(): StorageLike | null {
 }
 
 /** Member 3 registers `debriefTemplates.json` before the first debrief fetch. */
-export function registerDebriefTemplates(templates: DebriefTemplateLines): void {
+export function registerDebriefTemplates(
+  templates: DebriefTemplateLines,
+): void {
   bundledTemplates = templates;
 }
 
@@ -113,7 +118,9 @@ export function parseDebriefResponse(raw: unknown): DebriefResponse | null {
 }
 
 /** Strip unknown fields and reject forbidden prompt keys before POST. */
-export function sanitizeDebriefRequest(raw: DebriefRequest): DebriefRequest | null {
+export function sanitizeDebriefRequest(
+  raw: DebriefRequest,
+): DebriefRequest | null {
   const parsed = debriefRequestSchema.safeParse(raw);
   return parsed.success ? parsed.data : null;
 }
@@ -135,7 +142,12 @@ function composeObservation(payload: DebriefRequest): string {
   const last = payload.history[payload.history.length - 1];
   if (!last) return templates.generic.observation;
 
-  const key = choiceTemplateKey(last.sol, last.event, last.choice, payload.skyLevel);
+  const key = choiceTemplateKey(
+    last.sol,
+    last.event,
+    last.choice,
+    payload.skyLevel,
+  );
   return templates.choiceObservations[key] ?? templates.generic.observation;
 }
 
@@ -163,11 +175,17 @@ function composeHint(payload: DebriefRequest): string {
 
 /** Local rule-based summary — only authored template lines, keyed to real history where available. */
 export function composeLocalDebriefTemplate(payload: DebriefRequest): string {
-  const sentences = [composeObservation(payload), composeEnding(payload), composeHint(payload)];
+  const sentences = [
+    composeObservation(payload),
+    composeEnding(payload),
+    composeHint(payload),
+  ];
   return sentences.join(' ');
 }
 
-export function prepareLocalDebriefDisplay(payload: DebriefRequest): DisplayedDebrief {
+export function prepareLocalDebriefDisplay(
+  payload: DebriefRequest,
+): DisplayedDebrief {
   return {
     text: composeLocalDebriefTemplate(payload),
     source: 'template',
@@ -175,7 +193,9 @@ export function prepareLocalDebriefDisplay(payload: DebriefRequest): DisplayedDe
   };
 }
 
-export function labelForSource(source: 'ai' | 'template'): DisplayedDebrief['label'] {
+export function labelForSource(
+  source: 'ai' | 'template',
+): DisplayedDebrief['label'] {
   return source === 'ai' ? DEBRIEF_LABEL_AI : DEBRIEF_LABEL_TEMPLATE;
 }
 
@@ -245,7 +265,8 @@ async function postDebrief(
   const params = new URLSearchParams();
   if (options.simulateApiFailure) params.set('fail', 'ai');
 
-  const path = params.size > 0 ? `/api/debrief?${params.toString()}` : '/api/debrief';
+  const path =
+    params.size > 0 ? `/api/debrief?${params.toString()}` : '/api/debrief';
 
   try {
     const res = await options.fetchImpl(path, {
@@ -272,7 +293,9 @@ async function postDebrief(
  * Resolves the debrief text to show for this mission run. Call without blocking navigation;
  * the report can render immediately while this promise settles.
  */
-export async function fetchDebriefForMission(options: FetchDebriefOptions): Promise<DisplayedDebrief> {
+export async function fetchDebriefForMission(
+  options: FetchDebriefOptions,
+): Promise<DisplayedDebrief> {
   const fetchImpl = options.fetchImpl ?? fetch;
   const deadlineMs = options.displayDeadlineMs ?? DEBRIEF_DISPLAY_DEADLINE_MS;
 
@@ -347,7 +370,10 @@ export async function fetchDebriefForMission(options: FetchDebriefOptions): Prom
 }
 
 /** Returns false when a summary is already frozen (never swap template for late AI). */
-export function applyLateDebriefIfAllowed(sessionKey: string, wire: DebriefResponse): boolean {
+export function applyLateDebriefIfAllowed(
+  sessionKey: string,
+  wire: DebriefResponse,
+): boolean {
   if (frozenBySession.has(sessionKey)) return false;
 
   const ai = resolveAiWireResponse(wire);
@@ -358,6 +384,8 @@ export function applyLateDebriefIfAllowed(sessionKey: string, wire: DebriefRespo
   return true;
 }
 
-export function getFrozenDebrief(sessionKey: string): DisplayedDebrief | undefined {
+export function getFrozenDebrief(
+  sessionKey: string,
+): DisplayedDebrief | undefined {
   return frozenBySession.get(sessionKey);
 }

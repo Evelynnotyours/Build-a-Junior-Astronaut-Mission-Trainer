@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isObservationTimestamp } from '../engine/observation-time';
 
 import { classifySkyFromDonki, type DonkiObservationSet } from '../engine/sky';
 import {
@@ -9,14 +10,18 @@ import {
 
 import bundledDonkiArchive from './donkiArchive.json';
 
-const skyLevelSchema = z.union([z.literal('calm'), z.literal('active'), z.literal('stormy')]);
+const skyLevelSchema = z.union([
+  z.literal('calm'),
+  z.literal('active'),
+  z.literal('stormy'),
+]);
 
 const donkiArchiveEntrySchema = z
   .object({
     id: z.string().min(1),
     type: z.union([z.literal('FLR'), z.literal('CME'), z.literal('SEP')]),
     level: skyLevelSchema,
-    observedAt: z.string().min(1),
+    observedAt: z.string().refine(isObservationTimestamp),
     sourceUrl: z.string().url(),
     classType: z.string().min(1).optional(),
   })
@@ -30,8 +35,14 @@ export const donkiArchiveFileSchema = z
 
 const CME_SPEED_RE = /(\d+)\s*km\/s/i;
 
-function entryToDonkiObservation(entry: DonkiArchiveEntry): DonkiObservationSet {
-  const empty = { flares: [] as unknown[], cmes: [] as unknown[], seps: [] as unknown[] };
+function entryToDonkiObservation(
+  entry: DonkiArchiveEntry,
+): DonkiObservationSet {
+  const empty = {
+    flares: [] as unknown[],
+    cmes: [] as unknown[],
+    seps: [] as unknown[],
+  };
   if (entry.type === 'FLR') {
     return {
       ...empty,
@@ -58,7 +69,9 @@ function entryToDonkiObservation(entry: DonkiArchiveEntry): DonkiObservationSet 
     };
   }
 
-  const speedMatch = entry.classType ? CME_SPEED_RE.exec(entry.classType) : null;
+  const speedMatch = entry.classType
+    ? CME_SPEED_RE.exec(entry.classType)
+    : null;
   const speed = speedMatch ? Number(speedMatch[1]) : undefined;
   return {
     ...empty,
@@ -79,7 +92,9 @@ export function parseDonkiArchiveFile(raw: unknown): DonkiArchiveFile {
 }
 
 /** Each stored `level` must match engine rules for that single NASA record. */
-export function assertArchiveLevelsMatchClassifier(archive: DonkiArchiveFile): void {
+export function assertArchiveLevelsMatchClassifier(
+  archive: DonkiArchiveFile,
+): void {
   const ids = new Set<string>();
   for (const entry of archive.events) {
     if (ids.has(entry.id)) {
@@ -89,7 +104,9 @@ export function assertArchiveLevelsMatchClassifier(archive: DonkiArchiveFile): v
 
     const classified = classifySkyFromDonki(entryToDonkiObservation(entry));
     if (!classified.ok) {
-      throw new Error(`archive entry not classifiable: ${entry.id} (${classified.reason})`);
+      throw new Error(
+        `archive entry not classifiable: ${entry.id} (${classified.reason})`,
+      );
     }
     if (classified.level !== entry.level) {
       throw new Error(

@@ -13,9 +13,16 @@ import {
 } from './engine/scene-player';
 import type { SceneTransition } from './engine/scene-player';
 import type { SceneInput } from './engine/scene-types';
-import type { CargoId, FrozenSky, GameState } from './engine/types';
+import type { CargoId, GameState } from './engine/types';
 import { createMissionStorage, createSaveEnvelope } from './services/storage';
 import type { DurableTransition } from './engine/contracts';
+
+import { registerBundledDonkiArchive } from './content/donkiArchive';
+import {
+  clearMissionSkyFreeze,
+  fetchSkyForMission,
+  freezeMissionSkySnapshot,
+} from './services/sky';
 
 const VERSION = 'sol1-v1';
 const text = (key: string) =>
@@ -61,49 +68,17 @@ export default function App() {
     setStatus('Reading NASA observations…');
     try {
       const date = new Date().toISOString().slice(0, 10);
-      const response = await fetch(`/api/sky?date=${date}`, {
-        signal: AbortSignal.timeout(10000),
+      registerBundledDonkiArchive();
+      clearMissionSkyFreeze();
+      const result = await fetchSkyForMission({ queryDate: date });
+      if (!result.ok) throw new Error('Sky unavailable');
+      const mission = createMission({
+        missionDate: date,
+        contentVersion: VERSION,
+        sky: result.snapshot,
       });
-      if (!response.ok) throw new Error('Sky service unavailable');
-      const value: unknown = await response.json();
-      // Temporary boundary checks until Member 2 supplies the shared browser adapter.
-      if (!value || typeof value !== 'object')
-        throw new Error('Invalid sky response');
-      const v = value as Record<string, unknown>;
-      if (
-        v.date !== date ||
-        !['calm', 'active', 'stormy'].includes(String(v.level)) ||
-        !['live', 'cache', 'saved'].includes(String(v.source)) ||
-        typeof v.fetchedAt !== 'string' ||
-        !Number.isFinite(Date.parse(v.fetchedAt))
-      )
-        throw new Error('Invalid sky metadata');
-      const event = v.event;
-      if (
-        event !== null &&
-        (!event ||
-          typeof event !== 'object' ||
-          typeof (event as Record<string, unknown>).id !== 'string' ||
-          typeof (event as Record<string, unknown>).observedAt !== 'string' ||
-          typeof (event as Record<string, unknown>).sourceUrl !== 'string')
-      )
-        throw new Error('Invalid observation');
-      const e = event as {
-        id: string;
-        observedAt: string;
-        sourceUrl: string;
-      } | null;
-      const sky: FrozenSky = {
-        level: v.level as FrozenSky['level'],
-        source: v.source as FrozenSky['source'],
-        fetchedAt: v.fetchedAt,
-        ...(e
-          ? { eventId: e.id, observedAt: e.observedAt, sourceUrl: e.sourceUrl }
-          : {}),
-      };
-      setPlan(
-        createMission({ missionDate: date, contentVersion: VERSION, sky }),
-      );
+      freezeMissionSkySnapshot(mission.sky!);
+      setPlan(mission);
       setRunId(crypto.randomUUID());
       setCargo([]);
       setAllowReplace(confirmNew);
@@ -111,7 +86,7 @@ export default function App() {
       setStatus('');
     } catch {
       setStatus(
-        'NASA observations are unavailable. The backend needs to provide verified saved data before a new mission can start. Your saved mission is unchanged.',
+        'NASA observations and saved fallback are unavailable. Please try again. Your saved mission is unchanged.',
       );
     } finally {
       setLoading(false);
@@ -170,6 +145,8 @@ export default function App() {
         saved.save,
         { reduceMotion: reducedMotion },
       );
+      if (next.playback.game.sky)
+        freezeMissionSkySnapshot(next.playback.game.sky);
       setRunId(saved.save.runId);
       setTransition(next);
       setStatus('');

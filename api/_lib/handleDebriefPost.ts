@@ -72,10 +72,18 @@ export async function handleDebriefPost(
     }
 
     const { apiKey, model } = requireGeminiConfig();
-    const generated = await callGeminiDebrief(payload, apiKey, model, undefined, fetchImpl);
+    const generated = await callGeminiDebrief(
+      payload,
+      apiKey,
+      model,
+      undefined,
+      fetchImpl,
+    );
     const checked = validateDebriefOutput(generated.text);
 
-    const response = checked.ok ? aiDebriefResponse(checked.text) : templateDebriefResponse();
+    const response = checked.ok
+      ? aiDebriefResponse(checked.text)
+      : templateDebriefResponse();
     writeDedupedDebrief(fingerprint, response);
     return { ok: true, status: 200, body: response };
   } catch (err) {
@@ -87,7 +95,10 @@ export async function handleDebriefPost(
       return {
         ok: false,
         status: err.httpStatus,
-        body: { error: err.code, message: err.message !== err.code ? err.message : undefined },
+        body: {
+          error: err.code,
+          message: err.message !== err.code ? err.message : undefined,
+        },
       };
     }
     return { ok: true, status: 200, body: templateDebriefResponse() };

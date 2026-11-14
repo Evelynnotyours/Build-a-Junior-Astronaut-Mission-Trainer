@@ -7,7 +7,11 @@ import {
   fetchDonkiObservations,
   parseQueryDate,
 } from './donkiClient';
-import { readDonkiCache, writeDonkiCache, type DonkiCacheRecord } from './skyCache';
+import {
+  readDonkiCache,
+  writeDonkiCache,
+  type DonkiCacheRecord,
+} from './skyCache';
 import { SkyApiError } from './skyErrors';
 
 export interface SkyGetSuccess {
@@ -48,7 +52,10 @@ export async function handleSkyGet(
     return {
       ok: false,
       status: 503,
-      body: { error: 'sky_unavailable', message: 'Development fail switch active' },
+      body: {
+        error: 'sky_unavailable',
+        message: 'Development fail switch active',
+      },
     };
   }
 
@@ -57,7 +64,11 @@ export async function handleSkyGet(
     queryDate = parseQueryDate(query.date);
   } catch (err) {
     if (err instanceof SkyApiError) {
-      return { ok: false, status: err.httpStatus, body: { error: err.code, message: err.message } };
+      return {
+        ok: false,
+        status: err.httpStatus,
+        body: { error: err.code, message: err.message },
+      };
     }
     throw err;
   }
@@ -103,7 +114,10 @@ export async function handleSkyGet(
       return {
         ok: false,
         status: err.httpStatus,
-        body: { error: err.code, message: err.message !== err.code ? err.message : undefined },
+        body: {
+          error: err.code,
+          message: err.message !== err.code ? err.message : undefined,
+        },
       };
     }
     return { ok: false, status: 502, body: { error: 'nasa_unavailable' } };

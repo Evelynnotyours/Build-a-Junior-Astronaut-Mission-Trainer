@@ -19,8 +19,7 @@ function classifiedToSkyEvent(primary: ClassifiedDonkiEvent): SkyEvent | null {
   }
 
   const id =
-    primary.eventId?.trim() ||
-    `${primary.observationType}-${observedAt}`;
+    primary.eventId?.trim() || `${primary.observationType}-${observedAt}`;
 
   const skyEvent: SkyEvent = {
     id,
