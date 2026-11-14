@@ -1,0 +1,224 @@
+/* Prologue — code-drawn space / Mars approach (Member 4) */
+
+.prologue-shell {
+  --pro-ink: #eaf7ff;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  color: var(--pro-ink);
+  background: #070b16;
+}
+
+.prologue-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 70% 35%, rgba(180, 90, 40, 0.22), transparent 35%),
+    radial-gradient(circle at 20% 80%, rgba(40, 80, 160, 0.25), transparent 40%),
+    linear-gradient(180deg, #050814 0%, #121a32 55%, #1a1420 100%);
+}
+
+.prologue-stars {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 30% 60%, #cfe8ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 15%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 70% 45%, #ffe9b8 50%, transparent 51%),
+    radial-gradient(1px 1px at 85% 75%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 15% 80%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 45% 35%, #d7f0ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 92% 22%, #fff 50%, transparent 51%);
+  opacity: 0.85;
+}
+
+.prologue-stars--a {
+  animation: prologue-drift 48s linear infinite;
+}
+
+.prologue-stars--b {
+  opacity: 0.55;
+  transform: scale(1.2);
+  animation: prologue-drift 72s linear infinite reverse;
+}
+
+.prologue-mars {
+  position: absolute;
+  right: 8%;
+  top: 18%;
+  width: min(42vw, 320px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffc089 0%, #d86a3a 35%, #8a2f18 70%, #3a1208 100%);
+  box-shadow:
+    0 0 40px rgba(255, 140, 60, 0.35),
+    inset -18px -10px 40px rgba(40, 10, 0, 0.45);
+  animation: prologue-mars 7s ease-out forwards;
+}
+
+.prologue-pod {
+  position: absolute;
+  left: 18%;
+  top: 42%;
+  width: 18px;
+  height: 28px;
+  border-radius: 40% 40% 35% 35%;
+  background: linear-gradient(180deg, #e8f4ff, #7aa0c8 55%, #3a5070);
+  box-shadow: 0 0 12px rgba(120, 200, 255, 0.8);
+  animation: prologue-pod 5.5s ease-in-out infinite;
+}
+
+.prologue-glow {
+  position: absolute;
+  left: 14%;
+  top: 48%;
+  width: 70px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120, 210, 255, 0.55), transparent 70%);
+  filter: blur(2px);
+  animation: prologue-glow 5.5s ease-in-out infinite;
+}
+
+.prologue-title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 210, 255, 0.55);
+  background: rgba(12, 20, 40, 0.72);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.35);
+  animation: prologue-title-in 0.7s ease-out both;
+}
+
+.prologue-stage {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: grid;
+  align-content: end;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.prologue-card {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-end;
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+.prologue-robo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.4));
+}
+
+.prologue-speech {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border-radius: 18px;
+  background: rgba(247, 251, 255, 0.96);
+  color: #142033;
+  border: 2px solid rgba(0, 210, 255, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.prologue-speech p {
+  margin: 0 0 0.7rem;
+  min-height: 3.2em;
+  font-weight: 700;
+  line-height: 1.4;
+  font-size: 1.05rem;
+}
+
+.prologue-continue {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 48%),
+    linear-gradient(180deg, #ffd45c, #f0a800);
+  color: #1a2030;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b87a00;
+}
+
+.prologue-skip {
+  justify-self: center;
+  min-height: 40px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 210, 255, 0.4);
+  background: rgba(12, 20, 40, 0.65);
+  color: #eaf7ff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prologue-shell--static .prologue-stars--a,
+.prologue-shell--static .prologue-stars--b,
+.prologue-shell--static .prologue-mars,
+.prologue-shell--static .prologue-pod,
+.prologue-shell--static .prologue-glow,
+.prologue-shell--static .prologue-title {
+  animation: none;
+}
+
+.prologue-shell--static .prologue-mars {
+  transform: scale(1.15);
+}
+
+@keyframes prologue-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-4%, 3%, 0); }
+}
+
+@keyframes prologue-mars {
+  from { transform: scale(0.55); opacity: 0.7; }
+  to { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes prologue-pod {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+  50% { transform: translate(18px, -22px) rotate(6deg); }
+}
+
+@keyframes prologue-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+@keyframes prologue-title-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 560px) {
+  .prologue-mars {
+    width: min(55vw, 220px);
+    top: 14%;
+  }
+
+  .prologue-card {
+    align-items: flex-start;
+  }
+}
