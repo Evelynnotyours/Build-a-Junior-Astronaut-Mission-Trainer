@@ -61,6 +61,7 @@ export type DurableTransition =
 
 /** State is AFTER this transition. Loading must not replay it. */
 export interface SaveEnvelope {
+  runId: string;
   schemaVersion: typeof SAVE_SCHEMA_VERSION;
   contentVersion: string;
   savedAt: string;

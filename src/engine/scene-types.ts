@@ -70,12 +70,15 @@ export interface SceneCursor {
   miniGameResult?: MiniGameResult;
 }
 
-export type SceneInput =
+export type SceneInput = (
   | { type: 'advance'; stepId: string }
   | { type: 'choose'; stepId: string; choiceId: ChoiceId }
+  | { type: 'confirm_choice'; stepId: string; choiceId: ChoiceId }
+  | { type: 'cancel_choice'; stepId: string }
   | { type: 'select_spot'; stepId: string; spotId: SpotId }
   | { type: 'walk_finished'; stepId: string }
-  | { type: 'mini_game_result'; stepId: string; result: MiniGameResult };
+  | { type: 'mini_game_result'; stepId: string; result: MiniGameResult }
+) & { visit?: number };
 
 /** Consumers send the originating step ID so stale/double callbacks can be rejected. */
 export interface ScenePresentationProps {
