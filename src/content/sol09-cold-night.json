@@ -11,5 +11,6 @@
   "cold_night.B.after": "We kept what matters warm and saved power by switching off the lab. Good prioritizing!",
   "cold_night.C.label": "Minimum heat (Power −5, Life −5, plants suffer)",
   "cold_night.C.after": "We saved lots of power, but the plants got too cold, and tomorrow’s food will be smaller.",
-  "cold_night.classroom": "Which systems did you choose to heat?"
+  "cold_night.classroom": "Which systems did you choose to heat?",
+  "cold_night.cargo.greenhouse_kit": "Our greenhouse kit helps us use supplies carefully."
 }

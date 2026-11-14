@@ -1,8 +1,11 @@
-import type { SceneDefinition } from '../scene-types';
+import type { SceneDefinition, SceneStep } from '../scene-types';
+import type { CargoId } from '../types';
 
 /** Approved script keys; costs, callbacks and bonuses resolve through events.json. */
-export function createSol04Scene(): SceneDefinition {
-  return {
+export function createSol04Scene(
+  cargo: readonly CargoId[] = [],
+): SceneDefinition {
+  const scene: SceneDefinition = {
     eventId: 'ice_hunt',
     sol: 4,
     entryStepId: 'ice_hunt.mood',
@@ -209,5 +212,26 @@ export function createSol04Scene(): SceneDefinition {
         type: 'night',
       },
     ],
+  };
+
+  if (!cargo.includes('rover_fuel')) return scene;
+  const anchor = scene.steps.find((step) => step.id === 'ice_hunt.after.B');
+  if (!anchor || (anchor.type !== 'dialogue' && anchor.type !== 'after'))
+    throw new TypeError('Missing cargo callback anchor.');
+  const callback: SceneStep = {
+    id: 'ice_hunt.cargo.rover_fuel',
+    type: 'dialogue',
+    speaker: 'kai',
+    expression: 'happy',
+    textKey: 'ice_hunt.cargo.rover_fuel',
+    next: anchor.next,
+  };
+  return {
+    ...scene,
+    steps: scene.steps.flatMap((step) =>
+      step.id === anchor.id
+        ? [{ ...anchor, next: callback.id }, callback]
+        : [step],
+    ),
   };
 }

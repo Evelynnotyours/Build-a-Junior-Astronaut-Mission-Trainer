@@ -1,8 +1,11 @@
-import type { SceneDefinition } from '../scene-types';
+import type { SceneDefinition, SceneStep } from '../scene-types';
+import type { CargoId } from '../types';
 
 /** Approved script keys; costs, callbacks and bonuses resolve through events.json. */
-export function createSol09Scene(): SceneDefinition {
-  return {
+export function createSol09Scene(
+  cargo: readonly CargoId[] = [],
+): SceneDefinition {
+  const scene: SceneDefinition = {
     eventId: 'cold_night',
     sol: 9,
     entryStepId: 'cold_night.mood',
@@ -167,5 +170,28 @@ export function createSol09Scene(): SceneDefinition {
         type: 'night',
       },
     ],
+  };
+
+  if (!cargo.includes('greenhouse_kit')) return scene;
+  const anchor = scene.steps.find(
+    (step) => step.id === 'cold_night.dialogue.2',
+  );
+  if (!anchor || (anchor.type !== 'dialogue' && anchor.type !== 'after'))
+    throw new TypeError('Missing cargo callback anchor.');
+  const callback: SceneStep = {
+    id: 'cold_night.cargo.greenhouse_kit',
+    type: 'dialogue',
+    speaker: 'mei',
+    expression: 'neutral',
+    textKey: 'cold_night.cargo.greenhouse_kit',
+    next: anchor.next,
+  };
+  return {
+    ...scene,
+    steps: scene.steps.flatMap((step) =>
+      step.id === anchor.id
+        ? [{ ...anchor, next: callback.id }, callback]
+        : [step],
+    ),
   };
 }

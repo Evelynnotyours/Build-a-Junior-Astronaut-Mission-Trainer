@@ -1,8 +1,11 @@
-import type { SceneDefinition } from '../scene-types';
+import type { SceneDefinition, SceneStep } from '../scene-types';
+import type { CargoId } from '../types';
 
 /** Approved script keys; costs, callbacks and bonuses resolve through events.json. */
-export function createSol05Scene(): SceneDefinition {
-  return {
+export function createSol05Scene(
+  cargo: readonly CargoId[] = [],
+): SceneDefinition {
+  const scene: SceneDefinition = {
     eventId: 'calling_earth',
     sol: 5,
     entryStepId: 'calling_earth.mood',
@@ -181,5 +184,28 @@ export function createSol05Scene(): SceneDefinition {
         type: 'night',
       },
     ],
+  };
+
+  if (!cargo.includes('radio_booster')) return scene;
+  const anchor = scene.steps.find(
+    (step) => step.id === 'calling_earth.after.A',
+  );
+  if (!anchor || (anchor.type !== 'dialogue' && anchor.type !== 'after'))
+    throw new TypeError('Missing cargo callback anchor.');
+  const callback: SceneStep = {
+    id: 'calling_earth.cargo.radio_booster',
+    type: 'dialogue',
+    speaker: 'robo',
+    expression: 'explaining',
+    textKey: 'calling_earth.cargo.radio_booster',
+    next: anchor.next,
+  };
+  return {
+    ...scene,
+    steps: scene.steps.flatMap((step) =>
+      step.id === anchor.id
+        ? [{ ...anchor, next: callback.id }, callback]
+        : [step],
+    ),
   };
 }

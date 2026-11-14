@@ -1,8 +1,11 @@
-import type { SceneDefinition } from '../scene-types';
+import type { SceneDefinition, SceneStep } from '../scene-types';
+import type { CargoId } from '../types';
 
 /** Approved script keys; costs, callbacks and bonuses resolve through events.json. */
-export function createSol02Scene(): SceneDefinition {
-  return {
+export function createSol02Scene(
+  cargo: readonly CargoId[] = [],
+): SceneDefinition {
+  const scene: SceneDefinition = {
     eventId: 'first_night',
     sol: 2,
     entryStepId: 'first_night.mood',
@@ -153,5 +156,28 @@ export function createSol02Scene(): SceneDefinition {
         type: 'night',
       },
     ],
+  };
+
+  if (!cargo.includes('batteries')) return scene;
+  const anchor = scene.steps.find(
+    (step) => step.id === 'first_night.dialogue.2',
+  );
+  if (!anchor || (anchor.type !== 'dialogue' && anchor.type !== 'after'))
+    throw new TypeError('Missing cargo callback anchor.');
+  const callback: SceneStep = {
+    id: 'first_night.cargo.batteries',
+    type: 'dialogue',
+    speaker: 'robo',
+    expression: 'explaining',
+    textKey: 'first_night.cargo.batteries',
+    next: anchor.next,
+  };
+  return {
+    ...scene,
+    steps: scene.steps.flatMap((step) =>
+      step.id === anchor.id
+        ? [{ ...anchor, next: callback.id }, callback]
+        : [step],
+    ),
   };
 }
