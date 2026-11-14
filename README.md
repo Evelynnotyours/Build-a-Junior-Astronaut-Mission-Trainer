@@ -246,7 +246,7 @@ Environment variables (server only; never ship keys to the browser): `NASA_API_K
 
 ### Local development
 
-**Member 1 checkpoint (November 14):** the existing starter is runnable; shared contracts, fixed-order routing and starter constants are in `src/engine/`. Read [docs/CONTRACTS.md](docs/CONTRACTS.md) before parallel work. Full engine/scene player, playable Sol 1 and API/UI features are not implemented yet. Member 1 is working on `main` by explicit team instruction.
+**Member 1 checkpoint (November 14):** the existing starter is runnable; shared contracts, fixed-order routing and starter constants are in `src/engine/`. Read [docs/CONTRACTS.md](docs/CONTRACTS.md) before parallel work. The pure engine, storage/retry, scene player and approved Sol 1 timeline now have tested app-entry integration. The temporary development screen requires the backend sky contract; final UI/media, remaining sols and API handlers are still outstanding. See docs/SCENE_PLAYER_HANDOFF.md. Member 1 is working on `main` by explicit team instruction.
 
 Use **Node 24** (supported versions are recorded in `package.json`). `npm run typecheck` and `npm run format:check` are available in addition to the commands below. `npm run validate` is a planned content-validation command, not implemented at this checkpoint.
 

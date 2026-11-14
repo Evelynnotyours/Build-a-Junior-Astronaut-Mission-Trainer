@@ -1,6 +1,6 @@
 # Team project structure
 
-This repository now has a runnable React/Vite/TypeScript/Tailwind starter and Gate A shared contracts. Full game/API implementations have not been added. Empty folders contain `.gitkeep` so Git can retain them when explicitly committed. This structure does not change the event's coding-start requirements in README.md.
+This repository now has a runnable React/Vite/TypeScript/Tailwind starter and Gate A shared contracts. The engine, storage/retry, scene player and a Sol 1 app-entry integration are implemented; the complete game and API handlers remain outstanding. Empty folders contain `.gitkeep` so Git can retain them when explicitly committed. This structure does not change the event's coding-start requirements in README.md.
 
 ## Frontend: `src/`
 
@@ -8,7 +8,7 @@ The project uses one repository and one deployment. `src/` is the frontend; a se
 
 | Folder | Responsibility |
 |---|---|
-| `src/engine/` | Pure TypeScript domain/scene/API/save contracts, starter balance constants and fixed-order routing currently exist. Full meter/cargo/result/night resolution and snapshots are next. No React imports. |
+| `src/engine/` | Pure TypeScript contracts, fixed routing, cargo validation/modifiers, authored effect rules and resource/result/night/ending transitions are implemented. Validated save/retry modules also exist; validated scene progression and the approved Sol 1 timeline are implemented; the remaining timelines and complete presentation flow are next. No React imports. |
 | `src/content/` | Authored JSON: events, dialogue, facts, cargo, photos, glossary, discussion questions and local debrief templates. Add real content later; no fake NASA data. |
 | `src/services/` | Browser calls to `/api/sky` and `/api/debrief`, fallbacks and local save/storage handling. |
 | `src/ui/screens/` | Title, Plan, prologue, scene, report, Learn, Teachers, Sources and Settings. |
@@ -16,7 +16,7 @@ The project uses one repository and one deployment. `src/` is the frontend; a se
 | `src/ui/minigames/` | Cover Panels, Rover Drive, Repair Wires and Patch Leak. |
 | `src/styles/` | Shared responsive styles, visual effects, reduced motion and print styles. |
 
-The root contains the Vite/React/TypeScript starter configuration and frontend entry files `src/main.tsx`, `src/App.tsx` and `src/features.ts`. It runs as a clearly labeled starter screen; mission gameplay is not implemented. See the Local development section in `README.md` for install, test and build commands.
+The root contains the Vite/React/TypeScript starter configuration and frontend entry files `src/main.tsx`, `src/App.tsx` and `src/features.ts`. It runs a clearly labeled Sol 1 development integration with temporary semantic controls. Starting requires a valid `/api/sky` response; no invented NASA fixture is bundled. Member 4 replaces the temporary presentation with assigned components. See the Local development section in `README.md` for install, test and build commands.
 
 ## Backend: `api/`
 

@@ -46,7 +46,7 @@ Request a shared-contract change from Member 1 instead of inventing a second typ
 
 ## Storage boundary — Member 1
 
-`SaveEnvelope` has schemaVersion=1, contentVersion, savedAt, checkpoint and state, plus an optional scene cursor. State is **after** that checkpoint's transition: loading must not apply its effects again. Known durable boundaries are launch, sol_start, choice_result, night and ending.
+`SaveEnvelope` has schemaVersion=1, contentVersion, runId, savedAt, checkpoint and state, plus an optional scene cursor. State is **after** that checkpoint's transition: loading must not apply its effects again. Known durable boundaries are launch, sol_start, choice_result, night and ending.
 
 Selected choice and mini-game result can be captured in the cursor so uncommitted tasks can restart without costs/bonuses. The storage implementation must validate envelope/content compatibility, IDs, dates and meter ranges before accepting a save. Completed runs don't appear as unfinished Continue missions.
 
@@ -71,3 +71,15 @@ The pre-existing starter was preserved and its missing development dependencies 
 Development dependency audit still reports 41 findings (23 moderate, 18 high), including the local Vercel/lint toolchain. A compatible tar override removed the critical finding. The local Vercel CLI is pinned to 65.2.0; minimatch/tar overrides are documented in package.json and need review when updating the toolchain. This checkpoint is suitable for development, not a declaration of release security approval. No forced audit downgrade was run. Deployment smoke testing and API handlers are still pending.
 
 No push or commit was performed for this implementation task. Next: Member 1 implements effect resolution, cargo, save/retry guards and the scene player/Sol 1 timeline. Member 2 and Member 4 can consume these contracts in separate working folders after this checkpoint is shared.
+
+## Resource-engine follow-up
+
+Cargo validation, passive modifiers, authored choice rules, resource transitions and ending checks are now implemented. See [ENGINE_HANDOFF.md](ENGINE_HANDOFF.md) for function names and exact phase/idempotency semantics. This is an additive Member 1 implementation; UI/backend interfaces are unchanged. Browser save/retry restoration, the scene player and playable Sol 1 remain next.
+
+## Storage/retry follow-up
+
+Validated browser saves, session memory fallback, overwrite/stale-save protection and memory-only sol-start retry are now implemented. See [STORAGE_HANDOFF.md](STORAGE_HANDOFF.md). SaveEnvelope now includes the runId already required by the README; NASA/AI wire formats are unchanged. The scene player will supply its step-registry validator and connect these modules to the UI.
+
+Scene runner implemented: see docs/SCENE_PLAYER_HANDOFF.md for one-shot cues/checkpoints, optional visit tokens, risk confirmation and UI/storage integration. Authored Sol 1 and visible integration remain outstanding.
+
+Sol 1 integration: src/engine/scenes/sol01-touchdown.ts selects one applicable cargo callback; src/content/story.json contains the approved prologue/tutorial wording. Temporary src/App.tsx consumes /api/sky, persists the latest cursor and restores Continue without a new lookup. Content version is sol1-v1. Member 2's validated browser adapter should replace the temporary response checks; Member 4's presentation should replace the semantic markup, keeping engine changes centralized. No fake sky data or final photo claims are included.

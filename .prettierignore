@@ -10,5 +10,7 @@ README.md
 AGENTS.md
 docs/*.md
 !docs/CONTRACTS.md
+!docs/ENGINE_HANDOFF.md
+!docs/STORAGE_HANDOFF.md
 docs/*.json
 docs/*.svg

@@ -9,4 +9,5 @@ export const BALANCE = {
   warnAt: 30,
   dangerAt: 15,
   cargoBudget: 10,
+  plantsLifeLoss: 3,
 } as const;
