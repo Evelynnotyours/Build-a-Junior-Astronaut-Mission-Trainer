@@ -1087,6 +1087,98 @@
   }
 }
 
+.mg-wires--testing .mg-wires__board {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 2px rgba(120, 190, 255, 0.35);
+}
+
+.mg-wires--powered .mg-wires__board {
+  box-shadow:
+    0 8px 28px rgba(80, 180, 255, 0.35),
+    0 0 24px rgba(120, 220, 255, 0.25);
+}
+
+.mg-wires__test-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 640px);
+  padding: 0.55rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(12, 20, 36, 0.88);
+  border: 2px solid rgba(120, 190, 255, 0.35);
+}
+
+.mg-wires__led {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(8, 14, 28, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.mg-wires__led-bulb {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #554422;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.mg-wires__led--ready .mg-wires__led-bulb {
+  background: #8a6a20;
+  box-shadow: 0 0 6px rgba(255, 200, 80, 0.45);
+}
+
+.mg-wires__led--live .mg-wires__led-bulb {
+  background: var(--mg-wire-color, #7ec8ff);
+  box-shadow: 0 0 10px var(--mg-wire-color, #7ec8ff);
+}
+
+.mg-wires__led--pulse .mg-wires__led-bulb {
+  animation: mg-wire-glow 1.2s ease-in-out 2;
+}
+
+.mg-wires__test-btn {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 14px;
+  border: 2px solid #7ec8ff;
+  background: linear-gradient(180deg, #2a4a78 0%, #1a3058 100%);
+  color: #f4f1ea;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mg-wires__test-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.mg-wires__test-btn:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 2px;
+}
+
+.mg-wires__test-btn:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.mg-wires__test-hint {
+  flex: 1 1 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #b8d4ff;
+}
+
 @media (max-width: 720px) {
   .mg-wires__hud {
     grid-template-columns: 1fr;
@@ -1099,6 +1191,169 @@
 
   .mg-wires__port-label {
     font-size: 0.5rem;
+  }
+
+  .mg-wires__test-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mg-wires__led {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-wires__led--pulse .mg-wires__led-bulb {
+    animation: none;
+  }
+}
+
+.mg-wires__clues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 0.35rem 0.5rem;
+  border-radius: 14px;
+  background: rgba(12, 20, 36, 0.75);
+  border: 1px solid rgba(120, 190, 255, 0.25);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.mg-wires__clue-pill {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(8, 14, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mg-wires__clue-training {
+  margin-left: auto;
+  color: #b8d4ff;
+  font-weight: 700;
+}
+
+.mg-wires__obstacle {
+  position: absolute;
+  left: 38%;
+  top: 28%;
+  width: 24%;
+  height: 44%;
+  pointer-events: none;
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 120, 80, 0.55);
+  background: rgba(120, 28, 12, 0.22);
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #ffb89a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mg-wires__conduit-grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mg-wires__conduit-lane {
+  stroke: rgba(120, 190, 255, 0.22);
+  stroke-width: 1.2;
+  stroke-dasharray: 2.5 2.5;
+}
+
+.mg-wires__conduit-lane--busy {
+  stroke: rgba(255, 200, 100, 0.55);
+  stroke-width: 2;
+}
+
+.mg-wires__port--matched {
+  outline: 2px dashed #8fd0ff;
+  outline-offset: 2px;
+}
+
+.mg-wires__port--route {
+  animation: mg-wire-glow 1.2s ease-in-out infinite;
+}
+
+.mg-wires__route-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: stretch;
+  width: min(100%, 640px);
+  padding: 0.55rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(12, 20, 36, 0.88);
+  border: 2px solid rgba(255, 160, 100, 0.35);
+}
+
+.mg-wires__route-title {
+  margin: 0;
+  text-align: center;
+  font-weight: 800;
+  color: #ffe27a;
+}
+
+.mg-wires__route-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.mg-wires__route-btn {
+  min-height: 44px;
+  padding: 0.45rem 0.6rem;
+  border-radius: 14px;
+  border: 2px solid rgba(120, 190, 255, 0.45);
+  background: rgba(16, 28, 48, 0.92);
+  color: #f4f1ea;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mg-wires__route-btn--a {
+  border-color: rgba(90, 212, 255, 0.55);
+}
+
+.mg-wires__route-btn--b {
+  border-color: rgba(255, 154, 212, 0.45);
+}
+
+.mg-wires__route-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.mg-wires__route-btn:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .mg-wires__route-options {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-wires__clue-training {
+    flex: 1 1 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-wires__port--route {
+    animation: none;
   }
 }
 
@@ -1237,6 +1492,222 @@
   box-shadow: 0 0 12px rgba(100, 220, 150, 0.35);
 }
 
+.mg-leak__spot--scanned {
+  outline: 2px dashed rgba(143, 208, 255, 0.75);
+  outline-offset: 3px;
+}
+
+.mg-leak__spot--scan {
+  cursor: crosshair;
+}
+
+.mg-leak--scan .mg-leak__module {
+  filter: saturate(0.92);
+}
+
+.mg-leak__tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 640px);
+  padding: 0.55rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(12, 20, 36, 0.88);
+  border: 2px solid rgba(120, 190, 255, 0.35);
+}
+
+.mg-leak__tray-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-height: 44px;
+  min-width: 7.5rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 14px;
+  border: 2px solid rgba(120, 190, 255, 0.45);
+  background: rgba(16, 28, 48, 0.92);
+  color: #f4f1ea;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mg-leak__tray-btn--selected {
+  border-color: #ffe27a;
+  box-shadow: 0 0 0 2px rgba(255, 226, 122, 0.35);
+}
+
+.mg-leak__tray-glyph {
+  font-size: 0.72rem;
+  color: #b8d4ff;
+  font-weight: 700;
+}
+
+.mg-leak__tray-hint {
+  flex: 1 1 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #b8d4ff;
+}
+
+.mg-leak__pressure-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 640px);
+  padding: 0.55rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(12, 20, 36, 0.88);
+  border: 2px solid rgba(120, 190, 255, 0.35);
+}
+
+.mg-leak__gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 7rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 14px;
+  background: rgba(8, 14, 28, 0.85);
+  border: 2px solid rgba(255, 160, 80, 0.45);
+}
+
+.mg-leak__gauge--stable {
+  border-color: rgba(120, 220, 140, 0.65);
+}
+
+.mg-leak__gauge--pulse .mg-leak__gauge-readout {
+  animation: mg-wire-glow 1.2s ease-in-out 2;
+}
+
+.mg-leak__gauge-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #d7e7ff;
+}
+
+.mg-leak__gauge-readout {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffb89a;
+  letter-spacing: 0.08em;
+}
+
+.mg-leak__gauge--stable .mg-leak__gauge-readout {
+  color: #9ef0a8;
+}
+
+.mg-leak__pressure-btn {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 14px;
+  border: 2px solid #7ec8ff;
+  background: linear-gradient(180deg, #2a4a78 0%, #1a3058 100%);
+  color: #f4f1ea;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mg-leak__pressure-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.mg-leak__pressure-btn:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 2px;
+}
+
+.mg-leak__pressure-btn:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.mg-leak--testing .mg-leak__module {
+  box-shadow: 0 0 0 2px rgba(120, 190, 255, 0.35);
+}
+
+.mg-leak--stable .mg-leak__module {
+  box-shadow: 0 0 24px rgba(120, 220, 255, 0.25);
+}
+
+.mg-leak__clues {
+  display: flex;
+  justify-content: center;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 0.25rem 0.5rem;
+}
+
+.mg-leak__clue-training {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #b8d4ff;
+}
+
+.mg-leak__spot--shape-round .mg-leak__marker {
+  border-radius: 50%;
+}
+
+.mg-leak__spot--shape-oval .mg-leak__marker {
+  width: 2.35rem;
+  height: 1.45rem;
+  border-radius: 999px;
+}
+
+.mg-leak__spot--shape-slit .mg-leak__marker {
+  width: 2.15rem;
+  height: 0.85rem;
+  border-radius: 4px;
+}
+
+.mg-leak__spot--decoy.mg-leak__spot--open {
+  border-color: rgba(180, 180, 200, 0.45);
+}
+
+.mg-leak__spot--decoy-done {
+  opacity: 0.72;
+}
+
+.mg-leak__rotate-btn {
+  min-height: 44px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 226, 122, 0.55);
+  background: rgba(40, 32, 16, 0.88);
+  color: #ffe27a;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mg-leak__rotate-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.mg-leak__rotate-btn:focus-visible {
+  outline: 3px solid #8fd0ff;
+  outline-offset: 2px;
+}
+
+.mg-leak__pressure-order {
+  width: min(100%, 640px);
+  padding: 0.45rem 0.75rem;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  background: rgba(28, 18, 12, 0.88);
+  border: 2px solid rgba(255, 160, 100, 0.4);
+  color: #ffd0b0;
+}
+
 .mg-leak__spot--focus {
   outline: 3px solid #8fd0ff;
   outline-offset: 3px;
@@ -1358,7 +1829,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mg-leak__spot--hiss,
-  .mg-leak__hiss {
+  .mg-leak__hiss,
+  .mg-leak__gauge--pulse .mg-leak__gauge-readout {
     animation: none;
   }
 }
