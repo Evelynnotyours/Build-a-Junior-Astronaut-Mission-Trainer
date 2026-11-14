@@ -202,7 +202,7 @@ For each sol:
 **Lane C2: Members 2 + 4.** Build the four mini-games in separate files after the result/Skip contract is stable. Suggested ownership: Member 4 starts Rover Drive then Cover Panels; Member 2 starts Repair Wires then Patch Leak when backend work permits. Record any reassignment.
 
 - Each game gets input from the engine and reports `done` or `skipped` once.
-- The engine, not the component, applies the confirmed +2 Power completion bonus and other effects once.
+- The engine, not the component, applies the confirmed completion bonus once: +2 Life for Rover Drive and +2 Power for the other three tasks.
 - No countdown or failure screen. No forced dragging. Use clear instructions, touch/keyboard support and Skip throughout.
 - Rover Drive includes an obstacle route with a guaranteed solution, friendly blocked feedback, and the same component with `obstacleBlocking: false`.
 - Build/test games in their own preview harness; Member 1 integrates each into the relevant scene after handoff.

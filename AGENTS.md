@@ -1,11 +1,11 @@
 # AI entry instructions — Mars Mission Survival
 
-This is the clean team handoff repository. Read these instructions before editing. It contains imported planning, artwork and asset-preparation utilities, plus empty application directories. **There is no runnable game yet.** Do not report a feature as implemented just because a document describes it.
+This is the clean team handoff repository. Read these instructions before editing. It contains imported planning/artwork/utilities, a runnable React/Vite starter and Gate A shared contracts. **Mission gameplay is not implemented yet.** Do not report a feature as implemented just because a document describes it.
 
 ## Start here
 
 1. Read `README.md`, especially **CONFIRMED UPDATE**, for product rules, IDs and numbers.
-2. Read `docs/TEAM_WORKFLOW.md` for member ownership, dependencies, checkpoints, task prompts and acceptance criteria. View `docs/team-workflow.svg` for the parallel lanes.
+2. Read `docs/TEAM_WORKFLOW.md` for member ownership, dependencies, checkpoints, task prompts and acceptance criteria. Then read `docs/CONTRACTS.md` for the implemented shared interfaces and current checkpoint. View `docs/team-workflow.svg` for the parallel lanes.
 3. Read `docs/PROJECT_STRUCTURE.md` for paths. Frontend is `src/`; backend functions are `api/`. Do not create a second nested project or a `tuesday/` subfolder.
 4. For scene work, read `docs/story-script.md` and `docs/facts.md`. Facts are not all verified. Source PDFs and member art briefs were intentionally excluded.
 5. For artwork, read `asset-preparation/README.md` and `asset-preparation/export-manifest.json`. The setting reference is `asset-preparation/references/setting-reference.jpg`.
@@ -27,7 +27,7 @@ Assignments can change through a recorded handoff. Own and troubleshoot your del
 ## Safe parallel work
 
 - Each simultaneous coding agent needs a separate checkout and branch, including when Cursor and Codex run on the same computer. A separate chat alone does not isolate files.
-- Use `codex/` task branches by default. Do not switch the branch beneath another running agent.
+- Member 1 explicitly chose `main` in this checkout on November 14. Respect that override; do not create a branch for this task. Other task owners choose their own checkout workflow. Coordinate shared-remote pushes and never overwrite local work or force-push. Do not switch the branch beneath another running agent.
 - One active owner per file. Consume shared interfaces read-only. Request contract/config/dependency changes from Member 1; don't fix an integration error by silently changing someone else's files.
 - Member 1 initially owns package files, lockfile, project configuration, app entry points, central registry and shared state/scene types.
 - Bootstrap/contracts land first. Then engine/UI/backend/content run in parallel. Integrate and review Sol 1 before writing all other timelines.
@@ -58,7 +58,7 @@ Assignments can change through a recorded handoff. Own and troubleshoot your del
 - Physical PNG resolution differs from logical scene size. Read the manifest for frame slicing, logical dimensions and registration; larger files must not make characters larger in the world.
 - Scripted transparency/registration work was already done in preparation. Plating fit, panel design mismatches, helmets and the reference-setting style still need explicit review/edits.
 - The copied Python utilities predate this repository's import. They are optional artwork preparation/QA tools requiring Python and Pillow, not game implementation. `python scripts/prepare_assets.py --check` and `python scripts/check_asset_cleanup.py` validate the imported assets without redrawing them.
-- There is no `npm` app or test command until bootstrap creates and documents it. Never claim you ran a nonexistent command.
+- A runnable React 18/Vite/Tailwind starter now exists. Use Node 24 (or the supported engine range in package.json). `npm ci`, `npm run dev`, `npm test`, `npm run lint`, `npm run typecheck` and `npm run build` are available. API handlers/gameplay are still absent.
 
 ## Handoff before finishing a task
 

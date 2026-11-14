@@ -1,6 +1,6 @@
 # Team project structure
 
-This is a directory skeleton, not a runnable application. React/Vite configuration, package dependencies and game/API implementations have not been added. Empty folders contain `.gitkeep` so Git can retain them when explicitly committed. This structure does not change the event's coding-start requirements in README.md.
+This repository now has a runnable React/Vite/TypeScript/Tailwind starter and Gate A shared contracts. Full game/API implementations have not been added. Empty folders contain `.gitkeep` so Git can retain them when explicitly committed. This structure does not change the event's coding-start requirements in README.md.
 
 ## Frontend: `src/`
 
@@ -8,7 +8,7 @@ The project uses one repository and one deployment. `src/` is the frontend; a se
 
 | Folder | Responsibility |
 |---|---|
-| `src/engine/` | Pure TypeScript rules: meters, cargo modifiers, schedules, choices, consequences, ending checks and snapshots. No React imports. |
+| `src/engine/` | Pure TypeScript domain/scene/API/save contracts, starter balance constants and fixed-order routing currently exist. Full meter/cargo/result/night resolution and snapshots are next. No React imports. |
 | `src/content/` | Authored JSON: events, dialogue, facts, cargo, photos, glossary, discussion questions and local debrief templates. Add real content later; no fake NASA data. |
 | `src/services/` | Browser calls to `/api/sky` and `/api/debrief`, fallbacks and local save/storage handling. |
 | `src/ui/screens/` | Title, Plan, prologue, scene, report, Learn, Teachers, Sources and Settings. |
@@ -16,7 +16,7 @@ The project uses one repository and one deployment. `src/` is the frontend; a se
 | `src/ui/minigames/` | Cover Panels, Rover Drive, Repair Wires and Patch Leak. |
 | `src/styles/` | Shared responsive styles, visual effects, reduced motion and print styles. |
 
-Frontend entry files such as `src/main.tsx`, `src/App.tsx` and `src/features.ts`, plus Vite/package/TypeScript configuration, will be created during scaffold implementation. There is intentionally no nonfunctional pretend application here yet.
+The root contains the Vite/React/TypeScript starter configuration and frontend entry files `src/main.tsx`, `src/App.tsx` and `src/features.ts`. It runs as a clearly labeled starter screen; mission gameplay is not implemented. See the Local development section in `README.md` for install, test and build commands.
 
 ## Backend: `api/`
 
@@ -65,4 +65,4 @@ Preserved artwork sources and the sixty-two prepared runtime PNGs are included. 
 
 Artists can work in their preparation folders using the separate briefs. Writers can fill the script/fact documents. When coding is permitted, implement the scaffold and core engine before connecting real UI/assets. Keep frontend and API work on coordinated branches or avoid editing the same files simultaneously. Nothing in this skeleton fetches external data or needs an API key to inspect.
 
-No files are pushed automatically. A later commit can include the intended structure and `.gitkeep` placeholders without including private references, working drafts or secrets.
+The app bootstrap is in place, but the game and API handlers are not implemented. Continue with the permitted engine/contracts work before connecting gameplay or external services. No files are pushed automatically; keep private references, working drafts and secrets out of commits.

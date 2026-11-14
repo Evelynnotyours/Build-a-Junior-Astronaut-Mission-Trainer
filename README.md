@@ -244,6 +244,24 @@ If behind schedule, defer optional polish from the bottom of P1 first. Preserve 
 
 Environment variables (server only; never ship keys to the browser): `NASA_API_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL`. Provide a `.env.example`.
 
+### Local development
+
+**Member 1 checkpoint (November 14):** the existing starter is runnable; shared contracts, fixed-order routing and starter constants are in `src/engine/`. Read [docs/CONTRACTS.md](docs/CONTRACTS.md) before parallel work. Full engine/scene player, playable Sol 1 and API/UI features are not implemented yet. Member 1 is working on `main` by explicit team instruction.
+
+Use **Node 24** (supported versions are recorded in `package.json`). `npm run typecheck` and `npm run format:check` are available in addition to the commands below. `npm run validate` is a planned content-validation command, not implemented at this checkpoint.
+
+The repository now has a runnable React/Vite/TypeScript starter scaffold; this is not yet a playable game, and the API handlers are not implemented.
+
+```powershell
+npm ci
+npm run dev
+npm test
+npm run lint
+npm run build
+```
+
+Use `npm run dev:vercel` to run the Vite app with Vercel's local serverless-function support when API handlers are added. The scaffold also provides `npm run format:check` and `npm run format`.
+
 ---
 
 ## 6. Folder structure
