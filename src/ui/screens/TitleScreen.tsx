@@ -25,7 +25,7 @@ export function TitleScreen({
   return (
     <div className="title-shell">
       <div className="title-hero" aria-hidden="true">
-        <img src="/assets/bg/mars_vista.jpg" alt="" draggable={false} />
+        <img src="/assets/bg/sky_dawn.png" alt="" draggable={false} />
         <div className="title-hero__shade" />
       </div>
 

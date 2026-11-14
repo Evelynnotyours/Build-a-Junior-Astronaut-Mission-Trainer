@@ -1,17 +1,58 @@
 import type { ChoiceOption, SceneLayerFlags, SpotLayout } from '../components/types';
 import type { Meters, SpotId } from '../../engine/types';
+import { OUTPOST_BUILDINGS, OUTPOST_PATH_START } from '../components/outpostLayout';
 
-/**
- * Hotspots aligned to outpostLayout building slots (reference composition).
- * stand = Commander feet percent [x, y].
- */
+/** Hotspots aligned to bottom-center building anchors. */
 export const PREVIEW_SPOTS: Record<SpotId, SpotLayout> = {
-  greenhouse: { x: 7, y: 34, w: 18, h: 22, stand: [15, 62], label: 'Greenhouse' },
-  solar: { x: 30, y: 56, w: 12, h: 14, stand: [34, 72], label: 'Solar panels' },
-  air: { x: 38, y: 48, w: 10, h: 14, stand: [42, 68], label: 'Air module' },
-  habitat: { x: 54, y: 28, w: 18, h: 24, stand: [62, 64], label: 'Habitat' },
-  dish: { x: 72, y: 22, w: 8, h: 12, stand: [74, 48], label: 'Comms dish' },
-  rover: { x: 80, y: 52, w: 12, h: 16, stand: [86, 72], label: 'Rover garage' },
+  greenhouse: {
+    x: OUTPOST_BUILDINGS.greenhouse.x - 5,
+    y: 100 - OUTPOST_BUILDINGS.greenhouse.bottom - 14,
+    w: 10,
+    h: 14,
+    stand: [OUTPOST_BUILDINGS.greenhouse.x + 8, 100 - OUTPOST_BUILDINGS.greenhouse.bottom + 4],
+    label: 'Greenhouse',
+  },
+  solar: {
+    x: OUTPOST_BUILDINGS.solar.x - 4,
+    y: 100 - OUTPOST_BUILDINGS.solar.bottom - 10,
+    w: 9,
+    h: 10,
+    stand: [50, 72],
+    label: 'Solar panels',
+  },
+  air: {
+    x: OUTPOST_BUILDINGS.air.x - 5,
+    y: 100 - OUTPOST_BUILDINGS.air.bottom - 12,
+    w: 10,
+    h: 12,
+    stand: [OUTPOST_BUILDINGS.air.x + 7, 100 - OUTPOST_BUILDINGS.air.bottom + 4],
+    label: 'Air module',
+  },
+  habitat: {
+    x: OUTPOST_BUILDINGS.habitat.x - 7,
+    y: 100 - OUTPOST_BUILDINGS.habitat.bottom - 16,
+    w: 14,
+    h: 16,
+    // Stand on the path, not on the solar row
+    stand: [52, 70],
+    label: 'Habitat',
+  },
+  dish: {
+    x: OUTPOST_BUILDINGS.dish.x - 3,
+    y: 100 - OUTPOST_BUILDINGS.dish.bottom - 10,
+    w: 6,
+    h: 10,
+    stand: [OUTPOST_BUILDINGS.dish.x - 6, 100 - OUTPOST_BUILDINGS.dish.bottom + 4],
+    label: 'Comms dish',
+  },
+  rover: {
+    x: OUTPOST_BUILDINGS.rover.x - 5,
+    y: 100 - OUTPOST_BUILDINGS.rover.bottom - 10,
+    w: 10,
+    h: 10,
+    stand: [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y],
+    label: 'Rover garage',
+  },
 };
 
 export const PREVIEW_METERS: Meters = {
@@ -21,7 +62,7 @@ export const PREVIEW_METERS: Meters = {
 };
 
 export const PREVIEW_LAYERS: SceneLayerFlags = {
-  sky: 'dawn',
+  sky: 'day',
   solar: 'clean',
   garageOpen: false,
   shelterOpen: false,
@@ -31,8 +72,6 @@ export const PREVIEW_LAYERS: SceneLayerFlags = {
   frost: false,
 };
 
-export const PREVIEW_BACKDROP = '/assets/bg/mars_vista.jpg';
-
 export const PREVIEW_CHOICES: ChoiceOption[] = [
   { id: 'A', label: 'Check the habitat systems', costs: ['Power 0'] },
   { id: 'B', label: 'Send a status ping to Earth', costs: ['Power −5'] },
@@ -40,7 +79,7 @@ export const PREVIEW_CHOICES: ChoiceOption[] = [
 ];
 
 export const PREVIEW_NOTES = [
-  'Layout styled after the team UI reference; confirmed meters stay Life Support / Power / Shielding (no Food bar).',
-  'Background uses public/assets/bg/mars_vista.jpg (your landscape photo).',
+  'Bottom-center anchors + depth scale; rover smaller; astronaut on the path.',
+  'Decorative rocks are collision-resolved away from props (~20px / 2% clearance).',
   'No NASA logo in UI — team branding only.',
 ] as const;

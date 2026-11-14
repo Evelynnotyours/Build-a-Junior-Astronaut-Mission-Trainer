@@ -221,7 +221,7 @@ export function RoverDrive({
         aria-label="Mars rover drive. Use arrow keys or on-screen controls, then GO."
       >
         <div className="mg-rover__vista" aria-hidden="true">
-          <img src="/assets/bg/mars_vista.jpg" alt="" draggable={false} />
+          <img src="/assets/bg/sky_day.png" alt="" draggable={false} />
           <div className="mg-rover__vista-shade" />
         </div>
 

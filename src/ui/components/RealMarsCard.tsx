@@ -2,12 +2,14 @@ type RealMarsCardProps = {
   title: string;
   fact: string;
   sourceLabel: string;
+  sourceUrl?: string;
   photoSrc?: string;
   photoAlt?: string;
   photoCredit?: string;
   savedPhoto?: boolean;
   mediaLabel?: string;
-  sourceUrl?: string;
+  /** Catalog label, e.g. "Saved photo" / "Saved illustration". */
+  savedLabel?: string;
   photoSourceUrl?: string;
   photoCaption?: string;
   contextNote?: string;
@@ -22,12 +24,13 @@ export function RealMarsCard({
   title,
   fact,
   sourceLabel,
+  sourceUrl,
   photoSrc,
-  photoAlt = 'Real Mars photo',
+  photoAlt = 'Saved NASA image',
   photoCredit,
   savedPhoto = true,
   mediaLabel = 'Saved photo',
-  sourceUrl,
+  savedLabel,
   photoSourceUrl,
   photoCaption,
   contextNote,
@@ -37,6 +40,8 @@ export function RealMarsCard({
   onOpen,
   onClose,
 }: RealMarsCardProps) {
+  const tag = savedLabel || (savedPhoto ? mediaLabel : '');
+
   if (collapsed) {
     return (
       <button type="button" className="ui-real-mars-badge" onClick={onOpen}>
@@ -49,9 +54,7 @@ export function RealMarsCard({
     <article className="ui-real-mars" aria-label={title}>
       <header className="ui-real-mars__header">
         <h2>{title}</h2>
-        {savedPhoto ? (
-          <span className="ui-real-mars__tag">{mediaLabel}</span>
-        ) : null}
+        {tag ? <span className="ui-real-mars__tag">{tag}</span> : null}
       </header>
       {photoSrc ? (
         <figure className="ui-real-mars__figure">
@@ -62,33 +65,38 @@ export function RealMarsCard({
         <p className="ui-real-mars__missing">Photo not bundled yet.</p>
       )}
       <p className="ui-real-mars__fact">{fact}</p>
-      {observationNote && <p>{observationNote}</p>}
+      {observationNote ? <p>{observationNote}</p> : null}
+      {contextNote ? <p className="ui-real-mars__note">{contextNote}</p> : null}
       <details>
         <summary>Photo and sources</summary>
-        {photoCaption && <p>{photoCaption}</p>}
-        {contextNote && <p>{contextNote}</p>}
+        {photoCaption ? <p>{photoCaption}</p> : null}
         <p className="ui-real-mars__source">{sourceLabel}</p>
-        {observationSourceUrl && (
+        {observationSourceUrl ? (
           <p>
             <a href={observationSourceUrl} target="_blank" rel="noreferrer">
               Mission solar observation source
             </a>
           </p>
-        )}
-        {sourceUrl && (
+        ) : null}
+        {sourceUrl ? (
           <p>
-            <a href={sourceUrl} target="_blank" rel="noreferrer">
-              Fact source
+            <a
+              className="ui-real-mars__link"
+              href={sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open source
             </a>
           </p>
-        )}
-        {photoSourceUrl && (
+        ) : null}
+        {photoSourceUrl && photoSourceUrl !== sourceUrl ? (
           <p>
             <a href={photoSourceUrl} target="_blank" rel="noreferrer">
               Image source
             </a>
           </p>
-        )}
+        ) : null}
       </details>
       <button type="button" className="ui-btn" onClick={onClose}>
         Close

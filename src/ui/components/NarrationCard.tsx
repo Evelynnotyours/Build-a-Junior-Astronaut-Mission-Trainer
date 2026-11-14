@@ -8,7 +8,7 @@ type NarrationCardProps = {
   showPortrait?: boolean;
 };
 
-/** Bottom narration / Robo hint card. Parent supplies already-resolved story text. */
+/** Bottom narration / Robo hint — same dialogue panel style as character speech. */
 export function NarrationCard({
   text,
   onContinue,
@@ -17,21 +17,30 @@ export function NarrationCard({
   showPortrait = true,
 }: NarrationCardProps) {
   return (
-    <section className="ui-narration ui-speech" aria-live="polite">
+    <section
+      className={showPortrait ? 'ui-dialogue' : 'ui-dialogue ui-dialogue--solo'}
+      aria-live="polite"
+      aria-label="Robo says"
+    >
       {showPortrait ? (
-        <Portrait speaker="robo" expression="explaining" size="md" alt="" />
+        <div className="ui-dialogue__speaker" aria-hidden="true">
+          <Portrait speaker="robo" expression="explaining" size="hero" alt="" />
+        </div>
       ) : null}
-      <div className="ui-speech__body">
+      <div className="ui-dialogue__bubble">
+        <header className="ui-dialogue__name">Robo</header>
         <p
           className={
-            reduceMotion ? 'ui-narration__text' : 'ui-narration__text ui-narration__text--type'
+            reduceMotion
+              ? 'ui-dialogue__text'
+              : 'ui-dialogue__text ui-narration__text--type'
           }
         >
           {text}
         </p>
-        <button type="button" className="ui-btn ui-btn--cta" onClick={onContinue}>
+        <button type="button" className="ui-dialogue__continue" onClick={onContinue}>
           {continueLabel}
-          <span aria-hidden="true"> ›</span>
+          <span aria-hidden="true"> ››</span>
         </button>
       </div>
     </section>
