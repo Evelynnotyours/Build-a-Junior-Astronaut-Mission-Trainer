@@ -34,8 +34,7 @@ type RoutedStage = 'match' | 'route' | 'test';
 
 const CONDUIT_CLUE =
   'Robo says: each wire needs its own conduit row — pick a free lane.';
-const MATCH_CLUE_HINT =
-  'Robo says: match symbols and labels, not just colors.';
+const MATCH_CLUE_HINT = 'Robo says: match symbols and labels, not just colors.';
 
 function buildTerminals(
   pairs: readonly WirePairRoute[],
@@ -73,7 +72,9 @@ function wirePolyline(
   conduitRow: number,
   conduitMode: boolean,
 ): string {
-  const midY = conduitMode ? CONDUIT_ROW_Y[conduitRow] : portY + (path === 'A' ? -6 : 6);
+  const midY = conduitMode
+    ? CONDUIT_ROW_Y[conduitRow]
+    : portY + (path === 'A' ? -6 : 6);
   return `M ${LEFT_X} ${portY} L 35 ${portY} L 35 ${midY} L 65 ${midY} L 65 ${portY} L ${RIGHT_X} ${portY}`;
 }
 
@@ -123,17 +124,16 @@ export function RepairWiresRouted({
   const [toast, setToast] = useState(roboHint);
   const [nudge, setNudge] = useState(false);
   const [spark, setSpark] = useState(false);
-  const [pairMismatches, setPairMismatches] = useState<Record<string, number>>(
-    {},
-  );
-  const [conduitBlocks, setConduitBlocks] = useState(0);
+  const [, setPairMismatches] = useState<Record<string, number>>({});
+  const [, setConduitBlocks] = useState(0);
   const [circuitLive, setCircuitLive] = useState(false);
 
   const matchedSet = useMemo(() => new Set(matched), [matched]);
   const routedSet = useMemo(() => new Set(routed), [routed]);
 
   const completeCount = useMemo(
-    () => pairs.filter((p) => matchedSet.has(p.id) && routedSet.has(p.id)).length,
+    () =>
+      pairs.filter((p) => matchedSet.has(p.id) && routedSet.has(p.id)).length,
     [pairs, matchedSet, routedSet],
   );
 
@@ -207,7 +207,8 @@ export function RepairWiresRouted({
   function afterPairRouted() {
     setPendingRoutePairId(null);
     const done = pairs.every(
-      (p) => matchedRef.current.includes(p.id) && routedRef.current.includes(p.id),
+      (p) =>
+        matchedRef.current.includes(p.id) && routedRef.current.includes(p.id),
     );
     if (done) {
       enterTestPhase();
@@ -230,21 +231,21 @@ export function RepairWiresRouted({
       occupiedConduits.has(conduitRow) &&
       !routedRef.current.includes(pairId)
     ) {
-    setConduitBlocks((n) => {
-      const next = n + 1;
-      setToast(
-        next >= 1
-          ? `That conduit row is already in use. ${CONDUIT_CLUE}`
-          : 'That conduit row is already in use. Try the other route.',
-      );
-      return next;
-    });
-    if (!reduceMotion) {
-      setNudge(true);
-      window.setTimeout(() => setNudge(false), 420);
+      setConduitBlocks((n) => {
+        const next = n + 1;
+        setToast(
+          next >= 1
+            ? `That conduit row is already in use. ${CONDUIT_CLUE}`
+            : 'That conduit row is already in use. Try the other route.',
+        );
+        return next;
+      });
+      if (!reduceMotion) {
+        setNudge(true);
+        window.setTimeout(() => setNudge(false), 420);
+      }
+      return;
     }
-    return;
-  }
 
     if (path !== pair.safePath) {
       setToast('Too close to hot line. Try the other route.');
@@ -265,7 +266,9 @@ export function RepairWiresRouted({
     routePathRef.current = nextPaths;
     setRouted(nextRouted);
     setRoutePaths(nextPaths);
-    setToast(`Route locked for ${pair.name}. ${completeCount + 1} of ${pairCount} ready.`);
+    setToast(
+      `Route locked for ${pair.name}. ${completeCount + 1} of ${pairCount} ready.`,
+    );
     afterPairRouted();
   }
 
@@ -450,7 +453,8 @@ export function RepairWiresRouted({
         const sameSide = open.filter((t) => t.side === current.side);
         const pos = sameSide.findIndex((t) => t.id === current.id);
         const delta = event.key === 'ArrowDown' ? 1 : -1;
-        const next = sameSide[(pos + delta + sameSide.length) % sameSide.length];
+        const next =
+          sameSide[(pos + delta + sameSide.length) % sameSide.length];
         localFocus = openCol(next);
         setFocusIndex(localFocus);
         return;
@@ -575,7 +579,10 @@ export function RepairWiresRouted({
               ))}
             </svg>
           ) : (
-            <div className="mg-wires__obstacle mg-wires__obstacle--hot" aria-hidden="true">
+            <div
+              className="mg-wires__obstacle mg-wires__obstacle--hot"
+              aria-hidden="true"
+            >
               <span>Hot line</span>
             </div>
           )}

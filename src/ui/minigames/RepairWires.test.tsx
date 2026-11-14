@@ -1,4 +1,10 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RepairWires } from './RepairWires';
 
@@ -84,7 +90,9 @@ describe('RepairWires Tier 1', () => {
     fireEvent.click(port('Beta', 'right'));
     fireEvent.click(port('Gamma', 'left'));
     fireEvent.click(port('Alpha', 'right'));
-    expect(screen.getByRole('status')).toHaveTextContent(/match symbols and labels/i);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      /match symbols and labels/i,
+    );
   });
 
   it('reports skipped once and ignores repeated Skip', () => {
@@ -206,11 +214,7 @@ function renderWiresTier(
   );
 }
 
-function portNamed(
-  name: string,
-  side: 'left' | 'right',
-  onResult?: ReturnType<typeof vi.fn>,
-) {
+function portNamed(name: string, side: 'left' | 'right') {
   return screen.getByRole('button', {
     name: new RegExp(`${name} wire ${side}`, 'i'),
   });

@@ -1,4 +1,10 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PatchLeak } from './PatchLeak';
 
@@ -80,7 +86,9 @@ describe('PatchLeak Tier 1', () => {
     renderLeak(onResult);
     await scanAll();
     await sealAllCorrectly();
-    expect(screen.getByRole('button', { name: /check pressure/i })).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: /check pressure/i }),
+    ).toBeEnabled();
     expect(onResult).not.toHaveBeenCalled();
   });
 
@@ -93,7 +101,9 @@ describe('PatchLeak Tier 1', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/does not fit/i);
     selectSmall();
     fireEvent.click(patchSpot('Leak A'));
-    expect(screen.getByRole('button', { name: /Leak A, sealed/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Leak A, sealed/i }),
+    ).toBeInTheDocument();
     expect(onResult).not.toHaveBeenCalled();
   });
 
@@ -104,7 +114,9 @@ describe('PatchLeak Tier 1', () => {
     fireEvent.click(patchSpot('Leak B'));
     selectSmall();
     fireEvent.click(patchSpot('Leak B'));
-    expect(screen.getByRole('status')).toHaveTextContent(/match the scan reading/i);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      /match the scan reading/i,
+    );
   });
 
   it('reports skipped once and disables Skip', () => {
@@ -168,7 +180,9 @@ describe('PatchLeak Tier 1', () => {
     fireEvent.keyDown(document, { key: '1' });
     fireEvent.keyDown(document, { key: 'l' });
     fireEvent.keyDown(document, { key: '2' });
-    expect(screen.getByRole('button', { name: /Leak B, sealed/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Leak B, sealed/i }),
+    ).toBeInTheDocument();
   });
 
   it('runs pressure test via P key', async () => {
@@ -207,7 +221,9 @@ describe('PatchLeak Tier 1', () => {
   it('has no rotation controls in tier 1', async () => {
     renderLeak();
     await scanAll();
-    expect(screen.queryByRole('button', { name: /rotate/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /rotate/i }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/Training tier/)).not.toBeInTheDocument();
   });
 
@@ -252,7 +268,9 @@ function sealAdvanced(label: string) {
 
 function selectPatchSize(size: 'small' | 'medium' | 'large') {
   fireEvent.click(
-    screen.getByRole('button', { name: new RegExp(`Select ${size} patch`, 'i') }),
+    screen.getByRole('button', {
+      name: new RegExp(`Select ${size} patch`, 'i'),
+    }),
   );
 }
 
@@ -270,16 +288,6 @@ describe('PatchLeak Tier 2 (preview)', () => {
     expect(
       screen.getByRole('button', { name: /Select small patch/i }),
     ).toBeInTheDocument();
-  }
-
-  async function sealTier2() {
-    selectPatchSize('small');
-    sealAdvanced('Leak A');
-    selectPatchSize('medium');
-    sealAdvanced('Leak B');
-    selectPatchSize('large');
-    rotatePatch();
-    sealAdvanced('Leak C');
   }
 
   it('requires rotation on large slit leak before pressure', async () => {
@@ -322,11 +330,11 @@ describe('PatchLeak Tier 3 (preview)', () => {
     ).toBeInTheDocument();
   }
 
-function leakToast() {
-  const node = document.querySelector('.mg-leak__toast');
-  expect(node).toBeTruthy();
-  return node as HTMLElement;
-}
+  function leakToast() {
+    const node = document.querySelector('.mg-leak__toast');
+    expect(node).toBeTruthy();
+    return node as HTMLElement;
+  }
 
   async function sealTier3InOrder() {
     selectPatchSize('small');
