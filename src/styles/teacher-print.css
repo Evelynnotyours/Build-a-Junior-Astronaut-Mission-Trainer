@@ -2,24 +2,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
 
 .tn-shell {
-  --tn-navy: #1a2b6d;
-  --tn-navy-deep: #121f4d;
+  --tn-navy: #15244f;
+  --tn-navy-deep: #0d1638;
   --tn-cyan: #00d2ff;
   --tn-gold: #ffb800;
-  --tn-paper: #f7fbff;
+  --tn-title: #ffe566;
+  --tn-paper: #fff8ef;
   --tn-ink: #142033;
+  --tn-cta: #f5c42e;
+  --tn-cta-ink: #2a1a00;
   min-height: 100vh;
   padding: 1rem;
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 20% 0%, rgba(0, 210, 255, 0.18), transparent 40%),
-    radial-gradient(
-      circle at 80% 100%,
-      rgba(255, 120, 60, 0.2),
-      transparent 42%
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 28, 0.35) 0%,
+      rgba(8, 12, 28, 0.55) 55%,
+      rgba(8, 12, 28, 0.72) 100%
     ),
-    linear-gradient(160deg, #2a1840 0%, #6a2f1c 45%, #1a2048 100%);
+    radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.12), transparent 40%),
+    url('/assets/bg/menu_vista.jpg') center 60% / cover no-repeat;
   font-family: 'Nunito', 'Trebuchet MS', sans-serif;
   color: var(--tn-ink);
 }
@@ -222,7 +226,7 @@
 }
 
 .tn-main {
-  background: rgba(247, 251, 255, 0.96);
+  background: rgba(255, 248, 239, 0.96);
   border-radius: 18px;
   border: 2px solid rgba(0, 210, 255, 0.35);
   padding: 0.85rem;
@@ -281,7 +285,7 @@
 .tn-card {
   border-radius: 14px;
   overflow: hidden;
-  background: #eef6ff;
+  background: var(--tn-paper);
   border: 2px solid rgba(26, 43, 109, 0.15);
 }
 
@@ -930,26 +934,24 @@
   line-height: 1.6;
 }
 
-/* Learning hub: adapted from Pathopia's History heading, group panel and cards. */
+/* Learning hub — same Mars navy / gold / Nunito language as Plan, Album, Menu */
 .learn-shell {
   display: block;
   padding: clamp(1rem, 4vw, 3.5rem) 1rem;
-  color: #f2e9dc;
+  color: #eaf7ff;
   background:
     linear-gradient(
       180deg,
       rgba(8, 12, 28, 0.35) 0%,
-      rgba(8, 12, 28, 0.72) 55%,
-      rgba(8, 12, 28, 0.92) 100%
+      rgba(8, 12, 28, 0.55) 55%,
+      rgba(8, 12, 28, 0.72) 100%
     ),
-    radial-gradient(
-      circle at 70% 20%,
-      rgba(0, 210, 255, 0.18),
-      transparent 40%
-    ),
-    url('/assets/bg/mars_vista.jpg') center 60% / cover no-repeat;
+    radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.12), transparent 40%),
+    url('/assets/bg/menu_vista.jpg') center 60% / cover no-repeat;
   background-attachment: fixed;
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
 }
+
 .learn-shell .tn-frame {
   width: min(1080px, 100%);
   margin: 0 auto;
@@ -958,203 +960,286 @@
   border: 0;
   box-shadow: none;
 }
+
 .learn-heading {
   position: relative;
   text-align: center;
-  padding: 2.5rem 0 2rem;
+  padding: 2rem 0 1.5rem;
 }
+
 .learn-heading h1 {
-  margin: 0.5rem 0 1rem;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  font-weight: 500;
-  color: #d9a94f;
+  margin: 0.5rem 0 0.75rem;
+  font-family: inherit;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--tn-title);
   line-height: 1.15;
+  text-shadow: 0 3px 14px rgba(8, 12, 28, 0.55);
 }
+
 .learn-heading p {
   margin: 0 auto;
   max-width: 50ch;
-  color: #c7c9d6;
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  line-height: 1.6;
+  color: rgba(234, 247, 255, 0.9);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.55;
+  font-weight: 600;
 }
-.learn-back {
-  display: block;
-  margin: 0 0 1.5rem;
-  min-height: 44px;
-  border: 1px solid #c7cad666;
-  border-radius: 999px;
-  background: #171334;
-  color: #f2e9dc;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
+
 .learn-shell .tn-body {
   display: block;
 }
+
 .learn-shell .tn-side {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
+
 .learn-shell .tn-side__btn {
   display: flex;
   flex: 1 1 auto;
   justify-content: center;
-  border-radius: 999px;
+  clip-path: none;
+  border-radius: 14px;
   min-height: 44px;
   padding: 0.65rem 1rem;
-  border: 1px solid #c6b4ec47;
-  background: #171334;
-  color: #f2e9dc;
-  box-shadow: none;
+  border: 2px solid rgba(0, 210, 255, 0.4);
+  background: linear-gradient(180deg, #2a4a9a 0%, #1a326e 55%, #15244f 100%);
+  color: #eaf7ff;
+  box-shadow: 0 4px 0 #0d1638;
+  font-family: inherit;
+  font-weight: 800;
 }
+
 .learn-shell .tn-side__btn--active {
   clip-path: none;
-  border-color: #d9a94f;
-  background: #47336b;
-  color: #d9a94f;
+  border-color: rgba(232, 145, 58, 0.7);
+  background: linear-gradient(180deg, #ffe066 0%, var(--tn-cta) 55%, #e8913a 100%);
+  color: var(--tn-cta-ink);
+  box-shadow: 0 4px 0 #8a4b12;
 }
+
 .learn-shell .tn-main {
   padding: clamp(1rem, 2.5vw, 1.5rem);
-  border: 0;
-  border-radius: 24px;
-  background: transparent;
-  color: #f2e9dc;
-  box-shadow: none;
+  border-radius: 22px;
+  border: 2px solid rgba(0, 210, 255, 0.35);
+  background: rgba(255, 248, 239, 0.96);
+  color: var(--tn-ink);
+  box-shadow:
+    0 16px 34px rgba(8, 12, 28, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.65);
 }
+
 .learn-shell .tn-description {
-  color: #c7c9d6;
+  margin: 0 0 0.85rem;
+  color: #4a5568;
+  font-weight: 600;
 }
+
 .learn-intro {
   padding-bottom: 1rem;
-  border-bottom: 1px solid #f2e9dc24;
+  border-bottom: 1px solid rgba(20, 32, 51, 0.12);
 }
+
 .learn-intro h2 {
   margin: 0 0 0.5rem;
-  font:
-    500 1.6rem Georgia,
-    serif;
-  color: #d9a94f;
+  font-family: inherit;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--tn-navy);
 }
+
 .learn-intro p {
   margin: 0;
-  color: #c7c9d6;
-  line-height: 1.6;
+  color: #4a5568;
+  line-height: 1.55;
 }
+
 .learn-shell .tn-grid {
   grid-template-columns: 1fr;
   gap: 1rem;
 }
+
 .learn-shell .tn-card {
-  border-radius: 20px;
-  padding: 1.3rem 1.5rem;
-  background: linear-gradient(100deg, #16122e 0%, #191533 18%, #1c1547 100%);
-  border: 1px solid #e2e8ff61;
-  box-shadow: 0 14px 30px #0a071866;
-}
-.learn-shell .tn-card header {
-  padding: 0 0 0.7rem;
-  background: none;
-  color: #d9a94f;
-  font-family: Georgia, serif;
-  font-size: 1.4rem;
-  font-weight: 500;
-}
-.learn-shell .tn-card .tn-list {
+  border-radius: 16px;
   padding: 0;
-  color: #f2e9dc;
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid rgba(0, 210, 255, 0.28);
+  box-shadow: 0 8px 20px rgba(8, 12, 28, 0.12);
 }
+
+.learn-shell .tn-card header {
+  padding: 0.55rem 0.9rem;
+  background: linear-gradient(180deg, #2a4a9a, var(--tn-navy));
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.learn-shell .tn-card .tn-list {
+  padding: 0.75rem 0.9rem;
+  color: var(--tn-ink);
+}
+
 .learn-shell .tn-list li {
-  line-height: 1.6;
+  line-height: 1.5;
 }
+
 .learn-shell .tn-list li::before {
-  background: #d9a94f;
+  background: #e8913a;
 }
+
+.learn-shell .tn-list--checks li::before {
+  background: none;
+  color: var(--tn-gold);
+}
+
 .learn-shell .tn-fun {
-  background: #47336b;
-  border: 1px solid #c6b4ec47;
-  margin: 1rem 0 0 !important;
-  color: #f2e9dc;
+  background: #fff4cc;
+  border: 2px solid rgba(255, 184, 0, 0.45);
+  margin: 0.75rem 0.9rem 0.9rem !important;
+  color: var(--tn-ink);
 }
+
 .learn-shell .tn-classroom {
   max-width: none;
-  padding: 1.2rem 1.5rem;
-  border-radius: 20px;
-  background: #171334;
-  border: 1px solid #e2e8ff61;
+  padding: 1.1rem 1.25rem;
+  border-radius: 18px;
+  background: rgba(255, 248, 239, 0.96);
+  border: 2px solid rgba(0, 210, 255, 0.35);
+  color: var(--tn-ink);
+  box-shadow: 0 12px 28px rgba(8, 12, 28, 0.28);
 }
+
 .learn-shell .tn-toggle {
-  background: transparent;
-  color: #d9a94f;
-  border: 0;
-  padding: 0;
+  background: #fff;
+  color: var(--tn-navy);
+  border: 2px solid rgba(26, 43, 109, 0.18);
+  padding: 0.55rem 0.8rem;
 }
+
 .learn-shell .tn-classroom p {
   max-width: 75ch;
-  color: #c7c9d6;
+  color: #4a5568;
 }
-.learn-shell .tn-action,
-.learn-shell .teacher-print__toolbar button {
-  border: 1px solid #c7cad6;
-  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 3px #c7cad633;
-  color: #f2e9dc;
-}
+
 .learn-shell .tn-action {
   margin-top: 1rem;
 }
+
 .learn-shell .teacher-print__toolbar h2 {
-  color: #d9a94f;
-  font-family: Georgia, serif;
-  font-weight: 500;
+  color: var(--tn-navy);
+  font-family: inherit;
+  font-weight: 800;
 }
+
 .learn-shell .teacher-print__sheet {
-  background: #171334;
-  color: #f2e9dc;
-  border: 1px solid #e2e8ff61;
-  border-radius: 20px;
-  padding: 1.5rem;
+  background: #fff;
+  color: var(--tn-ink);
+  border: 2px solid rgba(0, 210, 255, 0.28);
+  border-radius: 16px;
+  padding: 1.25rem;
 }
+
 .learn-shell .teacher-print__sheet h3,
 .learn-shell .teacher-print__sheet h4,
 .learn-shell .teacher-vocab dt {
-  color: #d9a94f;
+  color: var(--tn-navy);
+  font-family: inherit;
+  font-weight: 800;
 }
+
 .learn-shell .teacher-print__note,
 .learn-shell .teacher-print__follow {
-  color: #c7c9d6;
+  color: #4a5568;
 }
+
 .learn-shell .teacher-log th {
-  background: #3c2c5e;
-  color: #d9a94f;
+  background: var(--tn-navy);
+  color: var(--tn-title);
 }
+
 .learn-shell .teacher-log td {
-  border-color: #c7cad666;
+  border-color: rgba(20, 32, 51, 0.15);
 }
+
 .learn-shell .teacher-album-card {
-  background: #21183c;
-  color: #f2e9dc;
-  border-color: #c7cad666;
+  background: var(--tn-paper);
+  color: var(--tn-ink);
+  border-color: rgba(0, 210, 255, 0.28);
 }
+
 .learn-shell a {
-  color: #d9a94f;
+  color: #1d5fbf;
+  font-weight: 700;
   text-decoration: underline;
 }
+
+.learn-shell .learn-back,
+.learn-shell .tn-action,
+.learn-shell .teacher-print__toolbar button {
+  position: relative;
+  overflow: hidden;
+  min-height: 46px;
+  padding: 12px 26px;
+  border-radius: 14px;
+  border: 2px solid rgba(0, 210, 255, 0.45);
+  background: linear-gradient(180deg, #2a4a9a 0%, #1a326e 55%, #15244f 100%);
+  color: #eaf7ff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 8px 20px rgba(8, 12, 28, 0.35),
+    0 4px 0 #0d1638;
+  cursor: pointer;
+}
+
+.learn-shell .learn-back::before,
+.learn-shell .tn-action::before,
+.learn-shell .teacher-print__toolbar button::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+}
+
+.learn-shell .learn-back:hover,
+.learn-shell .tn-action:hover,
+.learn-shell .teacher-print__toolbar button:hover:not(:disabled) {
+  border-color: rgba(0, 210, 255, 0.75);
+  filter: brightness(1.06);
+}
+
+.learn-shell .learn-back:focus-visible,
+.learn-shell .tn-action:focus-visible,
+.learn-shell .teacher-print__toolbar button:focus-visible {
+  outline: 3px solid #7ec8ff;
+  outline-offset: 3px;
+}
+
 @media (max-width: 640px) {
   .learn-heading {
     padding-top: 0.5rem;
   }
+
   .learn-shell .tn-card,
   .learn-shell .teacher-print__sheet {
-    padding: 1rem;
+    padding: 0;
   }
+
   .learn-shell .tn-side__btn {
     flex: 1 1 40%;
   }
 }
+
 @media print {
   .learn-shell,
   .learn-shell .tn-main,
@@ -1164,14 +1249,17 @@
     color: #000 !important;
     box-shadow: none;
   }
+
   .learn-shell {
     padding: 0;
   }
+
   .learn-shell .tn-main,
   .learn-shell .teacher-print__sheet {
     border: 0;
     padding: 0;
   }
+
   .learn-shell .teacher-print__sheet h3,
   .learn-shell .teacher-print__sheet h4,
   .learn-shell .teacher-vocab dt,
@@ -1180,142 +1268,7 @@
   .learn-shell a {
     color: #000;
   }
-}
 
-.learn-shell .tn-list--checks li::before {
-  background: none;
-  color: #d9a94f;
-}
-
-/* Translucent group panel, matching Pathopia History without replacing the Mars background. */
-.learn-shell .tn-main {
-  background: rgba(123, 94, 178, 0.22);
-  border: 1px solid rgba(198, 180, 236, 0.28);
-  box-shadow: 0 16px 34px rgba(10, 7, 24, 0.3);
-}
-.learn-heading h1 {
-  color: #d9a94f;
-}
-.learn-heading p {
-  color: #c7c9d6;
-}
-.learn-shell .learn-intro h2 {
-  color: #d9a94f;
-}
-
-/* Both Back to game buttons and print actions share the reference's double silver ring. */
-.learn-shell .learn-back,
-.learn-shell .tn-action,
-.learn-shell .teacher-print__toolbar button {
-  position: relative;
-  overflow: hidden;
-  min-height: 46px;
-  padding: 12px 26px;
-  border-radius: 999px;
-  border: 1px solid #c7cad6;
-  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
-  color: #f2e9dc;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1rem;
-  font-weight: 500;
-  box-shadow:
-    inset 0 0 0 1px rgba(199, 202, 214, 0.2),
-    0 12px 26px rgba(20, 16, 43, 0.35);
-  cursor: pointer;
-}
-.learn-shell .learn-back::before,
-.learn-shell .tn-action::before,
-.learn-shell .teacher-print__toolbar button::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border-radius: inherit;
-  border: 1px solid rgba(199, 202, 214, 0.5);
-  pointer-events: none;
-}
-.learn-shell .learn-back:hover,
-.learn-shell .tn-action:hover,
-.learn-shell .teacher-print__toolbar button:hover:not(:disabled) {
-  border-color: #eef0f6;
-  box-shadow: 0 0 16px rgba(199, 202, 214, 0.25);
-}
-.learn-shell .learn-back:focus-visible,
-.learn-shell .tn-action:focus-visible,
-.learn-shell .teacher-print__toolbar button:focus-visible {
-  outline: 2px solid #eef0f6;
-  outline-offset: 4px;
-}
-
-/* Screen gallery: broad, readable cards rather than narrow text columns. */
-@media screen {
-  .learn-shell .teacher-album-grid {
-    gap: 1.25rem;
-    margin-top: 1.25rem;
-    grid-auto-rows: auto;
-    align-items: stretch;
-  }
-
-  .learn-shell .teacher-album-card {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: 1rem;
-    border-radius: 18px;
-    border: 1px solid rgba(199, 202, 214, 0.3);
-    box-shadow: 0 8px 20px rgba(10, 7, 24, 0.18);
-  }
-
-  .learn-shell .teacher-album-card__photo {
-    flex-shrink: 0;
-    aspect-ratio: 16 / 10;
-    border-radius: 10px;
-    background: #100d20;
-    object-fit: contain;
-  }
-
-  .learn-shell .teacher-album-card figcaption {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding-top: 0.85rem;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    overflow-wrap: break-word;
-  }
-
-  .learn-shell .teacher-album-card h4 {
-    margin: 0 0 0.65rem;
-    font-size: 1.15rem;
-    line-height: 1.3;
-  }
-
-  .learn-shell .teacher-album-card p {
-    margin: 0 0 0.75rem;
-  }
-
-  .learn-shell .teacher-album-card figcaption > p:first-of-type {
-    font-size: 0.82rem;
-    color: #c7c9d6;
-  }
-
-  .learn-shell .teacher-album-card a {
-    margin-top: auto;
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    font-weight: 700;
-    text-underline-offset: 3px;
-  }
-}
-
-@media screen and (min-width: 641px) and (max-width: 900px) {
-  .teacher-album-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media print {
   .learn-shell .tn-main {
     background: #fff !important;
     border: 0;

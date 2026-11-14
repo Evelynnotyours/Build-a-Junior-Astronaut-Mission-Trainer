@@ -50,7 +50,7 @@ type SceneStageProps = {
 export const SKY_BACKDROPS: Record<SceneLayerFlags['sky'], string> = {
   day: '/assets/bg/sky_day.png',
   dawn: '/assets/bg/sky_day.png',
-  dusk: '/assets/bg/sky_dusk.png',
+  dusk: '/assets/bg/skydusk.png',
   night: '/assets/bg/sky_night.png',
   dust: '/assets/bg/sky_dust.png',
 };
@@ -252,12 +252,14 @@ export function SceneStage({
                 slot={OUTPOST_BUILDINGS.shieldPlating}
               />
             ) : null}
-            {layers.garageOpen ? (
-              <BuildingSprite
-                src="/assets/buildings/rover_garage_open.png"
-                slot={OUTPOST_BUILDINGS.garage}
-              />
-            ) : null}
+            <BuildingSprite
+              src={
+                layers.garageOpen
+                  ? '/assets/buildings/rover_garage_open.png'
+                  : '/assets/buildings/rover_garage_closed.png'
+              }
+              slot={OUTPOST_BUILDINGS.garage}
+            />
             <BuildingSprite
               src="/assets/buildings/outpost_rover.png"
               slot={OUTPOST_BUILDINGS.rover}

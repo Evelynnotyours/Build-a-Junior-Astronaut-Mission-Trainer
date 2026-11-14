@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   LAYOUT_CLEARANCE_PCT,
-  OUTPOST_BUILDINGS,
+  OUTPOST_MAIN_BUILDINGS,
   OUTPOST_PATH_START,
   depthScale,
   placeOutpostRocks,
@@ -15,9 +15,9 @@ describe('outpost layout', () => {
   });
 
   it('keeps decorative rocks clear of buildings and the commander', () => {
-    const rocks = placeOutpostRocks(OUTPOST_BUILDINGS, OUTPOST_PATH_START);
+    const rocks = placeOutpostRocks(OUTPOST_MAIN_BUILDINGS, OUTPOST_PATH_START);
     const obstacles = [
-      ...Object.values(OUTPOST_BUILDINGS).map((b) =>
+      ...Object.values(OUTPOST_MAIN_BUILDINGS).map((b) =>
         slotRect(b.x, b.bottom, b.baseWidth, b.id === 'rover' ? 0.55 : 0.9),
       ),
       {

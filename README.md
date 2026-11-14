@@ -777,7 +777,7 @@ Ground has a transparent sky region; mountain is transparent around its silhouet
 | `bg/mars_ground.png` | 480x270 | Transparent sky region; opaque ground |
 | `bg/mount_sharp.png` | 480x90 | Transparent around mountain |
 | `bg/sky_day.png` | 480x110 | Opaque |
-| `bg/sky_dusk.png` | 480x110 | Opaque |
+| `bg/skydusk.png` | full landscape | Opaque |
 | `bg/sky_night.png` | 480x110 | Opaque |
 | `bg/sky_dust.png` | 480x110 | Opaque |
 | `bg/sky_dawn.png` | 480x110 | Opaque |

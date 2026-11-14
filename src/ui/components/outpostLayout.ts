@@ -87,36 +87,41 @@ export function rectsOverlap(a: LayoutRect, b: LayoutRect, pad = LAYOUT_CLEARANC
 }
 
 /**
- * Reference layout:
- * dome far-left small · air center · habitat center-right · dish far-right small
- * solar neat row + crate near habitat · smaller rover beside path · commander on path
+ * Two equal-spaced rows on the flat sand, packed side-by-side with light overlap.
+ * Back row (farther): greenhouse · air · habitat · dish · garage
+ * Front row (nearer): solar · solarB · shelter · rover
+ * Cargo props (extra panels / battery / shield) only appear when packed — tucked
+ * near related buildings, not in the main grid.
  */
+const ROW_BACK = 40;
+const ROW_FRONT = 26;
+/** 5 equal slots across the sand for the back row. */
+const BACK_XS = [16, 32, 48, 64, 78] as const;
+/** 4 equal slots for the front row (slightly inset so feet stay on sand). */
+const FRONT_XS = [20, 38, 56, 74] as const;
+
 export const OUTPOST_BUILDINGS = {
-  // Far left, farther → smaller
-  greenhouse: { id: 'greenhouse', x: 11, bottom: 42, baseWidth: 8.5, z: 3 },
-  // Center small module
-  air: { id: 'air', x: 36, bottom: 32, baseWidth: 9.5, z: 4 },
-  // Center-right main base
-  habitat: { id: 'habitat', x: 60, bottom: 27, baseWidth: 14, z: 5 },
-  // Far right antenna, small
-  dish: { id: 'dish', x: 86, bottom: 40, baseWidth: 3.6, z: 3 },
-  // Neat solar row on habitat apron (right of path, left of habitat)
-  solar: { id: 'solar', x: 51, bottom: 19, baseWidth: 5.4, z: 4 },
-  solarB: { id: 'solarB', x: 54.8, bottom: 19, baseWidth: 5.4, z: 4 },
-  extraPanels: { id: 'extraPanels', x: 58.6, bottom: 19, baseWidth: 5.2, z: 3 },
-  // Crate beside solar row (not screen edge)
-  shelter: { id: 'shelter', x: 47.5, bottom: 18.5, baseWidth: 3, z: 3 },
-  batteryBox: { id: 'batteryBox', x: 49.2, bottom: 17.5, baseWidth: 2.4, z: 5 },
-  shieldPlating: { id: 'shieldPlating', x: 65, bottom: 21, baseWidth: 6, z: 4 },
-  garage: { id: 'garage', x: 70, bottom: 20, baseWidth: 5.5, z: 3 },
-  // Rover ~60% prior size, clear sand beside path (left of corner rocks)
-  rover: { id: 'rover', x: 66, bottom: 16, baseWidth: 5.2, z: 6 },
+  // —— Back row (farther / smaller) ——
+  greenhouse: { id: 'greenhouse', x: BACK_XS[0], bottom: ROW_BACK, baseWidth: 10, z: 3 },
+  air: { id: 'air', x: BACK_XS[1], bottom: ROW_BACK, baseWidth: 10, z: 3 },
+  habitat: { id: 'habitat', x: BACK_XS[2], bottom: ROW_BACK, baseWidth: 12, z: 3 },
+  dish: { id: 'dish', x: BACK_XS[3], bottom: ROW_BACK, baseWidth: 5, z: 3 },
+  garage: { id: 'garage', x: BACK_XS[4], bottom: ROW_BACK, baseWidth: 8, z: 3 },
+  // —— Front row (nearer / larger) ——
+  solar: { id: 'solar', x: FRONT_XS[0], bottom: ROW_FRONT, baseWidth: 8, z: 5 },
+  solarB: { id: 'solarB', x: FRONT_XS[1], bottom: ROW_FRONT, baseWidth: 8, z: 5 },
+  shelter: { id: 'shelter', x: FRONT_XS[2], bottom: ROW_FRONT, baseWidth: 5.5, z: 5 },
+  rover: { id: 'rover', x: FRONT_XS[3], bottom: ROW_FRONT, baseWidth: 7.5, z: 6 },
+  // —— Cargo accents (only when layer flags are on) ——
+  extraPanels: { id: 'extraPanels', x: 31, bottom: 20, baseWidth: 7, z: 5 },
+  batteryBox: { id: 'batteryBox', x: 52, bottom: 20, baseWidth: 4.5, z: 5 },
+  shieldPlating: { id: 'shieldPlating', x: 58, bottom: 36, baseWidth: 7, z: 3 },
 } as const satisfies Record<string, BuildingSlot>;
 
-/** Commander feet in the middle of the winding path. */
-export const OUTPOST_PATH_START = { x: 48, y: 78 } as const;
+/** Commander stands in the open sand ahead of the front row. */
+export const OUTPOST_PATH_START = { x: 50, y: 88 } as const;
 
-/** Walk hotspots aligned to the bottom-center building anchors. */
+/** Walk hotspots aligned to the two-row building anchors. */
 export const MISSION_SPOTS: Record<SpotId, SpotLayout> = {
   greenhouse: {
     x: OUTPOST_BUILDINGS.greenhouse.x - 5,
@@ -124,17 +129,20 @@ export const MISSION_SPOTS: Record<SpotId, SpotLayout> = {
     w: 10,
     h: 14,
     stand: [
-      OUTPOST_BUILDINGS.greenhouse.x + 8,
-      100 - OUTPOST_BUILDINGS.greenhouse.bottom + 4,
+      OUTPOST_BUILDINGS.greenhouse.x,
+      100 - OUTPOST_BUILDINGS.greenhouse.bottom + 6,
     ],
     label: 'Greenhouse',
   },
   solar: {
-    x: OUTPOST_BUILDINGS.solar.x - 4,
+    x: OUTPOST_BUILDINGS.solar.x - 5,
     y: 100 - OUTPOST_BUILDINGS.solar.bottom - 10,
-    w: 9,
+    w: 14,
     h: 10,
-    stand: [50, 72],
+    stand: [
+      (OUTPOST_BUILDINGS.solar.x + OUTPOST_BUILDINGS.solarB.x) / 2,
+      100 - OUTPOST_BUILDINGS.solar.bottom + 6,
+    ],
     label: 'Solar panels',
   },
   air: {
@@ -143,35 +151,38 @@ export const MISSION_SPOTS: Record<SpotId, SpotLayout> = {
     w: 10,
     h: 12,
     stand: [
-      OUTPOST_BUILDINGS.air.x + 7,
-      100 - OUTPOST_BUILDINGS.air.bottom + 4,
+      OUTPOST_BUILDINGS.air.x,
+      100 - OUTPOST_BUILDINGS.air.bottom + 6,
     ],
     label: 'Air module',
   },
   habitat: {
-    x: OUTPOST_BUILDINGS.habitat.x - 7,
-    y: 100 - OUTPOST_BUILDINGS.habitat.bottom - 16,
-    w: 14,
-    h: 16,
-    stand: [52, 70],
+    x: OUTPOST_BUILDINGS.habitat.x - 6,
+    y: 100 - OUTPOST_BUILDINGS.habitat.bottom - 14,
+    w: 12,
+    h: 14,
+    stand: [
+      OUTPOST_BUILDINGS.habitat.x,
+      100 - OUTPOST_BUILDINGS.habitat.bottom + 6,
+    ],
     label: 'Habitat',
   },
   dish: {
-    x: OUTPOST_BUILDINGS.dish.x - 3,
-    y: 100 - OUTPOST_BUILDINGS.dish.bottom - 10,
-    w: 6,
-    h: 10,
+    x: OUTPOST_BUILDINGS.dish.x - 4,
+    y: 100 - OUTPOST_BUILDINGS.dish.bottom - 12,
+    w: 8,
+    h: 12,
     stand: [
-      OUTPOST_BUILDINGS.dish.x - 6,
-      100 - OUTPOST_BUILDINGS.dish.bottom + 4,
+      OUTPOST_BUILDINGS.dish.x,
+      100 - OUTPOST_BUILDINGS.dish.bottom + 6,
     ],
     label: 'Comms dish',
   },
   rover: {
-    x: OUTPOST_BUILDINGS.rover.x - 5,
-    y: 100 - OUTPOST_BUILDINGS.rover.bottom - 10,
+    x: OUTPOST_BUILDINGS.garage.x - 5,
+    y: 100 - OUTPOST_BUILDINGS.garage.bottom - 12,
     w: 10,
-    h: 10,
+    h: 12,
     stand: [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y],
     label: 'Rover garage',
   },
@@ -234,9 +245,22 @@ function resolveRock(rock: RockSlot, obstacles: LayoutRect[]): RockSlot {
   });
 }
 
+/** Always-visible outpost props (excludes cargo accents). */
+export const OUTPOST_MAIN_BUILDINGS: Record<string, BuildingSlot> = {
+  greenhouse: OUTPOST_BUILDINGS.greenhouse,
+  air: OUTPOST_BUILDINGS.air,
+  habitat: OUTPOST_BUILDINGS.habitat,
+  dish: OUTPOST_BUILDINGS.dish,
+  garage: OUTPOST_BUILDINGS.garage,
+  solar: OUTPOST_BUILDINGS.solar,
+  solarB: OUTPOST_BUILDINGS.solarB,
+  shelter: OUTPOST_BUILDINGS.shelter,
+  rover: OUTPOST_BUILDINGS.rover,
+};
+
 /** Decorative rocks in clear edge gaps only (never overlapping props/commander). */
 export function placeOutpostRocks(
-  buildings: Record<string, BuildingSlot> = OUTPOST_BUILDINGS,
+  buildings: Record<string, BuildingSlot> = OUTPOST_MAIN_BUILDINGS,
   commander: { x: number; y: number } = OUTPOST_PATH_START,
 ): RockSlot[] {
   const obstacles = buildingObstacleRects(buildings, commander);

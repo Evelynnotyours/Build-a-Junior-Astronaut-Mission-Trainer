@@ -1,11 +1,16 @@
-/* Title / Learn / Sources / Settings — Member 4 */
+/* Title / Learn / Sources / Settings — Member 4
+   Colors + Nunito align with Plan / Album / scene HUD. */
 
 .title-shell,
 .menu-shell {
   --menu-navy: #15244f;
   --menu-cyan: #00d2ff;
   --menu-gold: #ffb800;
+  --menu-title: #ffe566;
   --menu-ink: #142033;
+  --menu-paper: #fff8ef;
+  --menu-cta: #f5c42e;
+  --menu-cta-ink: #2a1a00;
   min-height: 100vh;
   font-family: 'Nunito', 'Trebuchet MS', sans-serif;
   color: var(--menu-ink);
@@ -37,11 +42,11 @@
   background:
     linear-gradient(
       180deg,
-      rgba(8, 12, 28, 0.35) 0%,
-      rgba(8, 12, 28, 0.72) 55%,
-      rgba(8, 12, 28, 0.92) 100%
+      rgba(8, 12, 28, 0.28) 0%,
+      rgba(8, 12, 28, 0.55) 50%,
+      rgba(8, 12, 28, 0.78) 100%
     ),
-    radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.18), transparent 40%);
+    radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.12), transparent 40%);
 }
 
 .title-panel {
@@ -49,7 +54,7 @@
   z-index: 1;
   width: min(960px, 100%);
   padding: 0.5rem 1rem 1.5rem;
-  color: #f2ede4;
+  color: #eaf7ff;
   text-align: center;
 }
 
@@ -58,28 +63,30 @@
   width: clamp(160px, 22vw, 240px);
   height: auto;
   margin: -1.75rem auto -0.4rem;
-  filter: drop-shadow(0 8px 16px rgba(28, 27, 34, 0.35));
+  filter: drop-shadow(0 8px 16px rgba(8, 12, 28, 0.45));
 }
 
 .title-brand {
   margin: 0;
+  font-family: inherit;
   font-size: clamp(2.5rem, 6vw, 4.75rem);
   font-weight: 800;
   line-height: 1.06;
-  letter-spacing: -0.035em;
-  color: #f2ede4;
+  letter-spacing: -0.02em;
+  color: var(--menu-title);
   text-wrap: balance;
-  background: transparent;
-  text-shadow: none;
+  text-shadow: 0 3px 14px rgba(8, 12, 28, 0.55);
 }
 
 .title-subtitle {
   margin: 0.6rem 0 1.5rem;
-  color: #ffe08a;
-  font-size: clamp(1.65rem, 3vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-shadow: 0 2px 8px #1c1b22;
+  font-family: inherit;
+  color: var(--menu-gold);
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(8, 12, 28, 0.5);
 }
 
 .title-sky {
@@ -95,102 +102,82 @@
   margin-inline: auto;
 }
 
-/* Adapted from the team's Pathopia Dashboard action buttons. */
+/* Mars navy / gold CTAs — same family as Plan, Album, and scene HUD */
 .title-btn {
   position: relative;
   min-height: 54px;
   padding: 12px 36px;
-  border-radius: 32px;
-  border: 1px solid #c7cad6;
-  background: linear-gradient(180deg, #16122b 0%, #241b45 48%, #4c3288 100%);
+  border-radius: 18px;
+  border: 2px solid rgba(0, 210, 255, 0.45);
+  background: linear-gradient(180deg, #2a4a9a 0%, #1a326e 55%, #15244f 100%);
   box-shadow:
-    0 0 0 1px rgba(199, 202, 214, 0.2) inset,
-    0 14px 30px rgba(20, 16, 43, 0.35);
-  color: #f2e9dc;
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 10px 24px rgba(8, 12, 28, 0.4),
+    0 4px 0 #0d1638;
+  color: #eaf7ff;
+  font-family: inherit;
   cursor: pointer;
   overflow: hidden;
   transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    filter 0.2s ease;
+}
+
+.title-btn--primary {
+  border-color: rgba(232, 145, 58, 0.65);
+  background: linear-gradient(180deg, #ffe066 0%, var(--menu-cta) 55%, #e8913a 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.35) inset,
+    0 10px 24px rgba(8, 12, 28, 0.35),
+    0 4px 0 #8a4b12;
+  color: var(--menu-cta-ink);
 }
 
 .title-btn::before {
   content: '';
   position: absolute;
-  inset: 6px;
-  border-radius: 26px;
-  border: 1px solid rgba(199, 202, 214, 0.5);
+  inset: 5px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   pointer-events: none;
 }
 
-/* Faint star specks scattered across the button background — matches the
-   sparkle field in the reference. The two large side stars from that
-   reference are deliberately left out. */
-.title-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background-repeat: no-repeat;
-  background-image:
-    radial-gradient(
-      1.6px 1.6px at 15% 32%,
-      rgba(255, 255, 255, 0.9),
-      transparent 60%
-    ),
-    radial-gradient(
-      1.1px 1.1px at 34% 72%,
-      rgba(255, 255, 255, 0.7),
-      transparent 60%
-    ),
-    radial-gradient(
-      1.5px 1.5px at 58% 20%,
-      rgba(255, 255, 255, 0.8),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 72% 62%,
-      rgba(255, 255, 255, 0.6),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 26% 88%,
-      rgba(255, 255, 255, 0.55),
-      transparent 60%
-    ),
-    radial-gradient(
-      1.6px 1.6px at 88% 38%,
-      rgba(255, 255, 255, 0.75),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 50% 52%,
-      rgba(255, 255, 255, 0.45),
-      transparent 60%
-    );
+.title-btn--primary::before {
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .title-btn:hover:not(:disabled),
 .title-btn:focus-visible:not(:disabled) {
-  transform: translateY(-3px);
-  border-color: #eef0f6;
+  transform: translateY(-2px);
+  border-color: rgba(0, 210, 255, 0.75);
+  filter: brightness(1.06);
   box-shadow:
-    0 0 0 1px rgba(199, 202, 214, 0.35) inset,
-    0 0 18px rgba(199, 202, 214, 0.3),
-    0 18px 34px rgba(20, 16, 43, 0.4);
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    0 14px 28px rgba(8, 12, 28, 0.45),
+    0 5px 0 #0d1638;
+}
+
+.title-btn--primary:hover:not(:disabled),
+.title-btn--primary:focus-visible:not(:disabled) {
+  border-color: #ffe566;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.45) inset,
+    0 14px 28px rgba(8, 12, 28, 0.4),
+    0 5px 0 #8a4b12;
 }
 
 .title-btn:disabled {
   cursor: not-allowed;
-  border-color: rgba(199, 202, 214, 0.3);
-  box-shadow: 0 10px 20px rgba(20, 16, 43, 0.25);
+  filter: grayscale(0.25);
+  border-color: rgba(0, 210, 255, 0.2);
+  box-shadow: 0 8px 16px rgba(8, 12, 28, 0.28);
 }
 
 .title-btn:disabled .title-btn__label,
 .title-btn:disabled .title-btn__sparkle {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .title-btn__sparkle {
@@ -198,7 +185,11 @@
   z-index: 1;
   width: 12px;
   height: 12px;
-  color: rgba(232, 234, 255, 0.9);
+  color: rgba(255, 229, 102, 0.85);
+}
+
+.title-btn--primary .title-btn__sparkle {
+  color: rgba(138, 75, 18, 0.55);
 }
 
 .title-btn__sparkle--tl {
@@ -215,16 +206,16 @@
   position: relative;
   z-index: 1;
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: inherit;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 800;
   letter-spacing: 0.02em;
   text-align: center;
 }
 
 .title-btn:focus-visible {
-  outline: 2px solid #eef0f6;
-  outline-offset: 4px;
+  outline: 3px solid #7ec8ff;
+  outline-offset: 3px;
 }
 @media (prefers-reduced-motion: reduce) {
   .title-btn {
@@ -250,15 +241,18 @@
   width: min(420px, 100%);
   padding: 1.1rem;
   border-radius: 18px;
-  background: #f7fbff;
+  background: var(--menu-paper);
   border: 2px solid rgba(0, 210, 255, 0.45);
   color: var(--menu-ink);
   text-align: left;
+  font-family: inherit;
 }
 
 .title-modal__card h2 {
   margin: 0 0 0.4rem;
   color: var(--menu-navy);
+  font-family: inherit;
+  font-weight: 800;
 }
 
 .title-modal__card p {
@@ -270,22 +264,19 @@
   gap: 0.45rem;
 }
 
-.title-modal__actions .title-btn {
-  color: #fff;
-}
-
 .menu-shell {
   display: grid;
   place-items: center;
   padding: 1rem;
   background:
-    radial-gradient(circle at 20% 0%, rgba(0, 210, 255, 0.16), transparent 40%),
-    radial-gradient(
-      circle at 80% 100%,
-      rgba(255, 120, 60, 0.18),
-      transparent 42%
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 28, 0.35) 0%,
+      rgba(8, 12, 28, 0.55) 55%,
+      rgba(8, 12, 28, 0.72) 100%
     ),
-    linear-gradient(160deg, #2a1840 0%, #6a2f1c 45%, #1a2048 100%);
+    radial-gradient(circle at 70% 20%, rgba(0, 210, 255, 0.12), transparent 40%),
+    url('/assets/bg/menu_vista.jpg') center 60% / cover no-repeat;
 }
 
 .menu-frame {
@@ -337,15 +328,18 @@
   margin-bottom: 0.75rem;
   padding: 0.85rem 1rem;
   border-radius: 16px;
-  background: rgba(247, 251, 255, 0.97);
+  background: rgba(255, 248, 239, 0.97);
   color: var(--menu-ink);
   border: 2px solid rgba(0, 210, 255, 0.28);
+  font-family: inherit;
 }
 
 .menu-card h2 {
   margin: 0 0 0.55rem;
   color: var(--menu-navy);
   font-size: 1.05rem;
+  font-family: inherit;
+  font-weight: 800;
 }
 
 .menu-note {
@@ -370,9 +364,10 @@
 .learn-item {
   padding: 0.75rem 0.9rem;
   border-radius: 14px;
-  background: rgba(247, 251, 255, 0.97);
+  background: rgba(255, 248, 239, 0.97);
   color: var(--menu-ink);
   border: 2px solid rgba(0, 210, 255, 0.28);
+  font-family: inherit;
 }
 
 .learn-item dt {
@@ -450,9 +445,10 @@
   gap: 0.55rem;
   padding: 0.85rem 1rem;
   border-radius: 16px;
-  background: rgba(247, 251, 255, 0.97);
+  background: rgba(255, 248, 239, 0.97);
   color: var(--menu-ink);
   border: 2px solid rgba(0, 210, 255, 0.28);
+  font-family: inherit;
 }
 
 .settings-row {

@@ -736,16 +736,15 @@
   pointer-events: none;
   user-select: none;
   image-rendering: pixelated;
-  /* Knock out solid black sprite mattes on sky landscapes */
-  mix-blend-mode: lighten;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  /* Normal blend so props stay visible on bright flat sand */
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
   /* Bottom-center foot anchor (left/bottom set in JS as %) */
   transform: translateX(-50%);
   transform-origin: bottom center;
 }
 
 .ui-scene__prop--rock {
-  mix-blend-mode: normal;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 }
 
