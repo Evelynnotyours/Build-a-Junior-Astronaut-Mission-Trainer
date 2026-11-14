@@ -406,6 +406,8 @@ export default function App() {
   if (phase === 'plan' && plan)
     return (
       <PlanScreen
+        soundEnabled={settings.soundEnabled}
+        reduceMotion={settings.reduceMotion}
         skyLevel={plan.solarVariant}
         skyStatus={plan.sky!.source}
         observationDate={plan.sky?.observedAt?.slice(0, 10)}

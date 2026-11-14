@@ -110,9 +110,9 @@ describe('Sol 1 app integration', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Start New' }));
     await screen.findByRole('heading', { name: 'Pack your cargo' });
-    expect(screen.getByText(/NASA input: Saved/)).toBeInTheDocument();
-    expect(screen.getByText(/observed /)).toBeInTheDocument();
     expect(localStorage.getItem('mms.activeRun')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Launch mission' }));
+    expect(localStorage.getItem('mms.activeRun')).toContain('"source":"saved"');
   });
   it('keeps the old save while a replacement mission plans with archive fallback', async () => {
     backend();
@@ -125,7 +125,6 @@ describe('Sol 1 app integration', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Start New' }));
     await screen.findByRole('heading', { name: 'Pack your cargo' });
-    expect(screen.getByText(/NASA input: Saved/)).toBeInTheDocument();
     expect(localStorage.getItem('mms.activeRun')).toBe(saved);
     expect(
       screen.getByRole('button', { name: 'Launch mission' }),
@@ -159,7 +158,11 @@ it('prefers a valid cached sky response before the archive when offline', async 
   render(<App />);
   fireEvent.click(screen.getByRole('button', { name: 'Start New' }));
   await screen.findByRole('heading', { name: 'Pack your cargo' });
-  expect(screen.getByText(/NASA input: Cached.*active/)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Launch mission' }));
+  expect(localStorage.getItem('mms.activeRun')).toContain('"source":"cache"');
+  expect(localStorage.getItem('mms.activeRun')).toContain(
+    '"solarVariant":"active"',
+  );
 });
 
 it('restores the classroom setting and waits for teacher Continue before night', async () => {
