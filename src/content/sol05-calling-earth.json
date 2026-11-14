@@ -12,5 +12,6 @@
   "calling_earth.B.after": "Kai fixed it fast, all on our own! Deciding without help from Earth is part of life on Mars.",
   "calling_earth.C.label": "Ignore it and keep researching (Science +2, the flicker returns bigger on Sol 7)",
   "calling_earth.C.after": "We got extra science, but the flicker is still there. Small problems can come back bigger.",
-  "calling_earth.classroom": "Why could Earth not answer straight away?"
+  "calling_earth.classroom": "Why could Earth not answer straight away?",
+  "calling_earth.cargo.radio_booster": "The booster helped us use Earth’s tip. The message still took time to travel."
 }

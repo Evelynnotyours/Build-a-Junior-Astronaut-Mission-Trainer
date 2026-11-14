@@ -13,5 +13,6 @@
   "ice_hunt.B.after": "Lots of water! But the long trip used a lot of power and kept us outside longer, where there is more radiation.",
   "ice_hunt.C.label": "Ration the water (Life −3)",
   "ice_hunt.C.after": "We saved power by staying home, but our water is getting low. We will need a plan soon.",
-  "ice_hunt.classroom": "What did the rover trip give us, and what did it use?"
+  "ice_hunt.classroom": "What did the rover trip give us, and what did it use?",
+  "ice_hunt.cargo.rover_fuel": "Our extra rover supply reduced this trip’s power cost."
 }

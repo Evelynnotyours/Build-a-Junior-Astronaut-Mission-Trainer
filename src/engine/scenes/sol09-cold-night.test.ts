@@ -20,7 +20,10 @@ const rules = getEventRules('cold_night');
 describe('approved Sol 09 timeline', () => {
   it('validates every branch, text key, approved line and event-keyed cue', () => {
     expect(() => validateScene(scene)).not.toThrow();
-    const keys = scene.steps.flatMap((s) =>
+    const keys = [
+      ...scene.steps,
+      ...createSol09Scene(['greenhouse_kit']).steps,
+    ].flatMap((s) =>
       'textKey' in s ? [s.textKey] : 'questionKey' in s ? [s.questionKey] : [],
     );
     keys.push(...rules.choices.flatMap((c) => [c.labelKey, c.afterKey]));

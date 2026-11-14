@@ -20,7 +20,10 @@ const rules = getEventRules('ice_hunt');
 describe('approved Sol 04 timeline', () => {
   it('validates every branch, text key, approved line and event-keyed cue', () => {
     expect(() => validateScene(scene)).not.toThrow();
-    const keys = scene.steps.flatMap((s) =>
+    const keys = [
+      ...scene.steps,
+      ...createSol04Scene(['rover_fuel']).steps,
+    ].flatMap((s) =>
       'textKey' in s ? [s.textKey] : 'questionKey' in s ? [s.questionKey] : [],
     );
     keys.push(...rules.choices.flatMap((c) => [c.labelKey, c.afterKey]));

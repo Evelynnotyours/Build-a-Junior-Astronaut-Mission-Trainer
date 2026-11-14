@@ -35,3 +35,23 @@ Original creator/tool and rights still need team records. These entries describe
 | `public/assets/minigames/leak_marker.png` | Centered pivot and normalized visible size | `asset-preparation/minigames/leak_marker.png` | Python/Pillow; no AI generation |
 | `public/assets/minigames/patch_sticker.png` | Centered pivot and normalized visible size | `asset-preparation/minigames/patch_sticker.png` | Python/Pillow; no AI generation |
 | `public/assets/overlays/frost_corners.png` | Frost opacity reduced; center safe area cleared | `asset-preparation/overlays/frost_corners.png` | Python/Pillow; no AI generation |
+
+## Curated NASA card media — November 14, 2026
+
+Runtime metadata is authoritative in `src/content/photos.json`; card references are in `src/content/realMoments.json`. Sources and exact published credits were checked against the linked pages. The five ambiguous/mismatched files (Sol 1, drill, ISS, crater and finale) were replaced with the exact linked assets. The solar file was re-exported as JPEG because it contained WebP data under a `.jpg` name. The other five files closely match the official source images after resizing/recompression. No AI generation or redrawing was used. Previous replaced files are recoverable in Git and local ignored `tmp/photo-source-backup/`.
+
+Use: educational/informational cards; preserve credits and do not imply endorsement. See [NASA media guidance](https://www.nasa.gov/nasa-brand-center/images-and-media/). This records source checks, not a blanket claim about every third-party asset or a completion claim for scientific fact verification.
+
+| Runtime file | Source page | Published credit | Type |
+|---|---|---|---|
+| `/assets/photos/sol1-gale-crater.jpg` | https://science.nasa.gov/resource/layers-at-the-base-of-mount-sharp/ | NASA/JPL-Caltech/MSSS | photo |
+| `/assets/photos/sol2-mars-night.jpg` | https://www.jpl.nasa.gov/images/pia19400-sunset-in-mars-gale-crater | NASA/JPL-Caltech/MSSS/Texas A&M Univ. | photo |
+| `/assets/photos/sol3-dust-devil.jpg` | https://www.jpl.nasa.gov/images/pia24039-curiosity-spots-a-dust-devil-in-the-hills/ | NASA/JPL-Caltech/SSI | photo |
+| `/assets/photos/sol4-rover-drill.jpg` | https://science.nasa.gov/photojournal/curiositys-first-sample-drilling/ | NASA/JPL-Caltech/MSSS | photo |
+| `/assets/photos/sol5-earth-view.jpg` | https://www.jpl.nasa.gov/images/pia17936-bright-evening-star-seen-from-mars-is-earth | NASA/JPL-Caltech/MSSS/TAMU | photo |
+| `/assets/photos/sol6-solar-flare.jpg` | https://www.nasa.gov/image-article/strong-solar-flare/ | NASA/SDO | photo |
+| `/assets/photos/sol7-worn-wheel.jpg` | https://www.jpl.nasa.gov/images/pia17751-left-front-wheel-of-curiosity-rover-approaching-three-miles/ | NASA/JPL-Caltech/MSSS | photo |
+| `/assets/photos/sol8-iss-leak.jpg` | https://www.nasa.gov/isam/robotic-external-leak-locator/ | NASA | photo |
+| `/assets/photos/sol8-fresh-crater.jpg` | https://science.nasa.gov/photojournal/a-spectacular-new-martian-impact-crater/ | NASA/JPL-Caltech/Univ. of Arizona | photo |
+| `/assets/photos/sol9-mars-frost.jpg` | https://www.jpl.nasa.gov/images/pia00571-ice-on-mars-utopia-planitia-again | NASA/JPL | photo |
+| `/assets/photos/sol10-exploration-future.jpg` | https://www.nasa.gov/blogs/missions/2020/10/28/lunar-living-nasas-artemis-base-camp-concept/ | NASA | illustration |

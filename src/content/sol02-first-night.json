@@ -10,5 +10,6 @@
   "first_night.B.after": "A bit chilly, but we saved some power. Careful planning is part of every mission.",
   "first_night.C.label": "Heat the greenhouse only (Power −4, Life −5)",
   "first_night.C.after": "The plants are safe, but the crew is cold. We kept most of our power, though we feel it in our toes!",
-  "first_night.classroom": "Why do batteries matter when the Sun goes down?"
+  "first_night.classroom": "Why do batteries matter when the Sun goes down?",
+  "first_night.cargo.batteries": "Our battery upgrade helps with tonight’s power use."
 }

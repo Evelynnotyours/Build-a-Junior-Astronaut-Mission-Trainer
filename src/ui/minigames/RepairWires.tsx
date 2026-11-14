@@ -95,7 +95,10 @@ class RepairWiresErrorBoundary extends Component<
 > {
   private reported = false;
 
-  constructor(props: { onResult: (result: MiniGameResult) => void; children: ReactNode }) {
+  constructor(props: {
+    onResult: (result: MiniGameResult) => void;
+    children: ReactNode;
+  }) {
     super(props);
     this.state = { crashed: false };
   }
@@ -116,7 +119,8 @@ class RepairWiresErrorBoundary extends Component<
     if (this.state.crashed) {
       return (
         <p className="mg-wires__fallback" role="status">
-          Something went wrong with the wiring panel. You can continue — Skip was applied.
+          Something went wrong with the wiring panel. You can continue — Skip
+          was applied.
         </p>
       );
     }
@@ -202,7 +206,9 @@ function RepairWiresInner({
     if (!activeSelection) {
       selectedRef.current = terminal.id;
       setSelectedId(terminal.id);
-      setToast(`Selected ${terminal.name} (${terminal.symbol}). Now pick its matching end.`);
+      setToast(
+        `Selected ${terminal.name} (${terminal.symbol}). Now pick its matching end.`,
+      );
       return;
     }
 
@@ -241,7 +247,9 @@ function RepairWiresInner({
 
     selectedRef.current = null;
     setSelectedId(null);
-    setToast('Those ends do not match. Try again — match the symbol and label.');
+    setToast(
+      'Those ends do not match. Try again — match the symbol and label.',
+    );
     if (!reduceMotion) {
       setNudge(true);
       setSpark(true);
@@ -285,7 +293,9 @@ function RepairWiresInner({
         const digit = Number(event.key) - 1;
         const row = digit % 3;
         const side: 'left' | 'right' = digit < 3 ? 'left' : 'right';
-        const terminal = TERMINALS.find((t) => t.row === row && t.side === side);
+        const terminal = TERMINALS.find(
+          (t) => t.row === row && t.side === side,
+        );
         const live = new Set(connectedRef.current);
         if (!terminal || live.has(terminal.pairId)) return;
         event.preventDefault();
@@ -294,10 +304,7 @@ function RepairWiresInner({
         return;
       }
 
-      let localFocus = Math.min(
-        focusIndex,
-        Math.max(0, open.length - 1),
-      );
+      let localFocus = Math.min(focusIndex, Math.max(0, open.length - 1));
       const openCol = (term: WireTerminal) =>
         open.findIndex((t) => t.id === term.id);
 
@@ -306,7 +313,9 @@ function RepairWiresInner({
       if (event.key === 'ArrowRight') {
         event.preventDefault();
         if (current.side === 'left') {
-          const twin = open.find((t) => t.pairId === current.pairId && t.side === 'right');
+          const twin = open.find(
+            (t) => t.pairId === current.pairId && t.side === 'right',
+          );
           if (twin) localFocus = openCol(twin);
         }
         setFocusIndex(localFocus);
@@ -315,7 +324,9 @@ function RepairWiresInner({
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
         if (current.side === 'right') {
-          const twin = open.find((t) => t.pairId === current.pairId && t.side === 'left');
+          const twin = open.find(
+            (t) => t.pairId === current.pairId && t.side === 'left',
+          );
           if (twin) localFocus = openCol(twin);
         }
         setFocusIndex(localFocus);
@@ -379,7 +390,7 @@ function RepairWiresInner({
           <span className="mg-wires__title-icon" aria-hidden="true" />
           <div>
             <h2 id={titleId}>Repair Wires</h2>
-            <p>Match each wire pair before power drops.</p>
+            <p>Match each wire pair. Take your time.</p>
           </div>
         </div>
         <div
@@ -426,7 +437,9 @@ function RepairWiresInner({
                   strokeWidth={2.8}
                   strokeLinecap="round"
                   className={
-                    reduceMotion ? 'mg-wires__line' : 'mg-wires__line mg-wires__line--pulse'
+                    reduceMotion
+                      ? 'mg-wires__line'
+                      : 'mg-wires__line mg-wires__line--pulse'
                   }
                 />
               );
@@ -446,7 +459,9 @@ function RepairWiresInner({
                   linked ? 'mg-wires__port--linked' : '',
                   picked ? 'mg-wires__port--selected' : '',
                   keyboardFocus ? 'mg-wires__port--focus' : '',
-                  !linked && !reduceMotion && !picked ? 'mg-wires__port--idle' : '',
+                  !linked && !reduceMotion && !picked
+                    ? 'mg-wires__port--idle'
+                    : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -466,16 +481,16 @@ function RepairWiresInner({
                 disabled={ended || linked}
                 onClick={() => {
                   setFocusIndex(
-                    TERMINALS.filter((t) => !connectedSet.has(t.pairId)).findIndex(
-                      (t) => t.id === terminal.id,
-                    ),
+                    TERMINALS.filter(
+                      (t) => !connectedSet.has(t.pairId),
+                    ).findIndex((t) => t.id === terminal.id),
                   );
                   activateTerminal(terminal);
                 }}
                 onFocus={() => {
-                  const openIdx = TERMINALS.filter((t) => !connectedSet.has(t.pairId)).findIndex(
-                    (t) => t.id === terminal.id,
-                  );
+                  const openIdx = TERMINALS.filter(
+                    (t) => !connectedSet.has(t.pairId),
+                  ).findIndex((t) => t.id === terminal.id);
                   if (openIdx >= 0) setFocusIndex(openIdx);
                 }}
               >
