@@ -143,29 +143,6 @@ export function TitleScreen({
               <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
             </svg>
           </button>
-          <button
-            type="button"
-            className="title-btn"
-            onClick={() => onAction('settings')}
-          >
-            <svg
-              className="title-btn__sparkle title-btn__sparkle--tl"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              fill="currentColor"
-            >
-              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
-            </svg>
-            <span className="title-btn__label">Settings</span>
-            <svg
-              className="title-btn__sparkle title-btn__sparkle--br"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              fill="currentColor"
-            >
-              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" />
-            </svg>
-          </button>
         </div>
       </div>
     </div>

@@ -81,30 +81,26 @@ describe('Teacher Pack', () => {
       expect.stringContaining('nasa.gov'),
     );
     expect(screen.getByText(/Credit:/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Print photo cards' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Print' }));
     expect(print).toHaveBeenCalledOnce();
   });
   it('shows an honest empty album instead of fixture cards', () => {
     render(<TeachersScreen />);
     fireEvent.click(screen.getByRole('button', { name: /Photo cards/ }));
     expect(screen.getByText(/No cards collected yet/)).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Print photo cards' }),
-    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Print' })).toBeDisabled();
   });
-  it('gates certificates on completion and does not save the typed name', () => {
-    const view = render(<TeachersScreen />);
+  it('prints the certificate without a completion gate and does not save the typed name', () => {
+    render(<TeachersScreen />);
     fireEvent.click(screen.getByRole('button', { name: /Certificate/ }));
+    expect(screen.getByRole('button', { name: 'Print' })).toBeEnabled();
     expect(
-      screen.queryByRole('button', { name: 'Print certificate' }),
+      screen.queryByText(/Finish the mission to print/),
     ).not.toBeInTheDocument();
-    view.rerender(<TeachersScreen missionCompleted />);
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Young Explorer' },
     });
-    expect(
-      screen.getByRole('button', { name: 'Print certificate' }),
-    ).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Print' })).toBeEnabled();
     expect(localStorage.length).toBe(0);
   });
   it('waits for the teacher to continue a discussion', () => {

@@ -31,7 +31,7 @@ This section is authoritative for confirmed product decisions. The November 11 f
 
 ### Confirmed title menu, save and responsive UI
 
-Title menu: **Start New**, **Continue** (only with a valid unfinished save), **Learn** (learning hub and Teacher Pack), **Sources & Credits**, and **Settings**. Start New opens a fresh cargo plan directly, without a replacement popup. An inline notice explains that launching replaces unfinished progress; Back preserves it until launch. Continue restores the existing run without fetching new NASA conditions.
+Title menu: **Start New**, **Continue** (only with a valid unfinished save), **Learn** (learning hub and Teacher Pack), **Sources & Credits**. Settings remains available during the mission. Start New opens a fresh cargo plan directly, without a replacement popup. An inline notice explains that launching replaces unfinished progress; Back preserves it until launch. Continue restores the existing run without fetching new NASA conditions.
 
 Build dialogue boxes, speech tails, portrait/photo frames, meters, buttons, cards, source/disclosure labels and all text with responsive HTML/CSS/SVG. No generated UI-frame images are required. On narrow screens, reflow portraits and choices instead of shrinking the whole interface into unreadable text. Make tap targets, focus, font sizing and Reduce Motion work independently of scene art.
 
@@ -639,7 +639,7 @@ All player-facing text (narration, dialogue, After lines, Real moments, "Kids le
 ## 10. UI and scene spec
 
 ### 10.1 Screens
-1. **Title:** game name, Start New, Continue (only for a valid unfinished save), Sources & Credits, Settings, Learn, and an optional NASA observation badge. Explain the replacement inline; replace saved progress only when the new cargo launches.
+1. **Title:** game name, Start New, Continue (only for a valid unfinished save), Sources & Credits, Learn, and an optional NASA observation badge. Explain the replacement inline; replace saved progress only when the new cargo launches.
 2. **Mission initialization (no mode screen):** obtain NASA input or fallback once, then open Plan. No Story/Daily selection.
 3. **Plan phase:** cargo bay with item cards, budget bar, Balanced pack, Launch, and Robo's optional NASA-based cargo guidance with observation date/source.
 4. **Prologue:** Robo narration cards with typewriter text and tap to continue.
@@ -1124,7 +1124,7 @@ No new generated image, animation sheet or scene is required for the debrief. Re
 3. **Vocabulary list:** sol, radiation, shield, solar panel, signal delay, dust storm, launch weight, cargo, in kid-friendly words.
 4. **Mission log worksheet:** prediction -> choice -> result, with sol, meters before/after and "Why?" fields. Preserve the confirmed prediction/reflection element.
 5. **Mission Album:** the in-game Real Mars cards seen, printable with print CSS.
-6. **Junior Commander certificate:** printable, with the commander's chosen name typed on the page (not saved anywhere).
+6. **Junior Commander certificate:** the supplied artwork is printable from Learn without a completion gate or preview watermark; the commander's name is typed on the page and is not saved anywhere.
 
 **Classroom mode** (Settings toggle, saved in `localStorage`):
 - Bigger text and a projector-friendly layout.

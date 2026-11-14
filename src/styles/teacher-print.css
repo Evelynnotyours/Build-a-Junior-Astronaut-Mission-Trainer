@@ -1252,3 +1252,10 @@
     box-shadow: none;
   }
 }
+
+/* Keep the return action below the classroom setting. */
+.learn-shell .tn-classroom .tn-action {
+  display: block;
+  width: fit-content;
+  margin-top: 1rem;
+}

@@ -295,9 +295,7 @@ for (const repair of ['A', 'B'] as const) {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Close album' }));
     fireEvent.click(screen.getByRole('button', { name: 'Certificate' }));
-    expect(
-      screen.getByRole('button', { name: 'Print certificate' }),
-    ).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Print' })).toBeEnabled();
   }, 20000);
 }
 

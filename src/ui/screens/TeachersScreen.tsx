@@ -62,12 +62,10 @@ export function TeachersScreen({
     discussion:
       'Two questions for each sol. Invite ideas rather than score answers.',
     vocabulary: 'Simple meanings for words children meet during the mission.',
-    worksheet:
-      'Print before playing: predict, record a choice and explain its result.',
+    worksheet: '',
     album:
       'Print the NASA cards collected in this mission, with captions and credits.',
-    certificate:
-      'Print a Junior Commander certificate after completing the mission.',
+    certificate: '',
   };
 
   return (
@@ -86,7 +84,7 @@ export function TeachersScreen({
             onClick={onClose}
             aria-label="Back to game"
           >
-            ← Back to game
+            Back to game
           </button>
           <h1 id="tn-title">Your Mars Learning</h1>
           <p>
@@ -194,11 +192,6 @@ export function TeachersScreen({
               />
               Classroom presentation &amp; discussion pauses
             </label>
-            <p>
-              Play the same ten-sol mission together on a projector. Bigger text
-              and a pause after each sol’s learning card. The teacher presses
-              Continue. Turning this on sets sound off and reduced motion on.
-            </p>
             {onClose && (
               <button type="button" className="tn-action" onClick={onClose}>
                 Back to game
