@@ -623,6 +623,7 @@ export default function App() {
     <>
       <TitleScreen
         canContinue={saved.kind === 'ready'}
+        reduceMotion={settings.reduceMotion}
         onAction={titleAction}
       />
       {lastRun.kind === 'ready' && (

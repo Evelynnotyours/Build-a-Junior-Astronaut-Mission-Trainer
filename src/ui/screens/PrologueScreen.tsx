@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { PROLOGUE_LINES, PROLOGUE_TITLE } from './prologue/fixtureCopy';
+import {
+  PROLOGUE_LINES,
+  PROLOGUE_TAGLINE,
+  PROLOGUE_TEAM_LINES,
+} from './prologue/fixtureCopy';
+import { SpinningMars } from './prologue/SpinningMars';
 
 type PrologueScreenProps = {
   reduceMotion?: boolean;
@@ -10,8 +15,7 @@ type PrologueScreenProps = {
 };
 
 /**
- * Code-drawn prologue: stars, Mars approach, landing glow, title, tap narration.
- * No dedicated prologue art asset required.
+ * Prologue: starfield, spinning Mars, glowing team name, Robo narration.
  */
 export function PrologueScreen({
   reduceMotion = false,
@@ -22,7 +26,7 @@ export function PrologueScreen({
 }: PrologueScreenProps) {
   const [step, setStep] = useState(0);
   const [typing, setTyping] = useState({ line: '', text: '' });
-  const [showTitle, setShowTitle] = useState(false);
+  const [showBrand, setShowBrand] = useState(false);
   const line = lines[step] ?? '';
   const typed = reduceMotion ? line : typing.line === line ? typing.text : '';
   const doneTyping = typed.length >= line.length;
@@ -30,8 +34,8 @@ export function PrologueScreen({
 
   useEffect(() => {
     const t = window.setTimeout(
-      () => setShowTitle(true),
-      reduceMotion ? 0 : 900,
+      () => setShowBrand(true),
+      reduceMotion ? 0 : 700,
     );
     return () => window.clearTimeout(t);
   }, [reduceMotion]);
@@ -74,17 +78,23 @@ export function PrologueScreen({
       }
     >
       <div className="prologue-sky" aria-hidden="true">
-        <div className="prologue-stars prologue-stars--a" />
-        <div className="prologue-stars prologue-stars--b" />
-        <div className="prologue-mars" />
-        <div className="prologue-pod" />
-        <div className="prologue-glow" />
+        <div className="prologue-stars prologue-stars--far" />
+        <div className="prologue-stars prologue-stars--near" />
+        <div className="prologue-nebula" />
+        <SpinningMars reduceMotion={reduceMotion} />
       </div>
 
-      {showTitle ? (
-        <p className="prologue-title" aria-hidden="true">
-          {PROLOGUE_TITLE}
-        </p>
+      {showBrand ? (
+        <div className="prologue-brand">
+          <h1 className="prologue-brand__name">
+            {PROLOGUE_TEAM_LINES.map((word) => (
+              <span key={word} className="prologue-brand__line">
+                {word}
+              </span>
+            ))}
+          </h1>
+          <p className="prologue-brand__tag">{PROLOGUE_TAGLINE}</p>
+        </div>
       ) : null}
 
       <div className="prologue-stage">
