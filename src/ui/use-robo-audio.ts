@@ -101,7 +101,12 @@ export function useRoboAudio(
     }
     if (!sound && isRobo && !memory.current.greeted) sound = 'hello';
     if (!sound && stepType === 'choice') sound = 'curious';
-    if (!sound && (stepType === 'dialogue' || stepType === 'narration'))
+    if (
+      !sound &&
+      (stepType === 'dialogue' ||
+        stepType === 'narration' ||
+        stepType === 'after')
+    )
       sound = 'thinking';
     if (!sound) return;
 

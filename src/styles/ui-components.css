@@ -635,11 +635,7 @@
 }
 
 .ui-mood--dusk {
-  background: linear-gradient(
-    180deg,
-    rgba(40, 20, 60, 0.22),
-    transparent 45%
-  );
+  background: linear-gradient(180deg, rgba(40, 20, 60, 0.22), transparent 45%);
 }
 
 .ui-mood--dawn {
@@ -854,7 +850,9 @@
 }
 
 .ui-commander--move {
-  transition: left 1.5s linear, top 1.5s linear;
+  transition:
+    left 1.5s linear,
+    top 1.5s linear;
 }
 
 .ui-commander--instant {
@@ -1435,4 +1433,168 @@
   .ui-real-mars__figure img {
     max-height: min(28vh, 10rem);
   }
+}
+/* Real Mars appears automatically above the mission, then remains reopenable. */
+.real-mars-popup {
+  position: fixed;
+  inset: 0;
+  width: min(680px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: 86dvh;
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 20px;
+  background: #201711;
+  color: #fff8ef;
+  box-shadow: 0 24px 80px #0009;
+}
+.real-mars-popup::backdrop {
+  background: #080c1dcc;
+}
+.ui-game__dock .real-mars-popup .ui-real-mars {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+  padding: clamp(1rem, 3vw, 1.75rem);
+}
+.ui-game__dock:has(.real-mars-popup) {
+  top: auto;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  max-height: none;
+}
+/* A bright reading card: science first, visible photo context and credits below. */
+.real-mars-popup {
+  background: #f9f6ef;
+  scrollbar-width: thin;
+  scrollbar-color: #8594aa transparent;
+}
+.ui-game__dock .real-mars-popup .ui-real-mars {
+  background: #f9f6ef;
+  color: #202e48;
+  border: 2px solid #91abc7;
+  box-shadow: none;
+  gap: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.real-mars-popup .ui-real-mars__header h2 {
+  color: #19345e;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 800;
+}
+.real-mars-popup .ui-real-mars__tag {
+  background: #e5edf7;
+  color: #304b70;
+  border: 1px solid #bdcde1;
+}
+.real-mars-popup .ui-real-mars__figure {
+  background: #e7edf4;
+  border-radius: 12px;
+  max-height: none;
+  margin: 0;
+}
+.real-mars-popup .ui-real-mars__figure img {
+  width: 100%;
+  max-height: min(28dvh, 240px);
+  object-fit: contain;
+}
+.real-mars-popup .ui-real-mars__figure figcaption {
+  color: #52617a;
+  background: #e7edf4;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+}
+.real-mars-popup .ui-real-mars__fact {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid #e7b345;
+  border-radius: 8px;
+  background: #fff0ca;
+  color: #23334e;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.65;
+}
+.real-mars-popup .ui-real-mars__sources {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid #d2dce8;
+  border-radius: 12px;
+  background: #edf2f8;
+  color: #374b67;
+}
+.real-mars-popup .ui-real-mars__sources h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #253e62;
+  margin: 0;
+}
+.real-mars-popup .ui-real-mars__sources p {
+  margin: 0;
+  line-height: 1.6;
+}
+.real-mars-popup .ui-real-mars__source,
+.real-mars-popup .ui-real-mars__note {
+  color: #4b5d76;
+}
+.real-mars-popup .ui-real-mars__sources a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #245896;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.real-mars-popup .ui-btn {
+  background: #244b80;
+  border: 2px solid #193860;
+  color: #fff;
+  min-height: 48px;
+  box-shadow: 0 3px 0 #193860;
+}
+/* Keep the close control outside the scrolling content. */
+.real-mars-popup {
+  overflow: hidden;
+}
+.real-mars-popup__body {
+  max-height: 86dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #8594aa transparent;
+}
+.real-mars-popup__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #bdcde1;
+  border-radius: 50%;
+  background: #244b80;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 10px #19386033;
+}
+.real-mars-popup__close:hover {
+  background: #193860;
+}
+.real-mars-popup__close:focus-visible {
+  outline: 3px solid #e7b345;
+  outline-offset: 2px;
+}
+.real-mars-popup .ui-real-mars__header {
+  padding-right: 3rem;
+  min-height: 44px;
 }

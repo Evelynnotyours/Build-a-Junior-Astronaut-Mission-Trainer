@@ -58,11 +58,18 @@ function readToChoice() {
       fireEvent.click(arrival);
       continue;
     }
+    const photoClose = screen.queryByRole('button', { name: 'Close' });
+    if (photoClose) {
+      fireEvent.click(photoClose);
+      continue;
+    }
     const cont = screen.queryByRole('button', { name: 'Continue' });
     if (cont) {
       fireEvent.click(cont);
       continue;
     }
+    const autoPhotoClose = screen.queryByRole('button', { name: 'Close' });
+    if (autoPhotoClose) fireEvent.click(autoPhotoClose);
     const explore = screen.queryByRole('button', {
       name: 'Real Mars, tap to read',
     });
@@ -90,12 +97,15 @@ describe('Sol 1 app integration', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByText(/Air first! Breathing/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    const autoPhotoClose = screen.queryByRole('button', { name: 'Close' });
+    if (autoPhotoClose) fireEvent.click(autoPhotoClose);
     const explore = screen.queryByRole('button', {
       name: 'Real Mars, tap to read',
     });
     if (explore) {
       fireEvent.click(explore);
       fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     } else {
       fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     }
@@ -181,12 +191,15 @@ it('restores the classroom setting and waits for teacher Continue before night',
   readToChoice();
   fireEvent.click(screen.getByRole('button', { name: 'Air system first' }));
   fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+  const autoPhotoClose = screen.queryByRole('button', { name: 'Close' });
+  if (autoPhotoClose) fireEvent.click(autoPhotoClose);
   const explore = screen.queryByRole('button', {
     name: 'Real Mars, tap to read',
   });
   if (explore) {
     fireEvent.click(explore);
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
   } else {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
   }
@@ -261,6 +274,11 @@ for (const repair of ['A', 'B'] as const) {
         ])
           if (screen.queryByRole('heading', { name: title })) tasks.add(title);
         fireEvent.click(taskSkip);
+        continue;
+      }
+      const photoClose = screen.queryByRole('button', { name: 'Close' });
+      if (photoClose) {
+        fireEvent.click(photoClose);
         continue;
       }
       const cont = screen.queryByRole('button', { name: 'Continue' });
@@ -344,6 +362,11 @@ it('retries a failed sol from memory without double charges, then rejects succes
       const skip = screen.queryByRole('button', { name: 'Skip' });
       if (skip) {
         fireEvent.click(skip);
+        continue;
+      }
+      const photoClose = screen.queryByRole('button', { name: 'Close' });
+      if (photoClose) {
+        fireEvent.click(photoClose);
         continue;
       }
       const cont = screen.queryByRole('button', { name: 'Continue' });

@@ -10,7 +10,7 @@ import { Banner } from './Banner';
 import { ChoicePanel } from './ChoicePanel';
 import { DialogueBox } from './DialogueBox';
 import { NarrationCard } from './NarrationCard';
-import { RealMarsCard } from './RealMarsCard';
+import { RealMarsPopup } from './RealMarsPopup';
 import { SceneStage } from './SceneStage';
 import { CoverPanels } from '../minigames/CoverPanels';
 import { RoverDrive } from '../minigames/RoverDrive';
@@ -107,7 +107,7 @@ function ScenePresenterFrame({
     );
     return () => window.clearTimeout(timer);
   }, [walking, step, onInput, reduceMotion]);
-  const [realOpen, setRealOpen] = useState(false);
+  const [realOpen, setRealOpen] = useState(step.type === 'real_card');
 
   function emit(input: SceneInput) {
     onInput(input);
@@ -135,6 +135,7 @@ function ScenePresenterFrame({
   const activeSpot = step.type === 'walk' ? step.target : null;
   const dock = renderDock(step, content, {
     reduceMotion,
+    soundEnabled: settings.soundEnabled,
     roverObstacleBlocking,
     walking,
     realOpen,
@@ -183,6 +184,7 @@ function renderDock(
   content: ResolvedSceneContent,
   opts: {
     reduceMotion: boolean;
+    soundEnabled: boolean;
     roverObstacleBlocking: boolean;
     walking: boolean;
     realOpen: boolean;
@@ -242,22 +244,29 @@ function renderDock(
       );
     case 'after':
       return (
-        <AfterCard text={content.text ?? ''} onContinue={opts.onAdvance} />
+        <AfterCard
+          text={content.text ?? ''}
+          onContinue={opts.onAdvance}
+          reduceMotion={opts.reduceMotion}
+          soundEnabled={opts.soundEnabled}
+        />
       );
     case 'real_card':
       return (
         <div className="ui-game__dock-stack">
           {content.realCard ? (
-            <RealMarsCard
-              {...content.realCard}
-              collapsed={!opts.realOpen}
-              onOpen={() => opts.setRealOpen(true)}
-              onClose={opts.onAdvance}
-            />
+            <>
+              {opts.realOpen && (
+                <RealMarsPopup
+                  card={content.realCard}
+                  onClose={() => opts.setRealOpen(false)}
+                />
+              )}
+            </>
           ) : (
             <Banner message="This learning card is unavailable. You can keep playing." />
           )}
-          {!opts.realOpen && (
+          {(!opts.realOpen || !content.realCard) && (
             <button
               className="ui-btn ui-btn--cta"
               type="button"

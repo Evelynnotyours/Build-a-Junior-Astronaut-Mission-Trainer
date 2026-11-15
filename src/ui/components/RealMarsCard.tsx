@@ -18,6 +18,7 @@ type RealMarsCardProps = {
   collapsed?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
+  showCloseButton?: boolean;
 };
 
 export function RealMarsCard({
@@ -39,6 +40,7 @@ export function RealMarsCard({
   collapsed = true,
   onOpen,
   onClose,
+  showCloseButton = true,
 }: RealMarsCardProps) {
   const tag = savedLabel || (savedPhoto ? mediaLabel : '');
 
@@ -67,8 +69,8 @@ export function RealMarsCard({
       <p className="ui-real-mars__fact">{fact}</p>
       {observationNote ? <p>{observationNote}</p> : null}
       {contextNote ? <p className="ui-real-mars__note">{contextNote}</p> : null}
-      <details>
-        <summary>Photo and sources</summary>
+      <section className="ui-real-mars__sources" aria-label="Photo and sources">
+        <h3>About this photo</h3>
         {photoCaption ? <p>{photoCaption}</p> : null}
         <p className="ui-real-mars__source">{sourceLabel}</p>
         {observationSourceUrl ? (
@@ -97,10 +99,12 @@ export function RealMarsCard({
             </a>
           </p>
         ) : null}
-      </details>
-      <button type="button" className="ui-btn" onClick={onClose}>
-        Close
-      </button>
+      </section>
+      {showCloseButton && (
+        <button type="button" className="ui-btn" onClick={onClose}>
+          Close
+        </button>
+      )}
     </article>
   );
 }
