@@ -18,8 +18,16 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 18% 70%, rgba(40, 70, 140, 0.22), transparent 42%),
-    radial-gradient(ellipse at 85% 40%, rgba(180, 70, 30, 0.16), transparent 38%),
+    radial-gradient(
+      ellipse at 18% 70%,
+      rgba(40, 70, 140, 0.22),
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 85% 40%,
+      rgba(180, 70, 30, 0.16),
+      transparent 38%
+    ),
     linear-gradient(180deg, #000 0%, #050814 55%, #0a0610 100%);
 }
 
@@ -27,8 +35,16 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 48%, rgba(120, 160, 255, 0.12), transparent 28%),
-    radial-gradient(circle at 12% 62%, rgba(255, 255, 255, 0.06), transparent 18%);
+    radial-gradient(
+      circle at 22% 48%,
+      rgba(120, 160, 255, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 12% 62%,
+      rgba(255, 255, 255, 0.06),
+      transparent 18%
+    );
   filter: blur(1px);
 }
 
@@ -119,11 +135,11 @@
     ),
     /* Bright orange-red limb glow on the lit left edge */
     radial-gradient(
-      circle at 12% 48%,
-      rgba(255, 120, 40, 0.55) 0%,
-      rgba(255, 90, 20, 0.22) 18%,
-      transparent 42%
-    ),
+        circle at 12% 48%,
+        rgba(255, 120, 40, 0.55) 0%,
+        rgba(255, 90, 20, 0.22) 18%,
+        transparent 42%
+      ),
     radial-gradient(
       circle at 72% 58%,
       transparent 52%,
@@ -208,52 +224,15 @@
 }
 
 .prologue-card {
-  display: flex;
-  gap: 0.65rem;
-  align-items: flex-end;
-  width: min(720px, 100%);
+  width: min(1100px, 100%);
   margin: 0 auto;
 }
-
-.prologue-robo {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.4));
+.prologue-card .ui-dialogue:has(.ui-portrait--hero) {
+  translate: none;
+  width: 100%;
 }
-
-.prologue-speech {
-  flex: 1;
-  padding: 0.85rem 1rem;
-  border-radius: 18px;
-  background: rgba(247, 251, 255, 0.96);
-  color: #142033;
-  border: 2px solid rgba(0, 210, 255, 0.45);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-}
-
-.prologue-speech p {
-  margin: 0 0 0.7rem;
+.prologue-card .ui-dialogue__text {
   min-height: 3.2em;
-  font-weight: 700;
-  line-height: 1.4;
-  font-size: 1.05rem;
-}
-
-.prologue-continue {
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 48%),
-    linear-gradient(180deg, #ffd45c, #f0a800);
-  color: #1a2030;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 4px 0 #b87a00;
 }
 
 .prologue-skip {

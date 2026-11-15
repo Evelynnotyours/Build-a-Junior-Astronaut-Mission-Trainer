@@ -5,6 +5,7 @@ import {
   PROLOGUE_TEAM_LINES,
 } from './prologue/fixtureCopy';
 import { SpinningMars } from './prologue/SpinningMars';
+import { DialogueBox } from '../components/DialogueBox';
 
 type PrologueScreenProps = {
   reduceMotion?: boolean;
@@ -99,22 +100,17 @@ export function PrologueScreen({
 
       <div className="prologue-stage">
         <div className="prologue-card">
-          <img
-            src="/assets/characters/robo_explaining.png"
-            alt=""
-            className="prologue-robo"
-            draggable={false}
+          <DialogueBox
+            speaker="robo"
+            expression="explaining"
+            speakerName="Robo"
+            text={typed || '\u00a0'}
+            reduceMotion={reduceMotion}
+            onContinue={advance}
+            continueLabel={
+              doneTyping ? (last ? finalLabel : 'Continue') : 'Skip typing'
+            }
           />
-          <div className="prologue-speech">
-            <p aria-live="polite">{typed || '\u00a0'}</p>
-            <button
-              type="button"
-              className="prologue-continue"
-              onClick={advance}
-            >
-              {doneTyping ? (last ? finalLabel : 'Continue') : 'Skip typing'}
-            </button>
-          </div>
         </div>
 
         {onSkip ? (

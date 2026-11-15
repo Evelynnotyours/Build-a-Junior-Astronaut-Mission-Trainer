@@ -109,9 +109,12 @@ describe('Sol 1 app integration', () => {
     } else {
       fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     }
-    expect(screen.getByText('Sol 1 complete')).toBeInTheDocument();
+    expect(screen.queryByText('Sol 1 complete')).not.toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('mms.activeRun')!).state.sol).toBe(
+      2,
+    );
     expect(
-      screen.getByText('Life Support: 80 · Power: 64 · Shielding: 60'),
+      screen.getByText('Life Support: 80 · Power: 76 · Shielding: 60'),
     ).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledTimes(1);
   });
@@ -211,9 +214,10 @@ it('restores the classroom setting and waits for teacher Continue before night',
   ).toBeInTheDocument();
   expect(screen.queryByText('Sol 1 complete')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-  expect(screen.getByText('Sol 1 complete')).toBeInTheDocument();
+  expect(screen.queryByText('Sol 1 complete')).not.toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('mms.activeRun')!).state.sol).toBe(2);
   expect(
-    screen.getByText('Life Support: 80 · Power: 64 · Shielding: 60'),
+    screen.getByText('Life Support: 80 · Power: 76 · Shielding: 60'),
   ).toBeInTheDocument();
 });
 

@@ -1739,3 +1739,19 @@
   padding-right: 3rem;
   min-height: 44px;
 }
+/* Compact mission identity: the team logo replaces the repeated title. */
+.ui-topbar {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.ui-brand__mark {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: #15244f;
+  border: 1px solid #ffffff30;
+}
+.ui-brand__mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}

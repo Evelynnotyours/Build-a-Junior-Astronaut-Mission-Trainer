@@ -11,6 +11,16 @@ type ChoicePanelProps = {
   disabled?: boolean;
 };
 
+/** Hide numeric outcomes in presentation; authored effects remain in the engine. */
+function choiceLabel(label: string) {
+  return label
+    .replace(
+      /\s*\([^)]*(?:Life|Power|Shield(?:ing)?)[^)]*[+−-]\s*\d[^)]*\)/gi,
+      '',
+    )
+    .trim();
+}
+
 export function ChoicePanel({
   options,
   roundId,
@@ -41,9 +51,13 @@ export function ChoicePanel({
           disabled={disabled || option.disabled}
           onClick={() => handleChoose(option.id)}
         >
-          <span className="ui-choice__label">{option.label}</span>
+          <span className="ui-choice__label">{choiceLabel(option.label)}</span>
           {option.costs && option.costs.length > 0 ? (
-            <span className="ui-choice__costs">{option.costs.join(' · ')}</span>
+            <span className="ui-choice__costs">
+              {option.costs
+                .filter((cost) => !/[+−-]\s*\d/.test(cost))
+                .join(' · ')}
+            </span>
           ) : null}
           {option.caution ? (
             <span className="ui-choice__caution" aria-label="Caution">

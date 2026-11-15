@@ -188,7 +188,21 @@ export default function App() {
     );
     return result.kind === 'saved';
   }
-  function install(next: SceneTransition) {
+  function install(next: SceneTransition, id = runId) {
+    if (
+      next.playback.status === 'complete' &&
+      next.playback.game.phase === 'NIGHT' &&
+      next.playback.game.sol < 10
+    ) {
+      const game = beginNextSol(next.playback.game);
+      const following = startScene(resolveMissionScene(game), game, {
+        ...options,
+        visitBase: next.playback.visit + 1,
+      });
+      persist(following, id);
+      capture(following, id);
+      next = following;
+    }
     current.current = next;
     setTransition(next);
     if (next.playback.status === 'ended') setPhase('report');
@@ -253,7 +267,7 @@ export default function App() {
         freezeMissionSkySnapshot(next.playback.game.sky);
       retry.clear();
       setRunId(saved.save.runId);
-      install(next);
+      install(next, saved.save.runId);
       setPhase('scene');
       setOverlay(null);
       setStatus('');
@@ -282,23 +296,6 @@ export default function App() {
   const onSceneInput = playback
     ? (value: SceneInput) => input(stampSceneInput(playback, value))
     : () => {};
-  function nextSol() {
-    const previous = current.current?.playback;
-    if (
-      !previous ||
-      previous.status !== 'complete' ||
-      previous.game.phase !== 'NIGHT'
-    )
-      return;
-    const game = beginNextSol(previous.game);
-    const next = startScene(resolveMissionScene(game), game, {
-      ...options,
-      visitBase: previous.visit + 1,
-    });
-    persist(next, runId);
-    capture(next, runId);
-    install(next);
-  }
   function retrySol() {
     const previous = current.current?.playback;
     if (!previous) return;
@@ -547,15 +544,6 @@ export default function App() {
                 )}
               </>
             ) : null}
-            {playback.status === 'complete' && (
-              <section className="mission-night" aria-label="Sol complete">
-                <h2>Sol {state.sol} complete</h2>
-                <p>Night supplies have been used. Ready for the next sol?</p>
-                <button className="ui-btn ui-btn--cta" onClick={nextSol}>
-                  Begin Sol {state.sol + 1}
-                </button>
-              </section>
-            )}
           </SceneScreen>
         )}
         {view?.caution && step && (
@@ -612,9 +600,8 @@ export default function App() {
           })}
         </div>
         <div className="mission-tools no-print">
-          <button onClick={() => setOverlay('teachers')}>Learn</button>
           <button onClick={() => setOverlay('album')}>Mission Album</button>
-          <button onClick={() => setPhase('title')}>Save &amp; title</button>
+          <button onClick={() => setPhase('title')}>Exit</button>
         </div>
       </div>
     );

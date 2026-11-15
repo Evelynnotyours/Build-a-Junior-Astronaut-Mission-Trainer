@@ -50,13 +50,12 @@ export function SceneScreen({
       {children}
       <header className="ui-topbar">
         <div className="ui-brand">
-          <span className="ui-brand__mark" aria-hidden="true">
-            ✦
+          <span className="ui-brand__mark">
+            <img
+              src="/assets/branding/tiny_habitat_transparent.png"
+              alt="Tiny Habitat"
+            />
           </span>
-          <div className="ui-brand__text">
-            <p className="ui-brand__title">Mars Mission Survival</p>
-            <p className="ui-brand__sub">Junior Astronaut Mission Trainer</p>
-          </div>
         </div>
         <MetersBar values={meters} reduceMotion={reduceMotion} variant="hud" />
         <div className="ui-topbar__end">
