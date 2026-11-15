@@ -15,8 +15,8 @@ it('shows Robo explaining, reveals on Enter, then advances without reapplying a 
   expect(
     screen.getByRole('region', { name: 'Robo explains the result' }),
   ).toBeInTheDocument();
-  expect(document.querySelector('img')?.getAttribute('src')).toContain(
-    'robo_explaining',
+  expect(document.querySelector('.ui-portrait')).toHaveClass(
+    'ui-robo-motion--float',
   );
   fireEvent.keyDown(window, { key: 'Enter' });
   expect(next).not.toHaveBeenCalled();

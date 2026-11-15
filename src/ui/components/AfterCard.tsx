@@ -55,7 +55,13 @@ export function AfterCard({
   return (
     <section className="ui-dialogue" aria-label="Robo explains the result">
       <div className="ui-dialogue__speaker" aria-hidden="true">
-        <Portrait speaker="robo" expression="explaining" size="hero" alt="" />
+        <Portrait
+          speaker="robo"
+          expression="explaining"
+          size="hero"
+          reduceMotion={reduceMotion}
+          alt=""
+        />
       </div>
       <div className="ui-dialogue__bubble">
         <header className="ui-dialogue__name">Robo</header>

@@ -1,13 +1,15 @@
 import type { SceneDefinition, SceneStep } from '../engine/scene-types';
 import type { ScenePlayback } from '../engine/scene-player';
-import type { MoodId } from '../engine/types';
+import type { ChoiceId, MoodId } from '../engine/types';
+import { resolveMissionScene } from '../engine/mission';
 import type { SceneLayerFlags } from './components/types';
 import { MISSION_SPOTS, OUTPOST_PATH_START } from './components/outpostLayout';
 
-/** Rebuild presentation from the actual authored route; refreshing never replays resource effects. */
-export function scenePresentation(
+/** Follow only the chosen route, stopping at the current step when supplied. */
+function visitedSteps(
   scene: SceneDefinition,
-  playback: ScenePlayback,
+  selectedChoiceId?: ChoiceId,
+  stopAt?: string,
 ) {
   const visited: SceneStep[] = [];
   let id: string | undefined = scene.entryStepId;
@@ -15,14 +17,27 @@ export function scenePresentation(
     const step = scene.steps.find((s) => s.id === id);
     if (!step) break;
     visited.push(step);
-    if (step.id === playback.cursor.stepId) break;
+    if (step.id === stopAt) break;
     id =
       step.type === 'choice'
-        ? playback.cursor.selectedChoiceId
-          ? step.nextByChoice[playback.cursor.selectedChoiceId]
+        ? selectedChoiceId
+          ? step.nextByChoice[selectedChoiceId]
           : undefined
         : step.next;
   }
+  return visited;
+}
+
+/** Rebuild presentation from the actual authored route; refreshing never replays resource effects. */
+export function scenePresentation(
+  scene: SceneDefinition,
+  playback: ScenePlayback,
+) {
+  const visited = visitedSteps(
+    scene,
+    playback.cursor.selectedChoiceId,
+    playback.cursor.stepId,
+  );
   const mood =
     [...visited]
       .reverse()
@@ -31,14 +46,28 @@ export function scenePresentation(
       )?.mood ?? 'calm_day';
   const lastWalk = [...visited]
     .reverse()
-    .find((s): s is Extract<SceneStep, { type: 'walk' }> => s.type === 'walk');
-  const walked =
-    lastWalk &&
-    (lastWalk.id !== playback.cursor.stepId ||
-      playback.game.phase === 'WALKING');
-  const stand = walked
-    ? MISSION_SPOTS[lastWalk.target].stand
-    : [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y];
+    .find(
+      (s): s is Extract<SceneStep, { type: 'walk' }> =>
+        s.type === 'walk' &&
+        (s.id !== playback.cursor.stepId || playback.game.phase === 'WALKING'),
+    );
+  // Completed history reconstructs the previous location even after Continue or
+  // a sol retry, without adding presentation coordinates to the save contract.
+  let stand: readonly number[] = [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y];
+  for (const entry of playback.game.history) {
+    if (entry.sol >= playback.game.sol) continue;
+    const previousScene = resolveMissionScene({
+      ...playback.game,
+      sol: entry.sol,
+    });
+    const previousWalk = visitedSteps(previousScene, entry.choiceId)
+      .reverse()
+      .find(
+        (s): s is Extract<SceneStep, { type: 'walk' }> => s.type === 'walk',
+      );
+    if (previousWalk) stand = MISSION_SPOTS[previousWalk.target].stand;
+  }
+  if (lastWalk) stand = MISSION_SPOTS[lastWalk.target].stand;
   const sky: SceneLayerFlags['sky'] = [
     'dusk_night',
     'cold_night',
