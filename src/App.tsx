@@ -50,6 +50,7 @@ import { CertificatePrint } from './ui/screens/teacher/CertificatePrint';
 import { ClassroomPause } from './ui/screens/teacher/ClassroomPause';
 import { MissionReport } from './ui/screens/MissionReport';
 import { useMissionAudio } from './ui/use-mission-audio';
+import { useRoboAudio } from './ui/use-robo-audio';
 
 // Remain compatible with already saved Sol 1 runs; the envelope/schema is unchanged.
 const VERSION = 'sol1-v1';
@@ -148,6 +149,12 @@ export default function App() {
   useMissionAudio(
     phase === 'scene' && !overlay ? transition : undefined,
     settings.soundEnabled,
+  );
+  useRoboAudio(
+    phase === 'scene' && !overlay ? transition : undefined,
+    step,
+    settings.soundEnabled,
+    runId,
   );
 
   function persist(next: SceneTransition, id: string, replace = false) {
