@@ -8,4 +8,10 @@ export const PROLOGUE_LINES = [
   'Ready, Commander?',
 ] as const;
 
+/** Stacked glowing team name. */
+export const PROLOGUE_TEAM_LINES = ['TINY', 'HABITAT'] as const;
+
+export const PROLOGUE_TAGLINE = 'Mars Mission Survival';
+
+/** @deprecated Prefer PROLOGUE_TEAM_LINES — kept for older preview copy. */
 export const PROLOGUE_TITLE = 'MARS MISSION SURVIVAL';

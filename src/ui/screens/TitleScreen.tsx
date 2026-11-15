@@ -1,11 +1,13 @@
 import { SkyBadge } from '../components/SkyBadge';
 import type { SkyLevel, SkySource } from '../../engine/types';
+import { MarsGlobe } from './title/MarsGlobe';
 
 export type TitleAction =
   'start' | 'continue' | 'teachers' | 'sources' | 'settings';
 
 type TitleScreenProps = {
   canContinue?: boolean;
+  reduceMotion?: boolean;
   sky?: {
     level?: SkyLevel;
     status: SkySource | 'Unavailable';
@@ -16,28 +18,28 @@ type TitleScreenProps = {
 
 /**
  * Title menu shell. Member 1 wires Start/Continue to sky fetch + save restore.
+ * Left hero is an interactive Three.js Mars globe.
  */
 export function TitleScreen({
   canContinue = false,
+  reduceMotion = false,
   sky,
   onAction,
 }: TitleScreenProps) {
   return (
     <div className="title-shell">
       <div className="title-hero" aria-hidden="true">
-        <img src="/assets/bg/mars_vista.jpg" alt="" draggable={false} />
+        <div className="title-hero__space" />
+        <MarsGlobe reduceMotion={reduceMotion} />
         <div className="title-hero__shade" />
       </div>
 
       <div className="title-panel">
-        <img
-          className="title-logo"
-          src="/assets/branding/tiny_habitat_transparent.png"
-          alt="Tiny Habitat logo"
-          draggable={false}
-        />
-        <h1 className="title-brand">Mars Mission Survival</h1>
-        <p className="title-subtitle">Tiny Habitat</p>
+        <h1 className="title-brand">
+          <span className="title-brand__line">TINY</span>
+          <span className="title-brand__line">HABITAT</span>
+        </h1>
+        <p className="title-subtitle">Mars Mission Survival</p>
 
         {sky ? (
           <div className="title-sky">
