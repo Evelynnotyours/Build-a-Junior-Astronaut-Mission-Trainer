@@ -24,7 +24,13 @@ export function NarrationCard({
     >
       {showPortrait ? (
         <div className="ui-dialogue__speaker" aria-hidden="true">
-          <Portrait speaker="robo" expression="explaining" size="hero" alt="" />
+          <Portrait
+            speaker="robo"
+            expression="explaining"
+            size="hero"
+            alt=""
+            reduceMotion={reduceMotion}
+          />
         </div>
       ) : null}
       <div className="ui-dialogue__bubble">
@@ -38,7 +44,11 @@ export function NarrationCard({
         >
           {text}
         </p>
-        <button type="button" className="ui-dialogue__continue" onClick={onContinue}>
+        <button
+          type="button"
+          className="ui-dialogue__continue"
+          onClick={onContinue}
+        >
           {continueLabel}
           <span aria-hidden="true"> ››</span>
         </button>

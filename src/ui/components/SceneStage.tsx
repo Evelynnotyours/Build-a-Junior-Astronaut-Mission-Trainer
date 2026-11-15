@@ -75,6 +75,7 @@ function BuildingSprite({
   return (
     <img
       className={`ui-scene__prop ${className}`.trim()}
+      data-building={slot.id}
       src={src}
       alt=""
       draggable={false}
@@ -106,8 +107,57 @@ function RockSprite({ slot }: { slot: RockSlot }) {
   );
 }
 
+/** Keep the Sol 1 ground registration under every time/weather sky. */
+function BackdropPlate({
+  src,
+  opacity = 1,
+  fading = false,
+}: {
+  src: string;
+  opacity?: number;
+  fading?: boolean;
+}) {
+  const weather =
+    src === SKY_BACKDROPS.night
+      ? 'night'
+      : src === SKY_BACKDROPS.dust
+        ? 'dust'
+        : src === SKY_BACKDROPS.dusk
+          ? 'dusk'
+          : null;
+
+  return (
+    <div
+      className={`ui-scene__layer ui-scene__backdrop-plate ${fading ? 'ui-scene__backdrop--fade' : ''}`}
+      style={{ opacity }}
+      aria-hidden="true"
+    >
+      <img
+        className="ui-scene__layer ui-scene__backdrop"
+        src={src}
+        alt=""
+        draggable={false}
+      />
+      {weather ? (
+        <img
+          className={`ui-scene__layer ui-scene__backdrop ui-scene__terrain ui-scene__terrain--${weather}`}
+          src={SKY_BACKDROPS.day}
+          alt=""
+          draggable={false}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 /** Crossfades sky art when weather / event mood changes the backdrop. */
-function SceneBackdrop({ src, reduceMotion }: { src: string; reduceMotion: boolean }) {
+function SceneBackdrop({
+  src,
+  reduceMotion,
+}: {
+  src: string;
+  reduceMotion: boolean;
+}) {
   const [baseSrc, setBaseSrc] = useState(src);
   const [fadeSrc, setFadeSrc] = useState<string | null>(null);
   const [fadeOpacity, setFadeOpacity] = useState(0);
@@ -152,20 +202,13 @@ function SceneBackdrop({ src, reduceMotion }: { src: string; reduceMotion: boole
 
   return (
     <>
-      <img
-        className="ui-scene__layer ui-scene__backdrop"
-        src={baseSrc}
-        alt=""
-        draggable={false}
-      />
+      <BackdropPlate src={baseSrc} />
       {fadeSrc && fadeSrc !== baseSrc ? (
-        <img
+        <BackdropPlate
           key={fadeSrc}
-          className="ui-scene__layer ui-scene__backdrop ui-scene__backdrop--fade"
           src={fadeSrc}
-          alt=""
-          draggable={false}
-          style={{ opacity: fadeOpacity }}
+          fading
+          opacity={fadeOpacity}
         />
       ) : null}
     </>
@@ -201,7 +244,11 @@ export function SceneStage({
         <SceneBackdrop src={skySrc} reduceMotion={settings.reduceMotion} />
 
         {showBuildings ? (
-          <div className="ui-scene__props" aria-hidden="true">
+          <div
+            className="ui-scene__props"
+            data-active-spot={hotspotsEnabled ? activeSpot : undefined}
+            aria-hidden="true"
+          >
             {OUTPOST_ROCKS.map((rock) => (
               <RockSprite key={rock.id} slot={rock} />
             ))}

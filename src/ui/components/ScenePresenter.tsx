@@ -173,7 +173,11 @@ function ScenePresenterFrame({
           }}
         />
       </div>
-      <div className="ui-game__dock">{dock}</div>
+      <div
+        className={`ui-game__dock${step.type === 'walk' ? ' ui-game__dock--instruction' : ''}`}
+      >
+        {dock}
+      </div>
     </>
   );
 }
@@ -211,6 +215,7 @@ function renderDock(
       return (
         <DialogueBox
           {...portrait}
+          reduceMotion={opts.reduceMotion}
           speakerName={
             content.speakerName ?? SPEAKER_LABEL[step.speaker] ?? step.speaker
           }

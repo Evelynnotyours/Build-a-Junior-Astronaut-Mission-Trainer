@@ -1,8 +1,13 @@
-import type { CrewExpression, RoboExpression, SpeakerPortrait } from '../../engine/scene-types';
+import type {
+  CrewExpression,
+  RoboExpression,
+  SpeakerPortrait,
+} from '../../engine/scene-types';
 
 type PortraitProps = SpeakerPortrait & {
   alt?: string;
   size?: 'sm' | 'md' | 'lg' | 'hero';
+  reduceMotion?: boolean;
 };
 
 const ROBO: Record<RoboExpression, string> = {
@@ -39,8 +44,29 @@ export function portraitSrc(portrait: SpeakerPortrait): string {
 }
 
 /** Accepts Gate A SpeakerPortrait so Robo/crew expression sets cannot be mixed. */
-export function Portrait({ alt, size = 'md', ...portrait }: PortraitProps) {
+export function Portrait({
+  alt,
+  size = 'md',
+  reduceMotion = false,
+  ...portrait
+}: PortraitProps) {
   const label = alt ?? `${portrait.speaker} ${portrait.expression}`;
+  if (
+    size === 'hero' &&
+    portrait.speaker === 'robo' &&
+    !reduceMotion &&
+    (portrait.expression === 'neutral' || portrait.expression === 'explaining')
+  ) {
+    const animation = portrait.expression === 'neutral' ? 'idle' : 'float';
+    return (
+      <span
+        className={`ui-portrait ui-portrait--hero ui-portrait--robo ui-robo-motion ui-robo-motion--${animation}`}
+        role={label ? 'img' : undefined}
+        aria-label={label || undefined}
+        aria-hidden={label ? undefined : true}
+      />
+    );
+  }
   return (
     <img
       className={`ui-portrait ui-portrait--${size}${portrait.speaker === 'robo' ? ' ui-portrait--robo' : ''}`}

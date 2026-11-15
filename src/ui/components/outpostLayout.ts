@@ -50,11 +50,12 @@ export function rockSrc(size: RockSize): string {
 /**
  * Depth scale from vertical position.
  * Higher on screen (farther) → smaller. Lower (nearer) → larger.
- * Matches: scale = 0.55 + (yFromTop / 100) * 0.65
+ * Perspective is measured over the ground plane, below the 48% horizon.
  */
 export function depthScale(bottomPct: number): number {
   const yFromTop = Math.max(0, Math.min(100, 100 - bottomPct));
-  return 0.55 + (yFromTop / 100) * 0.65;
+  const groundDepth = Math.max(0, Math.min(1, (yFromTop - 48) / 40));
+  return 0.6 + groundDepth * 0.9;
 }
 
 export function scaledWidth(baseWidth: number, bottomPct: number): number {
@@ -77,7 +78,11 @@ export function slotRect(
   };
 }
 
-export function rectsOverlap(a: LayoutRect, b: LayoutRect, pad = LAYOUT_CLEARANCE_PCT): boolean {
+export function rectsOverlap(
+  a: LayoutRect,
+  b: LayoutRect,
+  pad = LAYOUT_CLEARANCE_PCT,
+): boolean {
   return !(
     a.x + a.w + pad <= b.x ||
     b.x + b.w + pad <= a.x ||
@@ -88,93 +93,76 @@ export function rectsOverlap(a: LayoutRect, b: LayoutRect, pad = LAYOUT_CLEARANC
 
 /**
  * Reference layout:
- * dome far-left small · air center · habitat center-right · dish far-right small
- * solar neat row + crate near habitat · smaller rover beside path · commander on path
+ * Two clusters flank the winding lane. Anchors sit on sand below the painted
+ * rock ridges, rather than treating the baked-in terrain as empty ground.
  */
 export const OUTPOST_BUILDINGS = {
   // Far left, farther → smaller
-  greenhouse: { id: 'greenhouse', x: 11, bottom: 42, baseWidth: 8.5, z: 3 },
-  // Center small module
-  air: { id: 'air', x: 36, bottom: 32, baseWidth: 9.5, z: 4 },
-  // Center-right main base
-  habitat: { id: 'habitat', x: 60, bottom: 27, baseWidth: 14, z: 5 },
+  greenhouse: { id: 'greenhouse', x: 27, bottom: 39, baseWidth: 13, z: 3 },
+  // Right-hand utility cluster, beyond the foreground solar array
+  air: { id: 'air', x: 78, bottom: 35, baseWidth: 12, z: 4 },
+  // Main habitat on the broad left shoulder of the lane
+  habitat: { id: 'habitat', x: 37, bottom: 25, baseWidth: 17, z: 5 },
   // Far right antenna, small
-  dish: { id: 'dish', x: 86, bottom: 40, baseWidth: 3.6, z: 3 },
-  // Neat solar row on habitat apron (right of path, left of habitat)
-  solar: { id: 'solar', x: 51, bottom: 19, baseWidth: 5.4, z: 4 },
-  solarB: { id: 'solarB', x: 54.8, bottom: 19, baseWidth: 5.4, z: 4 },
-  extraPanels: { id: 'extraPanels', x: 58.6, bottom: 19, baseWidth: 5.2, z: 3 },
-  // Crate beside solar row (not screen edge)
-  shelter: { id: 'shelter', x: 47.5, bottom: 18.5, baseWidth: 3, z: 3 },
-  batteryBox: { id: 'batteryBox', x: 49.2, bottom: 17.5, baseWidth: 2.4, z: 5 },
-  shieldPlating: { id: 'shieldPlating', x: 65, bottom: 21, baseWidth: 6, z: 4 },
-  garage: { id: 'garage', x: 70, bottom: 20, baseWidth: 5.5, z: 3 },
-  // Rover ~60% prior size, clear sand beside path (left of corner rocks)
-  rover: { id: 'rover', x: 66, bottom: 16, baseWidth: 5.2, z: 6 },
+  dish: { id: 'dish', x: 88, bottom: 25, baseWidth: 6, z: 5 },
+  // Solar array on the clear right shoulder; never across the lane
+  solar: { id: 'solar', x: 59, bottom: 23, baseWidth: 5.2, z: 6 },
+  solarB: { id: 'solarB', x: 65.5, bottom: 23, baseWidth: 5.2, z: 6 },
+  extraPanels: { id: 'extraPanels', x: 62, bottom: 17, baseWidth: 5.2, z: 7 },
+  // Shelter and cargo attachments stay with their respective clusters
+  shelter: { id: 'shelter', x: 18, bottom: 27, baseWidth: 5, z: 5 },
+  batteryBox: { id: 'batteryBox', x: 72, bottom: 23, baseWidth: 2.4, z: 6 },
+  shieldPlating: { id: 'shieldPlating', x: 37, bottom: 23, baseWidth: 9, z: 6 },
+  garage: { id: 'garage', x: 83, bottom: 17, baseWidth: 8, z: 7 },
+  // Foreground rover is larger than the distant utility structures
+  rover: { id: 'rover', x: 76, bottom: 16, baseWidth: 7, z: 8 },
 } as const satisfies Record<string, BuildingSlot>;
 
 /** Commander feet in the middle of the winding path. */
-export const OUTPOST_PATH_START = { x: 48, y: 78 } as const;
+export const OUTPOST_PATH_START = { x: 49, y: 76 } as const;
 
-/** Walk hotspots aligned to the bottom-center building anchors. */
+/** Match sprite bounds in the 16:9 scene; every stand point stays on clear sand. */
+function buildingSpot(
+  slot: BuildingSlot,
+  label: string,
+  stand: [number, number],
+  aspectRatio: number,
+): SpotLayout {
+  const w = scaledWidth(slot.baseWidth, slot.bottom);
+  const h = (w / aspectRatio) * (16 / 9);
+  return { x: slot.x - w / 2, y: 100 - slot.bottom - h, w, h, stand, label };
+}
+
+/** Interaction bounds and walk destinations follow the same anchors as the artwork. */
 export const MISSION_SPOTS: Record<SpotId, SpotLayout> = {
-  greenhouse: {
-    x: OUTPOST_BUILDINGS.greenhouse.x - 5,
-    y: 100 - OUTPOST_BUILDINGS.greenhouse.bottom - 14,
-    w: 10,
-    h: 14,
-    stand: [
-      OUTPOST_BUILDINGS.greenhouse.x + 8,
-      100 - OUTPOST_BUILDINGS.greenhouse.bottom + 4,
-    ],
-    label: 'Greenhouse',
-  },
+  greenhouse: buildingSpot(
+    OUTPOST_BUILDINGS.greenhouse,
+    'Greenhouse',
+    [34, 62],
+    1.5,
+  ),
   solar: {
-    x: OUTPOST_BUILDINGS.solar.x - 4,
-    y: 100 - OUTPOST_BUILDINGS.solar.bottom - 10,
-    w: 9,
-    h: 10,
-    stand: [50, 72],
-    label: 'Solar panels',
+    ...buildingSpot(OUTPOST_BUILDINGS.solar, 'Solar panels', [54, 76], 1.5),
+    w:
+      scaledWidth(
+        OUTPOST_BUILDINGS.solar.baseWidth,
+        OUTPOST_BUILDINGS.solar.bottom,
+      ) + 6.5,
   },
-  air: {
-    x: OUTPOST_BUILDINGS.air.x - 5,
-    y: 100 - OUTPOST_BUILDINGS.air.bottom - 12,
-    w: 10,
-    h: 12,
-    stand: [
-      OUTPOST_BUILDINGS.air.x + 7,
-      100 - OUTPOST_BUILDINGS.air.bottom + 4,
-    ],
-    label: 'Air module',
-  },
-  habitat: {
-    x: OUTPOST_BUILDINGS.habitat.x - 7,
-    y: 100 - OUTPOST_BUILDINGS.habitat.bottom - 16,
-    w: 14,
-    h: 16,
-    stand: [52, 70],
-    label: 'Habitat',
-  },
-  dish: {
-    x: OUTPOST_BUILDINGS.dish.x - 3,
-    y: 100 - OUTPOST_BUILDINGS.dish.bottom - 10,
-    w: 6,
-    h: 10,
-    stand: [
-      OUTPOST_BUILDINGS.dish.x - 6,
-      100 - OUTPOST_BUILDINGS.dish.bottom + 4,
-    ],
-    label: 'Comms dish',
-  },
-  rover: {
-    x: OUTPOST_BUILDINGS.rover.x - 5,
-    y: 100 - OUTPOST_BUILDINGS.rover.bottom - 10,
-    w: 10,
-    h: 10,
-    stand: [OUTPOST_PATH_START.x, OUTPOST_PATH_START.y],
-    label: 'Rover garage',
-  },
+  air: buildingSpot(OUTPOST_BUILDINGS.air, 'Air module', [70, 66], 1402 / 1122),
+  habitat: buildingSpot(OUTPOST_BUILDINGS.habitat, 'Habitat', [49, 73], 1.5),
+  dish: buildingSpot(
+    OUTPOST_BUILDINGS.dish,
+    'Comms dish',
+    [82, 76],
+    1284 / 1225,
+  ),
+  rover: buildingSpot(
+    OUTPOST_BUILDINGS.rover,
+    'Rover garage',
+    [69, 85],
+    128 / 96,
+  ),
 };
 
 /** Edge rock seeds only — kept away from path/props by collision resolve. */
@@ -189,7 +177,10 @@ function clampRock(rock: RockSlot): RockSlot {
   const half = scaledWidth(rock.baseWidth, rock.bottom) / 2;
   return {
     ...rock,
-    x: Math.min(100 - LAYOUT_MARGIN_PCT - half, Math.max(LAYOUT_MARGIN_PCT + half, rock.x)),
+    x: Math.min(
+      100 - LAYOUT_MARGIN_PCT - half,
+      Math.max(LAYOUT_MARGIN_PCT + half, rock.x),
+    ),
     bottom: Math.min(46, Math.max(6, rock.bottom)),
   };
 }

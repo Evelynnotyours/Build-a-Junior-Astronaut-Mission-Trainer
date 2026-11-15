@@ -39,8 +39,6 @@ export function Hotspot({
       onClick={() => {
         if (enabled) onSelect(id);
       }}
-    >
-      {active ? <span className="ui-hotspot__marker" aria-hidden="true" /> : null}
-    </button>
+    />
   );
 }
